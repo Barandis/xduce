@@ -1,6 +1,6 @@
 {
   "name": "xduce",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Composable algorithmic transformations library for JavaScript",
   "main": "lib/xduce.js",
   "scripts": {
