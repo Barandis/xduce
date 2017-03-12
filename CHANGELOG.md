@@ -2,6 +2,10 @@
 
 All notable changes to the library will be documented in this file.
 
+## [0.8.1] 2017-03-11
+### Changed
+- Fixed a silly problem with the API file where everything was under an extra `xduce` property, so what was `xduce.map` instead had to be referred to as `xduce.xduce.map`. It wasn't caught because all of the tests were against underlying files and nothing was actually testing `api.js`. Silly mistake that has been fixed.
+
 ## [0.8.0] 2017-03-11
 ### Changed
 - The entire library has been rewritten in ES2015 and transpiled into a browser-ready ES5 package. There just doesn't seem to be any reason to not write in ES2015 anymore. There have been some changes to coding philosophy - accepting that JavaScript doesn't have classes and stopping trying to pretend that it does, for instance - but the API remains exactly the same.
