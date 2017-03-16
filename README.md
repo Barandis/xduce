@@ -2,9 +2,12 @@
 
 A transducer library for JavaScript
 
+[![Build Status](https://travis-ci.org/Barandis/xduce.svg?branch=master)](https://travis-ci.org/Barandis/xduce)
+[![Coverage Status](https://coveralls.io/repos/github/Barandis/xduce/badge.svg)](https://coveralls.io/github/Barandis/xduce)
+
 ## Installation
 
-In node.js (or using browserify, etc.):
+In node.js (or using Browserify, Webpack, etc.):
 ```
 npm install xduce
 ```
