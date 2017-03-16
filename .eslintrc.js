@@ -56,7 +56,6 @@ module.exports = {
     "no-var": [ERROR],
     "object-shorthand": [ERROR],
     "prefer-const": [ERROR],
-    "prefer-destructuring": [ERROR],
     "prefer-numeric-literals": [ERROR],
     "prefer-rest-params": [ERROR],
     "prefer-spread": [ERROR],
