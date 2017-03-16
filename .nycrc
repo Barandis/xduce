@@ -1,6 +1,6 @@
 {
   "reporter": [
-    "html",
+    "text",
     "lcov"
   ],
   "require": [
