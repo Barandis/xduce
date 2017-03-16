@@ -2,6 +2,11 @@
 
 All notable changes to the library will be documented in this file.
 
+## [Unreleased]
+### Added
+- An unminified version of the library (`xduce.js`) to go along with the minified version (`xduce.min.js`, formerly `xduce.js`). This simply makes it like it was pre-0.8.0.
+- Support for Travis CI and Coveralls.
+
 ## [0.8.1] 2017-03-11
 ### Changed
 - Fixed a silly problem with the API file where everything was under an extra `xduce` property, so what was `xduce.map` instead had to be referred to as `xduce.xduce.map`. It wasn't caught because all of the tests were against underlying files and nothing was actually testing `api.js`. Silly mistake that has been fixed.
