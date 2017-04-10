@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2017 Thomas Otterson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -19,13 +19,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // transformation.js
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { 
+import {
   isImplemented,
-  protocols as p 
+  protocols as p
 } from './protocol';
 
 import {
@@ -33,7 +33,7 @@ import {
   iterator
 } from './iteration';
 
-import { 
+import {
   isReduced,
   reduce,
   arrayReducer,
@@ -47,7 +47,7 @@ import {
   isString
 } from './util';
 
-// An iterator that also acts as a transformer, transforming its collection one element at a time. This is the actual 
+// An iterator that also acts as a transformer, transforming its collection one element at a time. This is the actual
 // output of the sequence function (when the input collection is an iterator) and the asIterator function.
 //
 // This object supports non-1-to-1 correspondences between input and output values. For example, a filter transformation
@@ -64,29 +64,29 @@ const transformingIterator = (collection, xform) => {
   };
 
   return {
-    // This array is the key to working properly with step functions that return more than one value. All of them are 
-    // put into the items array. As long as this array has values in it, the `next` function will return one value 
+    // This array is the key to working properly with step functions that return more than one value. All of them are
+    // put into the items array. As long as this array has values in it, the `next` function will return one value
     // popped from it rather than running the step function again.
     items: [],
     reduced: false,
     iter: iterator(collection),
     xform: xform(stepReducer),
 
-    // This object is an iterator itself, so just return this. This function serves to make the iterator work right in 
+    // This object is an iterator itself, so just return this. This function serves to make the iterator work right in
     // ES2015, so it can be used in for...of expressions, for instance.
     [p.iterator]() {
       return this;
     },
 
     // The next function here is rather simple. If there is already something in the items array, it's returned. If not,
-    // the step function is run and, if that results in a value in the items array, it's returned. Otherwise an object 
+    // the step function is run and, if that results in a value in the items array, it's returned. Otherwise an object
     // with {done: true} is returned.
     next() {
       if (this.items.length === 0) {
         this.step();
       }
       if (this.items.length === 0) {
-        return { 
+        return {
           done: true
         };
       }
@@ -96,12 +96,12 @@ const transformingIterator = (collection, xform) => {
       };
     },
 
-    // This is where most of the work happens. It gets the next value from the input collection and runs it through the 
-    // reduction step functions. If that results in a value, it's given to the stepper object (which adds it to the 
-    // items array); otherwise the while loop continues to the next element of the input collection. This ensures that 
+    // This is where most of the work happens. It gets the next value from the input collection and runs it through the
+    // reduction step functions. If that results in a value, it's given to the stepper object (which adds it to the
+    // items array); otherwise the while loop continues to the next element of the input collection. This ensures that
     // there's something for the `next` function to return each time it's called.
     //
-    // If the collection has completed or if the step function returns a reduced object (which take will do after its 
+    // If the collection has completed or if the step function returns a reduced object (which take will do after its
     // limit of elements has been reached, for instance), the iteration is completed by calling the result function.
     step() {
       const count = this.items.length;
@@ -121,7 +121,7 @@ const transformingIterator = (collection, xform) => {
 // function and a reducer object and combines them into a transformer object suitable for `reduce`. It also ensures that
 // there is a legitimate init object to reduce into.
 //
-// If the transformer function is null, the reducer will be used as the transformer. If no initial collection is 
+// If the transformer function is null, the reducer will be used as the transformer. If no initial collection is
 // supplied, it'll be taken from the reducers `init` protocol function.
 //
 // Without the transformer, this function basically becomes `reduce` with the ability to determine an initial collection
@@ -131,35 +131,35 @@ export function transduce(collection, xform, reducer, init = reducer[p.init]()) 
   return reduce(collection, xf, init);
 }
 
-// Runs a collection through the supplied transformer, reducing the results into an array. If no transformer is 
+// Runs a collection through the supplied transformer, reducing the results into an array. If no transformer is
 // supplied, the collection is simply reduced into an array as-is.
 export function asArray(collection, xform) {
   return transduce(collection, xform, arrayReducer);
 }
 
-// Runs a collection through the supplied transformer, reducing the results into an object. In order for this to work, 
+// Runs a collection through the supplied transformer, reducing the results into an object. In order for this to work,
 // the object reducer assumes that it will be receiving elements that are objects in one of two forms: {key: value} or
 // {k: key, v:value} (kv-form). Either will be reduced into {key: value}.
 //
-// If no transformer is supplied, the collection is simply reduced into an object, though there aren't many instances 
+// If no transformer is supplied, the collection is simply reduced into an object, though there aren't many instances
 // where this would make a lot of sense because no other collections can be converted into the format required here.
 export function asObject(collection, xform) {
   return transduce(collection, xform, objectReducer);
 }
 
-// Runs a collection through the supplied transformer, reducing the results into a string. If no transformer is 
+// Runs a collection through the supplied transformer, reducing the results into a string. If no transformer is
 // supplied, the collection is simply reduced into a string as-is.
 export function asString(collection, xform) {
   return transduce(collection, xform, stringReducer);
 }
 
-// Runs a collection through the supplied transformer, reducing the results into an iterator. If no transformer is 
+// Runs a collection through the supplied transformer, reducing the results into an iterator. If no transformer is
 // supplied, the collection is simply turned into an iterator as-is.
 export function asIterator(collection, xform) {
   return xform ? transformingIterator(collection, xform) : iterator(collection, null, false);
 }
 
-// Runs a collection through the supplied transformer, reducing the results into a collection of the same kind. Since 
+// Runs a collection through the supplied transformer, reducing the results into a collection of the same kind. Since
 // this function depends on the collection to determine the output collection type, this can't be used for conversion
 // into a different type of collection.
 export function asReducible(collection, xform) {
@@ -178,7 +178,7 @@ export function sequence(collection, xform) {
   }
 }
 
-// Takes a collection and a transformer and performs a transduction, returning the result by appending it to the 
+// Takes a collection and a transformer and performs a transduction, returning the result by appending it to the
 // supplied target collection. In most cases, this will be an empty collection, but if a non-empty target is passed, its
 // elements will remain in place and the value of the transduction appended.
 export function into(target, collection, xform) {
@@ -191,17 +191,17 @@ export function into(target, collection, xform) {
   }
 }
 
-// Composes multiple transformer functions into a single transformer function. Unlike most compose functions, this one 
+// Composes multiple transformer functions into a single transformer function. Unlike most compose functions, this one
 // works first-to-last: the first function is run first, passing its result to the second function, etc. This is because
 // that's much more natural in working with transformers.
 //
-// This function is designed to work specifically with transformer functions. It depends on those functions taking 
+// This function is designed to work specifically with transformer functions. It depends on those functions taking
 // another transformer function and chaining them together.
 //
-// Note that when using this with transduction functions, the result must be passed to a sequencing function (sequence, 
-// into, as-array, etc.). The composed function can only take one parameter, so it can't be used like the shortcut 
+// Note that when using this with transduction functions, the result must be passed to a sequencing function (sequence,
+// into, as-array, etc.). The composed function can only take one parameter, so it can't be used like the shortcut
 // transducer functions.
 export function compose(...fns) {
   const reversedFns = fns.reverse();
-  return value => reversedFns.reduce(((acc, fn) => fn(acc)), value);
+  return (value) => reversedFns.reduce((acc, fn) => fn(acc), value);
 }

@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2017 Thomas Otterson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -19,9 +19,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // chunk.js
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import { protocols as p } from '../modules/protocol';
 import { sequence } from '../modules/transformation';
@@ -85,8 +85,7 @@ const chunkByTransformer = (fn, xform) => ({
     let result = acc;
     if (this.last === NO_VALUE || sameValueZero(current, this.last)) {
       this.part.push(input);
-    }
-    else {
+    } else {
       result = this.xform[p.step](result, this.part);
       this.part = [input];
     }
@@ -103,7 +102,7 @@ const chunkByTransformer = (fn, xform) => ({
   }
 });
 
-// Splits the input collection into chunks whose boundaries are defined by the supplied function. One chunk ends and 
+// Splits the input collection into chunks whose boundaries are defined by the supplied function. One chunk ends and
 // the next begins when the function returns a different value for an input element than it did for the prior element.
 //
 // By default, the function is run without context. If a context object is provided, it will become `this` within the

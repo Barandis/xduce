@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2017 Thomas Otterson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -19,9 +19,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// uniq.js
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// distinct.js
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import { protocols as p } from '../modules/protocol';
 import { sequence } from '../modules/transformation';
@@ -62,7 +62,7 @@ const distinctTransformer = (fn, xform) => ({
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 export function distinctWith(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
-  return col ? sequence(col, distinctWith(func)) : (xform) => distinctTransformer(func, xform); 
+  return col ? sequence(col, distinctWith(func)) : (xform) => distinctTransformer(func, xform);
 }
 
 // Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
@@ -79,7 +79,7 @@ export function distinctBy(collection, fn, ctx) {
 }
 
 // Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
-// comparing consecutive elements using SameValueZero. If two consecutive elements are the same, then the second will 
+// comparing consecutive elements using SameValueZero. If two consecutive elements are the same, then the second will
 // be suppressed.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).

@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2017 Thomas Otterson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -19,9 +19,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // reduction.js
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import {
   isArray,
@@ -41,7 +41,7 @@ import {
 } from './iteration';
 
 // Returns an init function for a collection. This is a function that returns a new, empty instance of the collection in
-// question. If the collection doesn't support reduction, `null` is returned. This makes conditionals a bit easier to 
+// question. If the collection doesn't support reduction, `null` is returned. This makes conditionals a bit easier to
 // work with.
 //
 // In order to support the conversion of functions into reducers, function support is also provided.
@@ -56,7 +56,7 @@ export function init(collection) {
   }
 }
 
-// Returns a step function for a collection. This is a function that takes an accumulator and a value and returns the 
+// Returns a step function for a collection. This is a function that takes an accumulator and a value and returns the
 // result of reducing the value into the accumulator. If the collection doesn't support reduction, `null` is returned.
 //
 // In order to support the conversion of functions into reducers, function support is also provided.
@@ -84,13 +84,12 @@ export function step(collection) {
         // Would love to use a do expression here, but they don't currently play nice with object literals
         let value = input;
 
-        // if the object is kv-form, change the object from { k: key, v: value } to { key: value } 
-        if (isKvFormObject(input)) {   
+        if (isKvFormObject(input)) {
+          // if the object is kv-form, change the object from { k: key, v: value } to { key: value }
           value = {[input.k]: input.v};
-        } 
-        // if the input isn't an object at all, turn it into an object with a key based on what's already in the
-        // accumulator
-        else if (!isObject(input)) {
+        } else if (!isObject(input)) {
+          // if the input isn't an object at all, turn it into an object with a key based on what's already in the
+          // accumulator
           let max = -1;
           for (const k1 in acc) {
             const knum = parseInt(k1);
@@ -127,7 +126,7 @@ export function result(collection) {
     case isString(collection):
     case isArray(collection):
     case isObject(collection):
-    case isFunction(collection):              return value => value;
+    case isFunction(collection):              return (value) => value;
     default:                                  return null;
   }
 }
@@ -147,9 +146,9 @@ export const arrayReducer = toReducer([]);
 export const objectReducer = toReducer({});
 export const stringReducer = toReducer('');
 
-// Turns a transformer along with a specific reducer into a function that can be used with other reduce implementations 
-// like the native Array.prototype.reduce function or the reduce functions in Underscore or Lodash. Since our 
-// transformers rely on the object being reduced to supply information on how to reduce, and since these other 
+// Turns a transformer along with a specific reducer into a function that can be used with other reduce implementations
+// like the native Array.prototype.reduce function or the reduce functions in Underscore or Lodash. Since our
+// transformers rely on the object being reduced to supply information on how to reduce, and since these other
 // implementations are not coded to read that information, we must explicitly supply the reducer.
 export function toFunction(xform, reducer) {
   const r = typeof reducer === 'function' ? toReducer(reducer) : reducer;
@@ -191,12 +190,12 @@ export function ensureUnreduced(value) {
   return isReduced(value) ? unreduced(value) : value;
 }
 
-// The core function of the entire library. This reduces a collection by applying a reduction step function to every 
-// element of the collection and adding it to the initial collection provided (the step function is assumed to know how 
+// The core function of the entire library. This reduces a collection by applying a reduction step function to every
+// element of the collection and adding it to the initial collection provided (the step function is assumed to know how
 // to build on the initial collection). The final collection is then passed through the result function to get the final
 // output.
 //
-// The `reducer` object contains these step and result functions. The collection must be iterable; if it is not, an 
+// The `reducer` object contains these step and result functions. The collection must be iterable; if it is not, an
 // error is thrown.
 export function reduce(collection, reducer, init) {
   if (collection == null) {

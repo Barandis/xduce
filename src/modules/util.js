@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2017 Thomas Otterson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -22,7 +22,7 @@
 // Object's toString is explicitly used throughout because it could be redefined in any subclass of Object
 const {toString} = Object.prototype;
 
-// Determines whether an object is an array. This is a completely unnecessary function that is here only for 
+// Determines whether an object is an array. This is a completely unnecessary function that is here only for
 // consistency with the other type-checking functions below.
 export const {isArray} = Array;
 
@@ -31,7 +31,7 @@ export function isFunction(x) {
   return x::toString() === '[object Function]';
 }
 
-// Determines whether an object is a plain object. This returns `true` only for object literals and those created with 
+// Determines whether an object is a plain object. This returns `true` only for object literals and those created with
 // the Object constructor; objects of other types will return `false`.
 export function isObject(x) {
   // This check is true on all objects, but also on all objects created by custom constructors (which we don't want)
@@ -54,7 +54,7 @@ export function isObject(x) {
          functionToString.call(ctor) === functionToString.call(Object);
 }
 
-// Determines whether an object is a number. It must be either an actual number or a Number object to return `true`; 
+// Determines whether an object is a number. It must be either an actual number or a Number object to return `true`;
 // strings that happen to be numbers still return `false`. Also, `NaN` and `Infinity` return `false`.
 export function isNumber(x) {
   return x::toString() === '[object Number]' && isFinite(x);
@@ -65,8 +65,8 @@ export function isString(x) {
   return x::toString() === '[object String]';
 }
 
-// The same as the basic JavaScript charAt function, except that it takes into account double-wide characters in the 
-// Basic Multilingual Plane (BMP). The index is adjusted to take into account such characters in the input string, and 
+// The same as the basic JavaScript charAt function, except that it takes into account double-wide characters in the
+// Basic Multilingual Plane (BMP). The index is adjusted to take into account such characters in the input string, and
 // if the result character is double-wide, it will be returned in full (as a two-character string).
 export function bmpCharAt(str, index) {
   const s = str + '';
@@ -78,8 +78,7 @@ export function bmpCharAt(str, index) {
     const li = pairs.lastIndex;
     if (li - 2 < i) {
       i++;
-    } 
-    else {
+    } else {
       break;
     }
   }
@@ -90,7 +89,7 @@ export function bmpCharAt(str, index) {
 
   let result = s.charAt(i);
 
-  if (/[\uD800-\uDBFF]/.test(result) && 
+  if (/[\uD800-\uDBFF]/.test(result) &&
       /[\uDC00-\uDFFF]/.test(s.charAt(i + 1))) {
     result += s.charAt(i + 1);
   }
@@ -98,8 +97,8 @@ export function bmpCharAt(str, index) {
   return result;
 }
 
-// Returns the length of a string, taking into account any double-wide BMP characters that may be in the string. For 
-// example, if the string has one double-wide character, this function will return a number that is one less than the 
+// Returns the length of a string, taking into account any double-wide BMP characters that may be in the string. For
+// example, if the string has one double-wide character, this function will return a number that is one less than the
 // regular string `.length` property would.
 export function bmpLength(str) {
   const s = str + '';
@@ -109,8 +108,8 @@ export function bmpLength(str) {
   return s.length - count;
 }
 
-// Creates an array of integers from start to end - 1, where `start` is the first parameter and `end` is the second. If 
-// only one parameter is given, it's the end, and the start becomes 0. If a third parameter is supplied, it's the step 
+// Creates an array of integers from start to end - 1, where `start` is the first parameter and `end` is the second. If
+// only one parameter is given, it's the end, and the start becomes 0. If a third parameter is supplied, it's the step
 // between successive elements of the array. If the step is negative, or if the start is greater than the end, the array
 // elements descend.
 export function range(start, end, step) {

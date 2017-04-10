@@ -2,6 +2,10 @@
 
 All notable changes to the library will be documented in this file.
 
+## [unreleased]
+### Changed
+- Added a consistent set of linting rules and ran them, fixing all of the linting errors.
+
 ## [0.8.2] 2017-03-16
 ### Added
 - An unminified version of the library (`xduce.js`) to go along with the minified version (`xduce.min.js`, formerly `xduce.js`). This simply makes it like it was pre-0.8.0.
@@ -15,7 +19,7 @@ All notable changes to the library will be documented in this file.
 ### Changed
 - The entire library has been rewritten in ES2015 and transpiled into a browser-ready ES5 package. There just doesn't seem to be any reason to not write in ES2015 anymore. There have been some changes to coding philosophy - accepting that JavaScript doesn't have classes and stopping trying to pretend that it does, for instance - but the API remains exactly the same.
 - A few additional tests have been written to cover some lines of code that had remained uncovered. While none of this code was likely to be used often, it did uncover a few bugs that may have caused some problems in unusual situations.
-- A new build process is in place. Gulp is gone because, while it's an excellent tool, it's like using a sledgehammer to kill a fly in a project this small (the number of dependencies. Yarn is now in place just to try it out a little bit, so far with good results. Coverage is now being done with nyc to run istanbul. Browserify was replaced with Webpack. Babel was added for transpiling. The end result is that, despite the additional transpiling step necessary with the switch to ES2015, the number of dev dependencies has been halved. 
+- A new build process is in place. Gulp is gone because, while it's an excellent tool, it's like using a sledgehammer to kill a fly in a project this small (the number of dependencies. Yarn is now in place just to try it out a little bit, so far with good results. Coverage is now being done with nyc to run istanbul. Browserify was replaced with Webpack. Babel was added for transpiling. The end result is that, despite the additional transpiling step necessary with the switch to ES2015, the number of dev dependencies has been halved.
 - Since the code has changed drastically and since the library isn't to version 1.0 yet anyway, it seemed best to delete the old Github project and create a new one for this release.
 
 ## [0.7.1] 2016-07-12
@@ -24,7 +28,7 @@ All notable changes to the library will be documented in this file.
 ## [0.7.0] 2016-07-12
 ### Added
 - BMP string functions and type-checking functions that were already present in the code have been made a part of the public API and are located on the `xduce.util` object.
-- A second parameter to `iterator`, which is a sort function used to sort object elements by key. 
+- A second parameter to `iterator`, which is a sort function used to sort object elements by key.
 - A third parameter to `iterator`, which determines whether iteration over objects returns `{key: value}` (`false`) or `{k: key, v: value}` (`true`). The default is `true`.
 - an `identity` transformer function that simply passes the collection through without modifying it.
 
