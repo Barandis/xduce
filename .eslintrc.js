@@ -150,7 +150,10 @@ module.exports = {
     // ECMAScript 6
     'arrow-parens': [ERROR, 'always'],
     'arrow-spacing': [ERROR],
-    'generator-star-spacing': [ERROR],
+    'generator-star-spacing': [ERROR, {
+      'before': false,
+      'after': true
+    }],
     'no-duplicate-imports': [ERROR],
     'no-useless-computed-key': [ERROR],
     'no-useless-rename': [ERROR],
