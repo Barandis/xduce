@@ -151,7 +151,7 @@ const stringReducer = toReducer('');
 function toFunction(xform, reducer) {
   const r = typeof reducer === 'function' ? toReducer(reducer) : reducer;
   const result = xform(r);
-  return result::result[p.step];
+  return result[p.step].bind(result);
 }
 
 // Returns a reduced version of a value, regardless of whether the value is already reduced.

@@ -112,7 +112,7 @@ const chunkByTransformer = (fn, xform) => ({
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function chunkBy(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, chunkBy(func)) : (xform) => chunkByTransformer(func, xform);
 }
 

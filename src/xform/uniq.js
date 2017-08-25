@@ -61,7 +61,7 @@ const uniqTransformer = (fn, xform) => ({
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function uniqWith(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, uniqWith(func)) : (xform) => uniqTransformer(func, xform);
 }
 
@@ -74,7 +74,7 @@ function uniqWith(collection, fn, ctx) {
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function uniqBy(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return uniqWith(col, (a, b) => sameValueZero(func(a), func(b)));
 }
 

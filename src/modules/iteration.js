@@ -197,7 +197,7 @@ function isKvFormObject(obj) {
 // is a NEW iterator each time the call is made.
 function iterator(obj, sort, kv) {
   switch (true) {
-    case isFunction(obj[p.iterator]): return obj::obj[p.iterator]();
+    case isFunction(obj[p.iterator]): return obj[p.iterator]();
     case isFunction(obj.next):        return obj;
     case isString(obj):               return stringIterator(obj);
     case isArray(obj):                return arrayIterator(obj);

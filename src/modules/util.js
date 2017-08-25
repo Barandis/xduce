@@ -28,14 +28,14 @@ const {isArray} = Array;
 
 // Determines whether an object is a function.
 function isFunction(x) {
-  return x::toString() === '[object Function]';
+  return toString.call(x) === '[object Function]';
 }
 
 // Determines whether an object is a plain object. This returns `true` only for object literals and those created with
 // the Object constructor; objects of other types will return `false`.
 function isObject(x) {
   // This check is true on all objects, but also on all objects created by custom constructors (which we don't want)
-  if (x::toString() !== '[object Object]') {
+  if (toString.call(x) !== '[object Object]') {
     return false;
   }
 
@@ -57,12 +57,12 @@ function isObject(x) {
 // Determines whether an object is a number. It must be either an actual number or a Number object to return `true`;
 // strings that happen to be numbers still return `false`. Also, `NaN` and `Infinity` return `false`.
 function isNumber(x) {
-  return x::toString() === '[object Number]' && isFinite(x);
+  return toString.call(x) === '[object Number]' && isFinite(x);
 }
 
 // Determines whether an object is a string.
 function isString(x) {
-  return x::toString() === '[object String]';
+  return toString.call(x) === '[object String]';
 }
 
 // The same as the basic JavaScript charAt function, except that it takes into account double-wide characters in the

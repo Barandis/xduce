@@ -88,7 +88,7 @@ const dropWhileTransformer = (fn, xform) => ({
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function dropWhile(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, dropWhile(func)) : (xform) => dropWhileTransformer(func, xform);
 }
 

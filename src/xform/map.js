@@ -55,7 +55,7 @@ const mapTransformer = (fn, xform) => ({
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function map(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, map(func)) : (xform) => mapTransformer(func, xform);
 }
 
@@ -66,7 +66,7 @@ function map(collection, fn, ctx) {
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function flatMap(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, compose(map(func), flatten())) : compose(map(func), flatten());
 }
 
