@@ -35,7 +35,7 @@ const p = protocols;
 // This object supports non-1-to-1 correspondences between input and output values. For example, a filter transformation
 // might return fewer output elements than were in the input collection, while a repeat transformation will return more.
 // In either case, `next` in this class will return one element per call.
-function transformingIterator(collection, xform) {
+function transducingIterator(collection, xform) {
   const stepReducer = {
     [p.step]: (xiter, input) => {
       const value = isKvFormObject(input) ? { [input.k]: input.v } : input;
@@ -139,7 +139,7 @@ function asString(collection, xform) {
 // Runs a collection through the supplied transformer, reducing the results into an iterator. If no transformer is
 // supplied, the collection is simply turned into an iterator as-is.
 function asIterator(collection, xform) {
-  return xform ? transformingIterator(collection, xform) : iterator(collection, null, false);
+  return xform ? transducingIterator(collection, xform) : iterator(collection, null, false);
 }
 
 // Runs a collection through the supplied transformer, reducing the results into a collection of the same kind. Since
