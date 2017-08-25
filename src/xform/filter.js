@@ -28,22 +28,21 @@ const { sequence } = require('../modules/transformation');
 const { isFunction, complement } = require('../modules/util');
 const p = protocols;
 
-const filterTransformer = (fn, xform) => ({
-  fn,
-  xform,
+function filterTransformer(fn, xform) {
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+    [p.step](acc, input) {
+      return fn(input) ? xform[p.step](acc, input) : acc;
+    },
 
-  [p.step](acc, input) {
-    return this.fn(input) ? this.xform[p.step](acc, input) : acc;
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Filters the elements of the input collection by only passing the ones that pass the predicate function on into the
 // output collection.

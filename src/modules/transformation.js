@@ -35,7 +35,7 @@ const p = protocols;
 // This object supports non-1-to-1 correspondences between input and output values. For example, a filter transformation
 // might return fewer output elements than were in the input collection, while a repeat transformation will return more.
 // In either case, `next` in this class will return one element per call.
-const transformingIterator = (collection, xform) => {
+function transformingIterator(collection, xform) {
   const stepReducer = {
     [p.step]: (xiter, input) => {
       const value = isKvFormObject(input) ? { [input.k]: input.v } : input;
@@ -45,14 +45,15 @@ const transformingIterator = (collection, xform) => {
     [p.result]: value => value
   };
 
+  const iter = iterator(collection);
+  const xf = xform(stepReducer);
+  let reduced = false;
+
   return {
     // This array is the key to working properly with step functions that return more than one value. All of them are
     // put into the items array. As long as this array has values in it, the `next` function will return one value
     // popped from it rather than running the step function again.
     items: [],
-    reduced: false,
-    iter: iterator(collection),
-    xform: xform(stepReducer),
 
     // This object is an iterator itself, so just return this. This function serves to make the iterator work right in
     // ES2015, so it can be used in for...of expressions, for instance.
@@ -88,16 +89,16 @@ const transformingIterator = (collection, xform) => {
     step() {
       const count = this.items.length;
       while (this.items.length === count) {
-        const step = this.iter.next();
-        if (step.done || this.reduced) {
-          this.xform[p.result](this);
+        const step = iter.next();
+        if (step.done || reduced) {
+          xf[p.result](this);
           break;
         }
-        this.reduced = isReduced(this.xform[p.step](this, step.value));
+        reduced = isReduced(xf[p.step](this, step.value));
       }
     }
   };
-};
+}
 
 // While `reduce` is the core function, this is the one that will be called the most often. This one takes a transformer
 // function and a reducer object and combines them into a transformer object suitable for `reduce`. It also ensures that

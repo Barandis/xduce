@@ -28,23 +28,23 @@ const { sequence } = require('../modules/transformation');
 const { isNumber, isFunction } = require('../modules/util');
 const p = protocols;
 
-const dropTransformer = (n, xform) => ({
-  n,
-  xform,
-  i: 0,
+function dropTransformer(n, xform) {
+  let i = 0;
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    return this.i++ < this.n ? acc : this.xform[p.step](acc, input);
-  },
+    [p.step](acc, input) {
+      return i++ < n ? acc : xform[p.step](acc, input);
+    },
 
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Returns a collection containing all of the elements of the input collection except for the first `n` of them.
 //
@@ -54,29 +54,29 @@ function drop(collection, n) {
   return col ? sequence(col, drop(num)) : xform => dropTransformer(num, xform);
 }
 
-const dropWhileTransformer = (fn, xform) => ({
-  fn,
-  xform,
-  dropping: true,
+function dropWhileTransformer(fn, xform) {
+  let dropping = true;
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    if (this.dropping) {
-      if (this.fn(input)) {
-        return acc;
+    [p.step](acc, input) {
+      if (dropping) {
+        if (fn(input)) {
+          return acc;
+        }
+        dropping = false;
       }
-      this.dropping = false;
-    }
-    return this.xform[p.step](acc, input);
-  },
+      return xform[p.step](acc, input);
+    },
 
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Returns a collection containing all of the elements of the input collection starting from the first one that returns
 // `false` from the supplied predicate function. After the first element that fails this test, no further elements are

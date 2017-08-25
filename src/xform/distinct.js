@@ -31,27 +31,27 @@ const p = protocols;
 
 const NO_VALUE = Symbol('NO_VALUE');
 
-const distinctTransformer = (fn, xform) => ({
-  fn,
-  xform,
-  last: NO_VALUE,
+function distinctTransformer(fn, xform) {
+  let last = NO_VALUE;
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    if (this.last !== NO_VALUE && this.fn(input, this.last)) {
-      return acc;
+    [p.step](acc, input) {
+      if (last !== NO_VALUE && fn(input, last)) {
+        return acc;
+      }
+      last = input;
+      return xform[p.step](acc, input);
+    },
+
+    [p.result](value) {
+      return xform[p.result](value);
     }
-    this.last = input;
-    return this.xform[p.step](acc, input);
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+  };
+}
 
 // Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
 // the provided function; if two consecutive elements produce the same result from the function, then the second of

@@ -32,34 +32,34 @@ const p = protocols;
 
 const NO_VALUE = Symbol('NO_VALUE');
 
-const chunkTransformer = (n, xform) => ({
-  n,
-  xform,
-  count: 0,
-  part: [],
+function chunkTransformer(n, xform) {
+  let count = 0;
+  let part = [];
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    this.part[this.count++] = input;
-    if (this.count === this.n) {
-      const out = this.part.slice(0, this.n);
-      this.part = [];
-      this.count = 0;
-      return this.xform[p.step](acc, out);
+    [p.step](acc, input) {
+      part[count++] = input;
+      if (count === n) {
+        const out = part.slice(0, n);
+        part = [];
+        count = 0;
+        return xform[p.step](acc, out);
+      }
+      return acc;
+    },
+
+    [p.result](value) {
+      if (count > 0) {
+        return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+      }
+      return xform[p.result](value);
     }
-    return acc;
-  },
-
-  [p.result](value) {
-    if (this.count > 0) {
-      return ensureUnreduced(this.xform[p.step](value, this.part.slice(0, this.count)));
-    }
-    return this.xform[p.result](value);
-  }
-});
+  };
+}
 
 // Splits the input collection into chunks of `n` elements each. Each of these chunks is an array, no matter what the
 // type of the input collection.
@@ -70,37 +70,37 @@ function chunk(collection, n) {
   return col ? sequence(col, chunk(num)) : xform => chunkTransformer(num, xform);
 }
 
-const chunkByTransformer = (fn, xform) => ({
-  fn,
-  xform,
-  part: [],
-  last: NO_VALUE,
+function chunkByTransformer(fn, xform) {
+  let part = [];
+  let last = NO_VALUE;
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    const current = this.fn(input);
-    let result = acc;
-    if (this.last === NO_VALUE || sameValueZero(current, this.last)) {
-      this.part.push(input);
-    } else {
-      result = this.xform[p.step](result, this.part);
-      this.part = [input];
+    [p.step](acc, input) {
+      const current = fn(input);
+      let result = acc;
+      if (last === NO_VALUE || sameValueZero(current, last)) {
+        part.push(input);
+      } else {
+        result = xform[p.step](result, part);
+        part = [input];
+      }
+      last = current;
+      return result;
+    },
+
+    [p.result](value) {
+      const count = part.length;
+      if (count > 0) {
+        return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+      }
+      return xform[p.result](value);
     }
-    this.last = current;
-    return result;
-  },
-
-  [p.result](value) {
-    const count = this.part.length;
-    if (count > 0) {
-      return ensureUnreduced(this.xform[p.step](value, this.part.slice(0, count)));
-    }
-    return this.xform[p.result](value);
-  }
-});
+  };
+}
 
 // Splits the input collection into chunks whose boundaries are defined by the supplied function. One chunk ends and
 // the next begins when the function returns a different value for an input element than it did for the prior element.

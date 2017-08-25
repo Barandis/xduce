@@ -29,22 +29,21 @@ const { isFunction } = require('../modules/util');
 const { flatten } = require('./core');
 const p = protocols;
 
-const mapTransformer = (fn, xform) => ({
-  fn,
-  xform,
+function mapTransformer(fn, xform) {
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+    [p.step](acc, input) {
+      return xform[p.step](acc, fn(input));
+    },
 
-  [p.step](acc, input) {
-    return this.xform[p.step](acc, this.fn(input));
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Maps the elements of a collection over a function. The output collection consists of the return values from that
 // function when the elements of the input function are fed into it.

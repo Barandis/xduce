@@ -37,21 +37,21 @@ function sameValueZero(a, b) {
   return a === b || (isNaN(a) && isNaN(b));
 }
 
-const identityTransformer = xform => ({
-  xform,
+function identityTransformer(xform) {
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+    [p.step](acc, input) {
+      return xform[p.step](acc, input);
+    },
 
-  [p.step](acc, input) {
-    return this.xform[p.step](acc, input);
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Returns the collection as-is, without transforming any of its elements. The collection's iteration and reduction
 // protocols are invoked, which means that this function cannot guarantee that the output collection is the same as
@@ -62,38 +62,36 @@ function identity(collection) {
   return collection ? sequence(collection, identity()) : xform => identityTransformer(xform);
 }
 
-const flattenTransformer = xform => ({
-  xform,
+function flattenTransformer(xform) {
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+    [p.step](acc, input) {
+      const subXform = {
+        [p.init]() {
+          return xform[p.init]();
+        },
 
-  [p.step](acc, input) {
-    const { xform } = this;
+        [p.step](acc, input) {
+          const v = xform[p.step](acc, input);
+          return isReduced(v) ? reduced(v) : v;
+        },
 
-    const subXform = {
-      [p.init]: () => {
-        return xform[p.init]();
-      },
+        [p.result](value) {
+          return xform[p.result](value);
+        }
+      };
 
-      [p.step]: (acc, input) => {
-        const v = xform[p.step](acc, input);
-        return isReduced(v) ? reduced(v) : v;
-      },
+      return isIterable(input) ? reduce(input, subXform, acc) : subXform[p.step](acc, input);
+    },
 
-      [p.result]: value => {
-        return xform[p.result](value);
-      }
-    };
-
-    return isIterable(input) ? reduce(input, subXform, acc) : subXform[p.step](acc, input);
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Flattens any sub-collections in the input collection, returning a flat collection. Any element in the input
 // collection that is iterable will be flattened. This includes strings and objects, types of collections that don't
@@ -104,29 +102,28 @@ function flatten(collection) {
   return collection ? sequence(collection, flatten()) : xform => flattenTransformer(xform);
 }
 
-const repeatTransformer = (n, xform) => ({
-  n,
-  xform,
+function repeatTransformer(n, xform) {
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
-
-  [p.step](acc, input) {
-    let result = acc;
-    for (let i = 0, count = this.n; i < count; ++i) {
-      result = this.xform[p.step](result, input);
-      if (isReduced(result)) {
-        break;
+    [p.step](acc, input) {
+      let result = acc;
+      for (let i = 0; i < n; ++i) {
+        result = xform[p.step](result, input);
+        if (isReduced(result)) {
+          break;
+        }
       }
-    }
-    return result;
-  },
+      return result;
+    },
 
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Duplicates the elements of the input collection n times in the output collection.
 //

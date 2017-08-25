@@ -29,27 +29,27 @@ const { isFunction } = require('../modules/util');
 const { sameValueZero } = require('./core');
 const p = protocols;
 
-const uniqTransformer = (fn, xform) => ({
-  fn,
-  xform,
-  uniques: [],
+function uniqTransformer(fn, xform) {
+  const uniques = [];
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    if (this.uniques.some(u => this.fn(input, u))) {
-      return acc;
+    [p.step](acc, input) {
+      if (uniques.some(u => fn(input, u))) {
+        return acc;
+      }
+      uniques.push(input);
+      return xform[p.step](acc, input);
+    },
+
+    [p.result](value) {
+      return xform[p.result](value);
     }
-    this.uniques.push(input);
-    return this.xform[p.step](acc, input);
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+  };
+}
 
 // Returns a collection containing only unique elements from the input collection. Uniqueness is determined by passing
 // each pair of elements through the provided function; those that return the same value from this function are
