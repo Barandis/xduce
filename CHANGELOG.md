@@ -5,6 +5,9 @@ All notable changes to the library will be documented in this file.
 ## [unreleased]
 ### Changed
 - Added a consistent set of linting rules and ran them, fixing all of the linting errors.
+- Augmented the liniting rules with prettier to format everything consistently.
+- Changed the names of transduction protocol properties to use symbols insteaed of strings, as long as symbols are available in the environment where the library is being used. This has no effect on the operation of the library, but it could affect the way it interfaces with other libraries (older CSP libraries, for instance, expect string property names).
+- Changed some internal naming conventions. The terminology around tranducers is a bit subtle, but I have an idea about how I want to go about that now. This does not affect any part of the public API.
 
 ## [0.8.2] 2017-03-16
 ### Added
