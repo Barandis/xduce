@@ -32,7 +32,7 @@ const p = protocols;
 
 const NO_VALUE = Symbol('NO_VALUE');
 
-function chunkTransformer(n, xform) {
+function chunkTransducer(n, xform) {
   let count = 0;
   let part = [];
 
@@ -67,10 +67,10 @@ function chunkTransformer(n, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function chunk(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
-  return col ? sequence(col, chunk(num)) : xform => chunkTransformer(num, xform);
+  return col ? sequence(col, chunk(num)) : xform => chunkTransducer(num, xform);
 }
 
-function chunkByTransformer(fn, xform) {
+function chunkByTransducer(fn, xform) {
   let part = [];
   let last = NO_VALUE;
 
@@ -111,7 +111,7 @@ function chunkByTransformer(fn, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function chunkBy(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, chunkBy(func)) : xform => chunkByTransformer(func, xform);
+  return col ? sequence(col, chunkBy(func)) : xform => chunkByTransducer(func, xform);
 }
 
 module.exports = {

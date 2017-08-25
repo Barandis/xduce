@@ -31,7 +31,7 @@ const p = protocols;
 
 const NO_VALUE = Symbol('NO_VALUE');
 
-function distinctTransformer(fn, xform) {
+function distinctTransducer(fn, xform) {
   let last = NO_VALUE;
 
   return {
@@ -63,7 +63,7 @@ function distinctTransformer(fn, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function distinctWith(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, distinctWith(func)) : xform => distinctTransformer(func, xform);
+  return col ? sequence(col, distinctWith(func)) : xform => distinctTransducer(func, xform);
 }
 
 // Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
