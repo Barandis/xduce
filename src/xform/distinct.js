@@ -23,12 +23,13 @@
 // distinct.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { sequence } from '../modules/transformation';
-import { isFunction } from '../modules/util';
-import { sameValueZero } from './core';
+const { protocols } = require('../modules/protocol');
+const { sequence } = require('../modules/transformation');
+const { isFunction } = require('../modules/util');
+const { sameValueZero } = require('./core');
 
-const NO_VALUE = {};
+const p = protocols;
+const NO_VALUE = Symbol('NO_VALUE');
 
 const distinctTransformer = (fn, xform) => ({
   fn,
@@ -60,7 +61,7 @@ const distinctTransformer = (fn, xform) => ({
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function distinctWith(collection, fn, ctx) {
+function distinctWith(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
   return col ? sequence(col, distinctWith(func)) : (xform) => distinctTransformer(func, xform);
 }
@@ -73,7 +74,7 @@ export function distinctWith(collection, fn, ctx) {
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function distinctBy(collection, fn, ctx) {
+function distinctBy(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
   return distinctWith(col, (a, b) => sameValueZero(func(a), func(b)));
 }
@@ -83,6 +84,12 @@ export function distinctBy(collection, fn, ctx) {
 // be suppressed.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function distinct(collection) {
+function distinct(collection) {
   return distinctWith(collection, sameValueZero);
 }
+
+module.exports = {
+  distinct,
+  distinctBy,
+  distinctWith
+};

@@ -23,9 +23,11 @@
 // filter.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { sequence } from '../modules/transformation';
-import { isFunction, complement } from '../modules/util';
+const { protocols } = require('../modules/protocol');
+const { sequence } = require('../modules/transformation');
+const { isFunction, complement } = require('../modules/util');
+
+const p = protocols;
 
 const filterTransformer = (fn, xform) => ({
   fn,
@@ -51,7 +53,7 @@ const filterTransformer = (fn, xform) => ({
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function filter(collection, fn, ctx) {
+function filter(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
   return col ? sequence(col, filter(func)) : (xform) => filterTransformer(func, xform);
 }
@@ -63,7 +65,7 @@ export function filter(collection, fn, ctx) {
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function reject(collection, fn, ctx) {
+function reject(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
   return filter(col, complement(func));
 }
@@ -72,6 +74,12 @@ export function reject(collection, fn, ctx) {
 // collection.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function compact(collection) {
+function compact(collection) {
   return filter(collection, (x) => !!x);
 }
+
+module.exports = {
+  filter,
+  reject,
+  compact
+};

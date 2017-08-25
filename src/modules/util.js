@@ -24,16 +24,16 @@ const {toString} = Object.prototype;
 
 // Determines whether an object is an array. This is a completely unnecessary function that is here only for
 // consistency with the other type-checking functions below.
-export const {isArray} = Array;
+const {isArray} = Array;
 
 // Determines whether an object is a function.
-export function isFunction(x) {
+function isFunction(x) {
   return x::toString() === '[object Function]';
 }
 
 // Determines whether an object is a plain object. This returns `true` only for object literals and those created with
 // the Object constructor; objects of other types will return `false`.
-export function isObject(x) {
+function isObject(x) {
   // This check is true on all objects, but also on all objects created by custom constructors (which we don't want)
   if (x::toString() !== '[object Object]') {
     return false;
@@ -56,19 +56,19 @@ export function isObject(x) {
 
 // Determines whether an object is a number. It must be either an actual number or a Number object to return `true`;
 // strings that happen to be numbers still return `false`. Also, `NaN` and `Infinity` return `false`.
-export function isNumber(x) {
+function isNumber(x) {
   return x::toString() === '[object Number]' && isFinite(x);
 }
 
 // Determines whether an object is a string.
-export function isString(x) {
+function isString(x) {
   return x::toString() === '[object String]';
 }
 
 // The same as the basic JavaScript charAt function, except that it takes into account double-wide characters in the
 // Basic Multilingual Plane (BMP). The index is adjusted to take into account such characters in the input string, and
 // if the result character is double-wide, it will be returned in full (as a two-character string).
-export function bmpCharAt(str, index) {
+function bmpCharAt(str, index) {
   const s = str + '';
   let i = index;
   const end = s.length;
@@ -100,7 +100,7 @@ export function bmpCharAt(str, index) {
 // Returns the length of a string, taking into account any double-wide BMP characters that may be in the string. For
 // example, if the string has one double-wide character, this function will return a number that is one less than the
 // regular string `.length` property would.
-export function bmpLength(str) {
+function bmpLength(str) {
   const s = str + '';
 
   const matches = s.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g);
@@ -112,7 +112,7 @@ export function bmpLength(str) {
 // only one parameter is given, it's the end, and the start becomes 0. If a third parameter is supplied, it's the step
 // between successive elements of the array. If the step is negative, or if the start is greater than the end, the array
 // elements descend.
-export function range(start, end, step) {
+function range(start, end, step) {
   const [s, e] = end == null ? [0, start] : [start, end];
   const t = step || (s > e ? -1 : 1);
 
@@ -124,6 +124,18 @@ export function range(start, end, step) {
 }
 
 // Takes a predicate function and returns a function that takes the same arguments and returns the opposite result.
-export function complement(fn) {
+function complement(fn) {
   return (...args) => !fn(...args);
 }
+
+module.exports = {
+  isArray,
+  isObject,
+  isFunction,
+  isString,
+  isNumber,
+  bmpCharAt,
+  bmpLength,
+  range,
+  complement
+};
