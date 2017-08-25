@@ -23,16 +23,17 @@
 // iteration.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import {
+const {
   bmpCharAt,
   bmpLength,
   isArray,
   isFunction,
   isObject,
   isString
-} from './util';
+} = require('./util');
 
-import { protocols as p, isImplemented } from './protocol';
+const { protocols, isImplemented } = require('./protocol');
+const p = protocols;
 
 // An iterator over strings. As of ES6 strings already satisfy the iterator protocol, so this is for pre-ES6
 // environments where the iterator protocol doesn't exist. Like ES6 iterators, it takes into account double-wide Basic
@@ -178,7 +179,7 @@ function objectIterator(obj, sort, kv = true) {
 
 // Determines whether an object is in kv-form. This used by the reducers that must recognize this form and reduce those
 // elements back into key-value form.
-export function isKvFormObject(obj) {
+function isKvFormObject(obj) {
   const keys = Object.keys(obj);
   if (keys.length !== 2) {
     return false;
@@ -194,9 +195,9 @@ export function isKvFormObject(obj) {
 // IMPORTANT: if there is no iterator protocol but there is an iterator pseudo-protocol (i.e., there is a `next`
 // property), then the passed object is already an iterator and is returned. Otherwise, the iterator that is returned
 // is a NEW iterator each time the call is made.
-export function iterator(obj, sort, kv) {
+function iterator(obj, sort, kv) {
   switch (true) {
-    case isFunction(obj[p.iterator]): return obj::obj[p.iterator]();
+    case isFunction(obj[p.iterator]): return obj[p.iterator]();
     case isFunction(obj.next):        return obj;
     case isString(obj):               return stringIterator(obj);
     case isArray(obj):                return arrayIterator(obj);
@@ -208,6 +209,12 @@ export function iterator(obj, sort, kv) {
 // Determines whether the passed object is iterable, in terms of what 'iterable' means to this library. In other words,
 // objects and ES5 arrays and strings will return `true`, as will objects with a `next` function. For that reason this
 // function is only really useful within the library and therefore isn't exported.
-export function isIterable(obj) {
+function isIterable(obj) {
   return isImplemented(obj, 'iterator') || isString(obj) || isArray(obj) || isObject(obj);
 }
+
+module.exports = {
+  isKvFormObject,
+  iterator,
+  isIterable
+};

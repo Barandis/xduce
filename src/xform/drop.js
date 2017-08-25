@@ -23,9 +23,11 @@
 // drop.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { sequence } from '../modules/transformation';
-import { isNumber, isFunction } from '../modules/util';
+const { protocols } = require('../modules/protocol');
+const { sequence } = require('../modules/transformation');
+const { isNumber, isFunction } = require('../modules/util');
+
+const p = protocols;
 
 const dropTransformer = (n, xform) => ({
   n,
@@ -48,7 +50,7 @@ const dropTransformer = (n, xform) => ({
 // Returns a collection containing all of the elements of the input collection except for the first `n` of them.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function drop(collection, n) {
+function drop(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
   return col ? sequence(col, drop(num)) : (xform) => dropTransformer(num, xform);
 }
@@ -85,7 +87,12 @@ const dropWhileTransformer = (fn, xform) => ({
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function dropWhile(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+function dropWhile(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, dropWhile(func)) : (xform) => dropWhileTransformer(func, xform);
 }
+
+module.exports = {
+  drop,
+  dropWhile
+};

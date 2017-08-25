@@ -23,20 +23,22 @@
 // core.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { sequence } from '../modules/transformation';
-import { isIterable } from '../modules/iteration';
-import { isNumber } from '../modules/util';
-import {
+const { protocols } = require('../modules/protocol');
+const { sequence } = require('../modules/transformation');
+const { isIterable } = require('../modules/iteration');
+const { isNumber } = require('../modules/util');
+const {
   isReduced,
   reduced,
   reduce
-} from '../modules/reduction';
+} = require('../modules/reduction');
+
+const p = protocols;
 
 // Function for defining equality in some of the transducers, like uniq and distinct. This is based on the definition of
 // SameValueZero in the JS spec,and this is the comparison used in similar situations by Lodash and other libraries.
 // It's the same as === in JavaScript, except that NaN is equal to itself.
-export function sameValueZero(a, b) {
+function sameValueZero(a, b) {
   return a === b || isNaN(a) && isNaN(b);
 }
 
@@ -61,7 +63,7 @@ const identityTransformer = (xform) => ({
 // the input collection unless those protocols are well-behaved.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function identity(collection) {
+function identity(collection) {
   return collection ? sequence(collection, identity()) : (xform) => identityTransformer(xform);
 }
 
@@ -103,7 +105,7 @@ const flattenTransformer = (xform) => ({
 // make much sense to flatten on their own.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function flatten(collection) {
+function flatten(collection) {
   return collection ? sequence(collection, flatten()) : (xform) => flattenTransformer(xform);
 }
 
@@ -134,7 +136,14 @@ const repeatTransformer = (n, xform) => ({
 // Duplicates the elements of the input collection n times in the output collection.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function repeat(collection, n) {
+function repeat(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
   return col ? sequence(col, repeat(num)) : (xform) => repeatTransformer(num, xform);
 }
+
+module.exports = {
+  sameValueZero,
+  identity,
+  flatten,
+  repeat
+};

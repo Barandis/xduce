@@ -1,4 +1,4 @@
-import {
+const {
   expect,
   expectIterator,
   ARRAY_5,
@@ -6,17 +6,17 @@ import {
   LIST_5,
   five,
   naturals
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   map,
   flatMap
-} from '../../../src/xform/map';
+} = require('../../../src/xform/map');
 
-import { List } from 'immutable';
+const { List } = require('immutable');
 
-import { sequence, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
+const { sequence, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
 const add1 = (x) => x + 1;
 const ucaseKey = ({k, v}) => ({[k.toUpperCase()]: v + 1});

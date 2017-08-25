@@ -23,29 +23,27 @@
 // transformation.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import {
-  isImplemented,
-  protocols as p
-} from './protocol';
+const { protocols, isImplemented } = require('./protocol');
+const p = protocols;
 
-import {
+const {
   isKvFormObject,
   iterator
-} from './iteration';
+} = require('./iteration');
 
-import {
+const {
   isReduced,
   reduce,
   arrayReducer,
   objectReducer,
   stringReducer
-} from './reduction';
+} = require('./reduction');
 
-import {
+const {
   isArray,
   isObject,
   isString
-} from './util';
+} = require('./util');
 
 // An iterator that also acts as a transformer, transforming its collection one element at a time. This is the actual
 // output of the sequence function (when the input collection is an iterator) and the asIterator function.
@@ -126,14 +124,14 @@ const transformingIterator = (collection, xform) => {
 //
 // Without the transformer, this function basically becomes `reduce` with the ability to determine an initial collection
 // from its reducer.
-export function transduce(collection, xform, reducer, init = reducer[p.init]()) {
+function transduce(collection, xform, reducer, init = reducer[p.init]()) {
   const xf = xform ? xform(reducer) : reducer;
   return reduce(collection, xf, init);
 }
 
 // Runs a collection through the supplied transformer, reducing the results into an array. If no transformer is
 // supplied, the collection is simply reduced into an array as-is.
-export function asArray(collection, xform) {
+function asArray(collection, xform) {
   return transduce(collection, xform, arrayReducer);
 }
 
@@ -143,31 +141,31 @@ export function asArray(collection, xform) {
 //
 // If no transformer is supplied, the collection is simply reduced into an object, though there aren't many instances
 // where this would make a lot of sense because no other collections can be converted into the format required here.
-export function asObject(collection, xform) {
+function asObject(collection, xform) {
   return transduce(collection, xform, objectReducer);
 }
 
 // Runs a collection through the supplied transformer, reducing the results into a string. If no transformer is
 // supplied, the collection is simply reduced into a string as-is.
-export function asString(collection, xform) {
+function asString(collection, xform) {
   return transduce(collection, xform, stringReducer);
 }
 
 // Runs a collection through the supplied transformer, reducing the results into an iterator. If no transformer is
 // supplied, the collection is simply turned into an iterator as-is.
-export function asIterator(collection, xform) {
+function asIterator(collection, xform) {
   return xform ? transformingIterator(collection, xform) : iterator(collection, null, false);
 }
 
 // Runs a collection through the supplied transformer, reducing the results into a collection of the same kind. Since
 // this function depends on the collection to determine the output collection type, this can't be used for conversion
 // into a different type of collection.
-export function asReducible(collection, xform) {
+function asReducible(collection, xform) {
   return transduce(collection, xform, collection);
 }
 
 // Takes a collection and a transformer and performs a transduction, returning a collection of the same kind.
-export function sequence(collection, xform) {
+function sequence(collection, xform) {
   switch (true) {
     case isArray(collection):                   return asArray(collection, xform);
     case isObject(collection):                  return asObject(collection, xform);
@@ -181,7 +179,7 @@ export function sequence(collection, xform) {
 // Takes a collection and a transformer and performs a transduction, returning the result by appending it to the
 // supplied target collection. In most cases, this will be an empty collection, but if a non-empty target is passed, its
 // elements will remain in place and the value of the transduction appended.
-export function into(target, collection, xform) {
+function into(target, collection, xform) {
   switch (true) {
     case isArray(target):               return transduce(collection, xform, arrayReducer, target);
     case isObject(target):              return transduce(collection, xform, objectReducer, target);
@@ -201,7 +199,19 @@ export function into(target, collection, xform) {
 // Note that when using this with transduction functions, the result must be passed to a sequencing function (sequence,
 // into, as-array, etc.). The composed function can only take one parameter, so it can't be used like the shortcut
 // transducer functions.
-export function compose(...fns) {
+function compose(...fns) {
   const reversedFns = fns.reverse();
   return (value) => reversedFns.reduce((acc, fn) => fn(acc), value);
 }
+
+module.exports = {
+  transduce,
+  asArray,
+  asObject,
+  asString,
+  asIterator,
+  asReducible,
+  sequence,
+  into,
+  compose
+};

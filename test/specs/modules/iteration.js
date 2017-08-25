@@ -1,10 +1,10 @@
-import {
-  expect, 
+const {
+  expect,
   five
-} from '../../helper';
+} = require('../../helper');
 
-import { iterator } from '../../../src/modules/iteration';
-import { protocols as p } from '../../../src/modules/protocol';
+const { iterator } = require('../../../src/modules/iteration');
+const p = require('../../../src/modules/protocol').protocols;
 
 describe('Iterator', () => {
 

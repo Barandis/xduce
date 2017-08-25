@@ -23,10 +23,12 @@
 // take.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { ensureReduced } from '../modules/reduction';
-import { sequence } from '../modules/transformation';
-import { isNumber, isFunction } from '../modules/util';
+const { protocols } = require('../modules/protocol');
+const { ensureReduced } = require('../modules/reduction');
+const { sequence } = require('../modules/transformation');
+const { isNumber, isFunction } = require('../modules/util');
+
+const p = protocols;
 
 const takeTransformer = (n, xform) => ({
   n,
@@ -58,7 +60,7 @@ const takeTransformer = (n, xform) => ({
 // Returns a collection that contains only the first `count` elements from the input collection.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function take(collection, n) {
+function take(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
   return col ? sequence(col, take(num)) : (xform) => takeTransformer(num, xform);
 }
@@ -87,8 +89,8 @@ const takeWhileTransformer = (fn, xform) => ({
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function takeWhile(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+function takeWhile(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, takeWhile(func)) : (xform) => takeWhileTransformer(func, xform);
 }
 
@@ -113,7 +115,13 @@ const takeNthTransformer = (n, xform) => ({
 // Returns a collection containing the first and then every nth element after that of the input collection.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function takeNth(collection, n) {
+function takeNth(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
   return col ? sequence(col, takeNth(num)) : (xform) => takeNthTransformer(num, xform);
 }
+
+module.exports = {
+  take,
+  takeWhile,
+  takeNth
+};

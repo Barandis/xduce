@@ -1,4 +1,4 @@
-import {
+const {
   expect,
   expectIterator,
   five,
@@ -6,13 +6,13 @@ import {
   ARRAY_5,
   OBJECT_AB,
   LIST_5
-} from '../../helper';
+} = require('../../helper');
 
-import Immutable from 'immutable';
+const Immutable = require('immutable');
 
-import { protocols as p } from '../../../src/modules/protocol';
+const p = require('../../../src/modules/protocol').protocols;
 
-import {
+const {
   transduce,
   asArray,
   asObject,
@@ -21,19 +21,19 @@ import {
   into,
   sequence,
   compose
-} from '../../../src/modules/transformation';
+} = require('../../../src/modules/transformation');
 
-import {
+const {
   toReducer,
   arrayReducer,
   objectReducer,
   stringReducer
-} from '../../../src/modules/reduction';
+} = require('../../../src/modules/reduction');
 
-import { range } from '../../../src/modules/util';
-import { map } from '../../../src/xform/map';
-import { filter } from '../../../src/xform/filter';
-import { take } from '../../../src/xform/take';
+const { range } = require('../../../src/modules/util');
+const { map } = require('../../../src/xform/map');
+const { filter } = require('../../../src/xform/filter');
+const { take } = require('../../../src/xform/take');
 
 const addOne = (x) => x + 1;
 const ucaseObject = ({k, v}) => ({[k.toUpperCase()]: v});

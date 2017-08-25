@@ -23,10 +23,12 @@
 // uniq.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { sequence } from '../modules/transformation';
-import { isFunction } from '../modules/util';
-import { sameValueZero } from './core';
+const { protocols } = require('../modules/protocol');
+const { sequence } = require('../modules/transformation');
+const { isFunction } = require('../modules/util');
+const { sameValueZero } = require('./core');
+
+const p = protocols;
 
 const uniqTransformer = (fn, xform) => ({
   fn,
@@ -58,8 +60,8 @@ const uniqTransformer = (fn, xform) => ({
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function uniqWith(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+function uniqWith(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, uniqWith(func)) : (xform) => uniqTransformer(func, xform);
 }
 
@@ -71,8 +73,8 @@ export function uniqWith(collection, fn, ctx) {
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function uniqBy(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+function uniqBy(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return uniqWith(col, (a, b) => sameValueZero(func(a), func(b)));
 }
 
@@ -80,6 +82,12 @@ export function uniqBy(collection, fn, ctx) {
 // not equal (using SameValueZero) to any other element in the collection.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function uniq(collection) {
+function uniq(collection) {
   return uniqWith(collection, sameValueZero);
 }
+
+module.exports = {
+  uniq,
+  uniqBy,
+  uniqWith
+};

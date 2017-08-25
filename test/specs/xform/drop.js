@@ -1,4 +1,4 @@
-import {
+const {
   expect,
   expectIterator,
   ARRAY_5,
@@ -6,16 +6,16 @@ import {
   LIST_5,
   five,
   naturals
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   drop,
   dropWhile
-} from '../../../src/xform/drop';
+} = require('../../../src/xform/drop');
 
-import { sequence, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
-import { complement } from '../../../src/modules/util';
+const { sequence, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
+const { complement } = require('../../../src/modules/util');
 
 const lt4 = (x) => x < 4;
 const lt4Value = ({v}) => v < 4;
@@ -97,7 +97,7 @@ describe('Dropping transformers', () => {
 
     it('can accept a context object', () => {
       const ctx = { fn: lt4 };
-      const fn= function (x) { return this.fn(x); };
+      const fn = function (x) { return this.fn(x); };
       expect(dropWhile(ARRAY_5, fn, ctx)).to.deep.equal([4, 5]);
     });
 

@@ -23,10 +23,12 @@
 // map.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { sequence, compose } from '../modules/transformation';
-import { isFunction } from '../modules/util';
-import { flatten } from './core';
+const { protocols } = require('../modules/protocol');
+const { sequence, compose } = require('../modules/transformation');
+const { isFunction } = require('../modules/util');
+const { flatten } = require('./core');
+
+const p = protocols;
 
 const mapTransformer = (fn, xform) => ({
   fn,
@@ -52,8 +54,8 @@ const mapTransformer = (fn, xform) => ({
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function map(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+function map(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, map(func)) : (xform) => mapTransformer(func, xform);
 }
 
@@ -63,7 +65,12 @@ export function map(collection, fn, ctx) {
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function flatMap(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+function flatMap(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, compose(map(func), flatten())) : compose(map(func), flatten());
 }
+
+module.exports = {
+  map,
+  flatMap
+};

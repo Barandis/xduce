@@ -1,14 +1,14 @@
-import {
+const {
   expect
-} from '../../helper';
+} = require('../../helper');
 
-import _ from 'lodash';
-import { protocols as p, isImplemented } from '../../../src/modules/protocol';
-import { compose } from '../../../src/modules/transformation';
-import { map } from '../../../src/xform/map';
-import { filter } from '../../../src/xform/filter';
+const _ = require('lodash');
+const { protocols, isImplemented } = require('../../../src/modules/protocol');
+const { compose } = require('../../../src/modules/transformation');
+const { map } = require('../../../src/xform/map');
+const { filter } = require('../../../src/xform/filter');
 
-import {
+const {
   isReduced,
   reduced,
   unreduced,
@@ -17,7 +17,9 @@ import {
   toReducer,
   toFunction,
   arrayReducer
-} from '../../../src/modules/reduction';
+} = require('../../../src/modules/reduction');
+
+const p = protocols;
 
 describe('Reduction marking functions', () => {
   context('isReduced', () => {

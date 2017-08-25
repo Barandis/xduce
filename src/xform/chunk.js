@@ -23,14 +23,16 @@
 // chunk.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { protocols as p } from '../modules/protocol';
-import { sequence } from '../modules/transformation';
-import { ensureUnreduced } from '../modules/reduction';
-import { isFunction, isNumber } from '../modules/util';
+const { protocols } = require('../modules/protocol');
+const { sequence } = require('../modules/transformation');
+const { ensureUnreduced } = require('../modules/reduction');
+const { isFunction, isNumber } = require('../modules/util');
 
-import { sameValueZero } from './core';
+const { sameValueZero } = require('./core');
 
-const NO_VALUE = {};
+const p = protocols;
+
+const NO_VALUE = Symbol('NO_VALUE');
 
 const chunkTransformer = (n, xform) => ({
   n,
@@ -65,7 +67,7 @@ const chunkTransformer = (n, xform) => ({
 // type of the input collection.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function chunk(collection, n) {
+function chunk(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
   return col ? sequence(col, chunk(num)) : (xform) => chunkTransformer(num, xform);
 }
@@ -109,7 +111,12 @@ const chunkByTransformer = (fn, xform) => ({
 // function.
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function chunkBy(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+function chunkBy(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return col ? sequence(col, chunkBy(func)) : (xform) => chunkByTransformer(func, xform);
 }
+
+module.exports = {
+  chunk,
+  chunkBy
+};

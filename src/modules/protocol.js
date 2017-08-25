@@ -28,7 +28,7 @@
 // Transduction: agreed to by several parties who maintain transducer libraries in the comment thread for an issue on
 //     one of them (https://github.com/cognitect-labs/transducers-js/issues/20).
 
-import { isFunction } from './util';
+const { isFunction } = require('./util');
 
 const USE_SYMBOLS = false;
 const symbol = typeof Symbol !== 'undefined';
@@ -40,7 +40,7 @@ function generateKey(name) {
   return USE_SYMBOLS && symbol ? Symbol.for(name) : `@@${name}`;
 }
 
-export const protocols = {
+const protocols = {
   // Since this one is built in, it already has a custom Symbol property, so we don't need to generate a symbol for a
   // key when symbols are supported.
   iterator: symbol ? Symbol.iterator : '@@iterator',
@@ -58,7 +58,7 @@ export const protocols = {
 // an object with a next() function is also an iterator, so we make a specific check for that.
 //
 // For the reduced and value protocols, the requirement that the property be a function is waived.
-export function isImplemented(obj, protocol) {
+function isImplemented(obj, protocol) {
   if (obj == null) {
     return false;
   }
@@ -72,3 +72,8 @@ export function isImplemented(obj, protocol) {
       return isFunction(obj[protocols[protocol]]);
   }
 }
+
+module.exports = {
+  protocols,
+  isImplemented
+};
