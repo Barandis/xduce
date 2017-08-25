@@ -1,32 +1,15 @@
-const {
-  expect,
-  expectIterator,
-  ARRAY_5,
-  OBJECT_AB,
-  LIST_5,
-  five,
-  naturals
-} = require('../../helper');
-
-const {
-  take,
-  takeWhile,
-  takeNth
-} = require('../../../src/xform/take');
-
+const { expect, expectIterator, ARRAY_5, OBJECT_AB, LIST_5, five, naturals } = require('../../helper');
+const { take, takeWhile, takeNth } = require('../../../src/xform/take');
 const { List } = require('immutable');
-
 const { complement, range } = require('../../../src/modules/util');
-
 const { map } = require('../../../src/xform/map');
 const { filter } = require('../../../src/xform/filter');
-
 const { sequence, compose, transduce } = require('../../../src/modules/transformation');
 const { arrayReducer } = require('../../../src/modules/reduction');
 
-const lt4 = (x) => x < 4;
-const lt4Value = ({v}) => v < 4;
-const isVowel = (x) => !!~'aeoiu'.indexOf(x);
+const lt4 = x => x < 4;
+const lt4Value = ({ v }) => v < 4;
+const isVowel = x => !!~'aeoiu'.indexOf(x);
 
 describe('Taking transformers', () => {
   context('take', () => {
@@ -35,7 +18,7 @@ describe('Taking transformers', () => {
     });
 
     it('works with objects', () => {
-      expect(take(OBJECT_AB, 1)).to.deep.equal({a: 1});
+      expect(take(OBJECT_AB, 1)).to.deep.equal({ a: 1 });
     });
 
     it('works with strings', () => {
@@ -80,7 +63,7 @@ describe('Taking transformers', () => {
     });
 
     it('works with objects', () => {
-      expect(takeWhile({a: 1, b: 2, c: 6}, lt4Value)).to.deep.equal(OBJECT_AB);
+      expect(takeWhile({ a: 1, b: 2, c: 6 }, lt4Value)).to.deep.equal(OBJECT_AB);
     });
 
     it('works with strings', () => {
@@ -106,7 +89,9 @@ describe('Taking transformers', () => {
 
     it('can accept a context object', () => {
       const ctx = { fn: lt4 };
-      const fn = function (x) { return this.fn(x); };
+      const fn = function(x) {
+        return this.fn(x);
+      };
       expect(takeWhile(ARRAY_5, fn, ctx)).to.deep.equal([1, 2, 3]);
     });
 
@@ -123,7 +108,7 @@ describe('Taking transformers', () => {
     });
 
     it('works with objects', () => {
-      expect(takeNth({a: 1, b: 2, c: 3}, 2)).to.deep.equal({a: 1, c: 3});
+      expect(takeNth({ a: 1, b: 2, c: 3 }, 2)).to.deep.equal({ a: 1, c: 3 });
     });
 
     it('works with strings', () => {

@@ -46,11 +46,11 @@ const protocols = {
   iterator: symbol ? Symbol.iterator : '@@iterator',
 
   // Reduction protocols
-  init:     generateKey('transducer/init'),
-  step:     generateKey('transducer/step'),
-  result:   generateKey('transducer/result'),
-  reduced:  generateKey('transducer/reduced'),
-  value:    generateKey('transducer/value')
+  init: generateKey('transducer/init'),
+  step: generateKey('transducer/step'),
+  result: generateKey('transducer/result'),
+  reduced: generateKey('transducer/reduced'),
+  value: generateKey('transducer/value')
 };
 
 // Determines whether an object implements a given protocol. Generally, a protocol is implemented if the object has a

@@ -1,6 +1,4 @@
-const {
-  expect
-} = require('../../helper');
+const { expect } = require('../../helper');
 
 const _ = require('lodash');
 const { protocols, isImplemented } = require('../../../src/modules/protocol');
@@ -25,7 +23,7 @@ describe('Reduction marking functions', () => {
   context('isReduced', () => {
     it('works on unreduced values', () => {
       expect(isReduced(1729)).to.be.false;
-      expect(isReduced(new Object())).to.be.false;
+      expect(isReduced({})).to.be.false;
       expect(isReduced([])).to.be.false;
       expect(isReduced(0)).to.be.false;
       expect(isReduced('')).to.be.false;
@@ -35,7 +33,7 @@ describe('Reduction marking functions', () => {
 
     it('works on values wrapped with marker class', () => {
       expect(isReduced(reduced(1729))).to.be.true;
-      expect(isReduced(reduced(new Object()))).to.be.true;
+      expect(isReduced(reduced({}))).to.be.true;
       expect(isReduced(reduced([]))).to.be.true;
       expect(isReduced(reduced(0))).to.be.true;
       expect(isReduced(reduced(''))).to.be.true;
@@ -44,7 +42,7 @@ describe('Reduction marking functions', () => {
     });
 
     it('works on values with the reduced protocol', () => {
-      const obj = {[p.reduced]: true};
+      const obj = { [p.reduced]: true };
       expect(isReduced(obj)).to.be.true;
 
       const array = [];
@@ -137,7 +135,7 @@ describe('Reduction marking functions', () => {
 
 describe('Reducer creation function', () => {
   context('toReducer', () => {
-    it('will create an object that doesn\'t satisfy the reducer protocol if given a non-reducible object', () => {
+    it("will create an object that doesn't satisfy the reducer protocol if given a non-reducible object", () => {
       expect(isImplemented(toReducer(new Date())), 'step').to.be.false;
     });
 
@@ -160,14 +158,14 @@ describe('Integration with other libraries', () => {
   const reducerObj = toFunction(xform, arrayReducer);
 
   context('toFunction', () => {
-    it('can make a function to use with Array\'s reduce', () => {
+    it("can make a function to use with Array's reduce", () => {
       const result1 = [1, 2, 3, 4, 5].reduce(reducerFn, []);
       const result2 = [1, 2, 3, 4, 5].reduce(reducerObj, []);
       expect(result1).to.deep.equal([2, 4, 6]);
       expect(result2).to.deep.equal([2, 4, 6]);
     });
 
-    it('can make a function to use with lodash\'s reduce', () => {
+    it("can make a function to use with lodash's reduce", () => {
       const result1 = _.reduce([1, 2, 3, 4, 5], reducerFn, []);
       const result2 = _.reduce([1, 2, 3, 4, 5], reducerObj, []);
       expect(result1).to.deep.equal([2, 4, 6]);

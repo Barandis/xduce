@@ -24,26 +24,10 @@
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const { protocols, isImplemented } = require('./protocol');
+const { isKvFormObject, iterator } = require('./iteration');
+const { isReduced, reduce, arrayReducer, objectReducer, stringReducer } = require('./reduction');
+const { isArray, isObject, isString } = require('./util');
 const p = protocols;
-
-const {
-  isKvFormObject,
-  iterator
-} = require('./iteration');
-
-const {
-  isReduced,
-  reduce,
-  arrayReducer,
-  objectReducer,
-  stringReducer
-} = require('./reduction');
-
-const {
-  isArray,
-  isObject,
-  isString
-} = require('./util');
 
 // An iterator that also acts as a transformer, transforming its collection one element at a time. This is the actual
 // output of the sequence function (when the input collection is an iterator) and the asIterator function.
@@ -54,11 +38,11 @@ const {
 const transformingIterator = (collection, xform) => {
   const stepReducer = {
     [p.step]: (xiter, input) => {
-      const value = isKvFormObject(input) ? {[input.k]: input.v} : input;
+      const value = isKvFormObject(input) ? { [input.k]: input.v } : input;
       xiter.items.unshift(value);
       return xiter;
     },
-    [p.result]: (value) => value
+    [p.result]: value => value
   };
 
   return {
@@ -167,12 +151,18 @@ function asReducible(collection, xform) {
 // Takes a collection and a transformer and performs a transduction, returning a collection of the same kind.
 function sequence(collection, xform) {
   switch (true) {
-    case isArray(collection):                   return asArray(collection, xform);
-    case isObject(collection):                  return asObject(collection, xform);
-    case isString(collection):                  return asString(collection, xform);
-    case isImplemented(collection, 'step'):     return asReducible(collection, xform);
-    case isImplemented(collection, 'iterator'): return asIterator(collection, xform);
-    default:                                    throw Error(`Cannot sequence collection: ${collection}`);
+    case isArray(collection):
+      return asArray(collection, xform);
+    case isObject(collection):
+      return asObject(collection, xform);
+    case isString(collection):
+      return asString(collection, xform);
+    case isImplemented(collection, 'step'):
+      return asReducible(collection, xform);
+    case isImplemented(collection, 'iterator'):
+      return asIterator(collection, xform);
+    default:
+      throw Error(`Cannot sequence collection: ${collection}`);
   }
 }
 
@@ -181,11 +171,16 @@ function sequence(collection, xform) {
 // elements will remain in place and the value of the transduction appended.
 function into(target, collection, xform) {
   switch (true) {
-    case isArray(target):               return transduce(collection, xform, arrayReducer, target);
-    case isObject(target):              return transduce(collection, xform, objectReducer, target);
-    case isString(target):              return transduce(collection, xform, stringReducer, target);
-    case isImplemented(target, 'step'): return transduce(collection, xform, target, target);
-    default:                            throw Error(`Cannot reduce collection into ${target}: ${collection}`);
+    case isArray(target):
+      return transduce(collection, xform, arrayReducer, target);
+    case isObject(target):
+      return transduce(collection, xform, objectReducer, target);
+    case isString(target):
+      return transduce(collection, xform, stringReducer, target);
+    case isImplemented(target, 'step'):
+      return transduce(collection, xform, target, target);
+    default:
+      throw Error(`Cannot reduce collection into ${target}: ${collection}`);
   }
 }
 
@@ -201,7 +196,7 @@ function into(target, collection, xform) {
 // transducer functions.
 function compose(...fns) {
   const reversedFns = fns.reverse();
-  return (value) => reversedFns.reduce((acc, fn) => fn(acc), value);
+  return value => reversedFns.reduce((acc, fn) => fn(acc), value);
 }
 
 module.exports = {

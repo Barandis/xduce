@@ -1,12 +1,8 @@
-const {
-  expect
-} = require('../../helper');
-
+const { expect } = require('../../helper');
 const { protocols, isImplemented } = require('../../../src/modules/protocol');
 const p = protocols;
 
 describe('Protocol checks', () => {
-
   context('for the iteration protocol', () => {
     it('works for objects implementing the protocol', () => {
       expect(isImplemented(null, 'iterator')).to.be.false;
@@ -20,7 +16,7 @@ describe('Protocol checks', () => {
     });
 
     it('works for objects implementing the pseudo-protocol', () => {
-      const obj = {next: {}};
+      const obj = { next: {} };
       expect(isImplemented(obj, 'iterator')).to.be.false;
       obj.next = () => {};
       expect(isImplemented(obj, 'iterator')).to.be.true;

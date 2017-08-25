@@ -26,7 +26,6 @@
 const { protocols } = require('../modules/protocol');
 const { sequence } = require('../modules/transformation');
 const { isFunction, complement } = require('../modules/util');
-
 const p = protocols;
 
 const filterTransformer = (fn, xform) => ({
@@ -55,7 +54,7 @@ const filterTransformer = (fn, xform) => ({
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function filter(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, filter(func)) : (xform) => filterTransformer(func, xform);
+  return col ? sequence(col, filter(func)) : xform => filterTransformer(func, xform);
 }
 
 // Filters the elements of the input collection by rejecting the ones that pass the predicate function, preventing them
@@ -75,7 +74,7 @@ function reject(collection, fn, ctx) {
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function compact(collection) {
-  return filter(collection, (x) => !!x);
+  return filter(collection, x => !!x);
 }
 
 module.exports = {

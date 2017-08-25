@@ -1,25 +1,9 @@
-const {
-  expect,
-  ARRAY_5,
-  OBJECT_AB,
-  LIST_5,
-  five,
-  naturals,
-  expectIterator
-} = require('../../helper');
-
-const {
-  identity,
-  flatten,
-  repeat
-} = require('../../../src/xform/core');
-
+const { expect, ARRAY_5, OBJECT_AB, LIST_5, five, naturals, expectIterator } = require('../../helper');
+const { identity, flatten, repeat } = require('../../../src/xform/core');
 const { take } = require('../../../src/xform/take');
-
 const { List } = require('immutable');
-
 const { sequence, into, transduce, compose } = require('../../../src/modules/transformation');
-const { toReducer, arrayReducer } = require('../../../src/modules/reduction');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
 describe('Core transformers', () => {
   context('identity', () => {

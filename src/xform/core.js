@@ -27,22 +27,17 @@ const { protocols } = require('../modules/protocol');
 const { sequence } = require('../modules/transformation');
 const { isIterable } = require('../modules/iteration');
 const { isNumber } = require('../modules/util');
-const {
-  isReduced,
-  reduced,
-  reduce
-} = require('../modules/reduction');
-
+const { isReduced, reduced, reduce } = require('../modules/reduction');
 const p = protocols;
 
 // Function for defining equality in some of the transducers, like uniq and distinct. This is based on the definition of
 // SameValueZero in the JS spec,and this is the comparison used in similar situations by Lodash and other libraries.
 // It's the same as === in JavaScript, except that NaN is equal to itself.
 function sameValueZero(a, b) {
-  return a === b || isNaN(a) && isNaN(b);
+  return a === b || (isNaN(a) && isNaN(b));
 }
 
-const identityTransformer = (xform) => ({
+const identityTransformer = xform => ({
   xform,
 
   [p.init]() {
@@ -64,10 +59,10 @@ const identityTransformer = (xform) => ({
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function identity(collection) {
-  return collection ? sequence(collection, identity()) : (xform) => identityTransformer(xform);
+  return collection ? sequence(collection, identity()) : xform => identityTransformer(xform);
 }
 
-const flattenTransformer = (xform) => ({
+const flattenTransformer = xform => ({
   xform,
 
   [p.init]() {
@@ -75,7 +70,7 @@ const flattenTransformer = (xform) => ({
   },
 
   [p.step](acc, input) {
-    const {xform} = this;
+    const { xform } = this;
 
     const subXform = {
       [p.init]: () => {
@@ -87,7 +82,7 @@ const flattenTransformer = (xform) => ({
         return isReduced(v) ? reduced(v) : v;
       },
 
-      [p.result]: (value) => {
+      [p.result]: value => {
         return xform[p.result](value);
       }
     };
@@ -106,7 +101,7 @@ const flattenTransformer = (xform) => ({
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function flatten(collection) {
-  return collection ? sequence(collection, flatten()) : (xform) => flattenTransformer(xform);
+  return collection ? sequence(collection, flatten()) : xform => flattenTransformer(xform);
 }
 
 const repeatTransformer = (n, xform) => ({
@@ -138,7 +133,7 @@ const repeatTransformer = (n, xform) => ({
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function repeat(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
-  return col ? sequence(col, repeat(num)) : (xform) => repeatTransformer(num, xform);
+  return col ? sequence(col, repeat(num)) : xform => repeatTransformer(num, xform);
 }
 
 module.exports = {

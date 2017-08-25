@@ -28,40 +28,23 @@ const {
   isFunction,
   isNumber,
   isObject,
-  isString } = require('./modules/util');
-const {
-  reduced,
-  unreduced,
-  isReduced,
-  ensureReduced,
-  ensureUnreduced } = require('./modules/reduction');
-
-const util = {
-  bmp: {
-    charAt: bmpCharAt,
-    length: bmpLength
-  },
-  range,
-  complement,
-
-  isArray,
-  isFunction,
-  isNumber,
-  isObject,
-  isString,
-
-  reduced,
-  unreduced,
-  isReduced,
-  ensureReduced,
-  ensureUnreduced
-};
+  isString
+} = require('./modules/util');
+const { reduced, unreduced, isReduced, ensureReduced, ensureUnreduced } = require('./modules/reduction');
 
 const { protocols } = require('./modules/protocol');
 const { iterator } = require('./modules/iteration');
 const { toReducer, toFunction, reduce } = require('./modules/reduction');
 const {
-  transduce, into, sequence, asArray, asIterator, asObject, asString, compose } = require('./modules/transformation');
+  transduce,
+  into,
+  sequence,
+  asArray,
+  asIterator,
+  asObject,
+  asString,
+  compose
+} = require('./modules/transformation');
 
 const { chunk, chunkBy } = require('./xform/chunk');
 const { identity, flatten, repeat } = require('./xform/core');
@@ -73,7 +56,26 @@ const { take, takeWhile, takeNth } = require('./xform/take');
 const { uniq, uniqBy, uniqWith } = require('./xform/uniq');
 
 module.exports = {
-  util,
+  util: {
+    bmp: {
+      charAt: bmpCharAt,
+      length: bmpLength
+    },
+    range,
+    complement,
+
+    isArray,
+    isFunction,
+    isNumber,
+    isObject,
+    isString,
+
+    reduced,
+    unreduced,
+    isReduced,
+    ensureReduced,
+    ensureUnreduced
+  },
   protocols,
   iterator,
   toReducer,

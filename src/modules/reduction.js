@@ -23,18 +23,8 @@
 // reduction.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const {
-  isArray,
-  isFunction,
-  isObject,
-  isString
-} = require('./util');
-
-const {
-  isKvFormObject,
-  iterator
-} = require('./iteration');
-
+const { isArray, isFunction, isObject, isString } = require('./util');
+const { isKvFormObject, iterator } = require('./iteration');
 const { protocols, isImplemented } = require('./protocol');
 const p = protocols;
 
@@ -45,12 +35,20 @@ const p = protocols;
 // In order to support the conversion of functions into reducers, function support is also provided.
 function init(collection) {
   switch (true) {
-    case isImplemented(collection, 'init'): return collection[p.init];
-    case isString(collection):              return () => '';
-    case isArray(collection):               return () => [];
-    case isObject(collection):              return () => ({});
-    case isFunction(collection):            return () => { throw Error('init not available'); };
-    default:                                return null;
+    case isImplemented(collection, 'init'):
+      return collection[p.init];
+    case isString(collection):
+      return () => '';
+    case isArray(collection):
+      return () => [];
+    case isObject(collection):
+      return () => ({});
+    case isFunction(collection):
+      return () => {
+        throw Error('init not available');
+      };
+    default:
+      return null;
   }
 }
 
@@ -60,7 +58,6 @@ function init(collection) {
 // In order to support the conversion of functions into reducers, function support is also provided.
 function step(collection) {
   switch (true) {
-
     case isImplemented(collection, 'step'):
       return collection[p.step];
 
@@ -84,7 +81,7 @@ function step(collection) {
 
         if (isKvFormObject(input)) {
           // if the object is kv-form, change the object from { k: key, v: value } to { key: value }
-          value = {[input.k]: input.v};
+          value = { [input.k]: input.v };
         } else if (!isObject(input)) {
           // if the input isn't an object at all, turn it into an object with a key based on what's already in the
           // accumulator
@@ -95,7 +92,7 @@ function step(collection) {
               max = knum;
             }
           }
-          value = {[max + 1]: input};
+          value = { [max + 1]: input };
         }
 
         for (const k2 in value) {
@@ -120,12 +117,15 @@ function step(collection) {
 // In order to support the conversion of functions into reducers, function support is also provided.
 function result(collection) {
   switch (true) {
-    case isImplemented(collection, 'result'): return collection[p.result];
+    case isImplemented(collection, 'result'):
+      return collection[p.result];
     case isString(collection):
     case isArray(collection):
     case isObject(collection):
-    case isFunction(collection):              return (value) => value;
-    default:                                  return null;
+    case isFunction(collection):
+      return value => value;
+    default:
+      return null;
   }
 }
 
@@ -133,8 +133,8 @@ function result(collection) {
 // a function is passed, a reducer version of that function is returned.
 function toReducer(collection) {
   return {
-    [p.init]:   init(collection),
-    [p.step]:   step(collection),
+    [p.init]: init(collection),
+    [p.step]: step(collection),
     [p.result]: result(collection)
   };
 }

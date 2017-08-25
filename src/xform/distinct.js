@@ -27,8 +27,8 @@ const { protocols } = require('../modules/protocol');
 const { sequence } = require('../modules/transformation');
 const { isFunction } = require('../modules/util');
 const { sameValueZero } = require('./core');
-
 const p = protocols;
+
 const NO_VALUE = Symbol('NO_VALUE');
 
 const distinctTransformer = (fn, xform) => ({
@@ -63,7 +63,7 @@ const distinctTransformer = (fn, xform) => ({
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function distinctWith(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, distinctWith(func)) : (xform) => distinctTransformer(func, xform);
+  return col ? sequence(col, distinctWith(func)) : xform => distinctTransformer(func, xform);
 }
 
 // Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
