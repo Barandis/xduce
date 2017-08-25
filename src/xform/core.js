@@ -37,7 +37,7 @@ function sameValueZero(a, b) {
   return a === b || (isNaN(a) && isNaN(b));
 }
 
-function identityTransformer(xform) {
+function identityTransducer(xform) {
   return {
     [p.init]() {
       return xform[p.init]();
@@ -59,10 +59,10 @@ function identityTransformer(xform) {
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function identity(collection) {
-  return collection ? sequence(collection, identity()) : xform => identityTransformer(xform);
+  return collection ? sequence(collection, identity()) : xform => identityTransducer(xform);
 }
 
-function flattenTransformer(xform) {
+function flattenTransducer(xform) {
   return {
     [p.init]() {
       return xform[p.init]();
@@ -99,10 +99,10 @@ function flattenTransformer(xform) {
 //
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function flatten(collection) {
-  return collection ? sequence(collection, flatten()) : xform => flattenTransformer(xform);
+  return collection ? sequence(collection, flatten()) : xform => flattenTransducer(xform);
 }
 
-function repeatTransformer(n, xform) {
+function repeatTransducer(n, xform) {
   return {
     [p.init]() {
       return xform[p.init]();
@@ -130,7 +130,7 @@ function repeatTransformer(n, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function repeat(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
-  return col ? sequence(col, repeat(num)) : xform => repeatTransformer(num, xform);
+  return col ? sequence(col, repeat(num)) : xform => repeatTransducer(num, xform);
 }
 
 module.exports = {

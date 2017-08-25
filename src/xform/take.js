@@ -29,7 +29,7 @@ const { sequence } = require('../modules/transformation');
 const { isNumber, isFunction } = require('../modules/util');
 const p = protocols;
 
-function takeTransformer(n, xform) {
+function takeTransducer(n, xform) {
   let i = 0;
 
   return {
@@ -61,10 +61,10 @@ function takeTransformer(n, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function take(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
-  return col ? sequence(col, take(num)) : xform => takeTransformer(num, xform);
+  return col ? sequence(col, take(num)) : xform => takeTransducer(num, xform);
 }
 
-function takeWhileTransformer(fn, xform) {
+function takeWhileTransducer(fn, xform) {
   return {
     [p.init]() {
       return xform[p.init]();
@@ -89,10 +89,10 @@ function takeWhileTransformer(fn, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function takeWhile(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, takeWhile(func)) : xform => takeWhileTransformer(func, xform);
+  return col ? sequence(col, takeWhile(func)) : xform => takeWhileTransducer(func, xform);
 }
 
-function takeNthTransformer(n, xform) {
+function takeNthTransducer(n, xform) {
   let i = -1;
 
   return {
@@ -115,7 +115,7 @@ function takeNthTransformer(n, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function takeNth(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
-  return col ? sequence(col, takeNth(num)) : xform => takeNthTransformer(num, xform);
+  return col ? sequence(col, takeNth(num)) : xform => takeNthTransducer(num, xform);
 }
 
 module.exports = {

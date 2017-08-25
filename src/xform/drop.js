@@ -28,7 +28,7 @@ const { sequence } = require('../modules/transformation');
 const { isNumber, isFunction } = require('../modules/util');
 const p = protocols;
 
-function dropTransformer(n, xform) {
+function dropTransducer(n, xform) {
   let i = 0;
 
   return {
@@ -51,10 +51,10 @@ function dropTransformer(n, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function drop(collection, n) {
   const [col, num] = isNumber(collection) ? [null, collection] : [collection, n];
-  return col ? sequence(col, drop(num)) : xform => dropTransformer(num, xform);
+  return col ? sequence(col, drop(num)) : xform => dropTransducer(num, xform);
 }
 
-function dropWhileTransformer(fn, xform) {
+function dropWhileTransducer(fn, xform) {
   let dropping = true;
 
   return {
@@ -88,7 +88,7 @@ function dropWhileTransformer(fn, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function dropWhile(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, dropWhile(func)) : xform => dropWhileTransformer(func, xform);
+  return col ? sequence(col, dropWhile(func)) : xform => dropWhileTransducer(func, xform);
 }
 
 module.exports = {

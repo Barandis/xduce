@@ -29,7 +29,7 @@ const { isFunction } = require('../modules/util');
 const { flatten } = require('./core');
 const p = protocols;
 
-function mapTransformer(fn, xform) {
+function mapTransducer(fn, xform) {
   return {
     [p.init]() {
       return xform[p.init]();
@@ -54,7 +54,7 @@ function mapTransformer(fn, xform) {
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function map(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, map(func)) : xform => mapTransformer(func, xform);
+  return col ? sequence(col, map(func)) : xform => mapTransducer(func, xform);
 }
 
 // Maps the elements of a collection over a function, flattening any collections that are returned from that function.
