@@ -88,10 +88,7 @@ module.exports = {
     'eol-last': [ERROR],
     'func-call-spacing': [ERROR, 'never'],
     'func-name-matching': [ERROR],
-    'indent': [ERROR, 2, {
-      'SwitchCase': 1,
-      'MemberExpression': 'off'
-    }],
+    'indent': [OFF],
     'key-spacing': [ERROR, {
       'beforeColon': false,
       'afterColon': true,
@@ -149,7 +146,7 @@ module.exports = {
     }],
 
     // ECMAScript 6
-    'arrow-parens': [ERROR, 'always'],
+    'arrow-parens': [ERROR, 'as-needed'],
     'arrow-spacing': [ERROR],
     'generator-star-spacing': [ERROR, {
       'before': false,
