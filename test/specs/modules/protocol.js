@@ -1,11 +1,9 @@
-import {
+const {
   expect
-} from '../../helper';
+} = require('../../helper');
 
-import {
-  protocols as p,
-  isImplemented
-} from '../../../src/modules/protocol';
+const { protocols, isImplemented } = require('../../../src/modules/protocol');
+const p = protocols;
 
 describe('Protocol checks', () => {
 

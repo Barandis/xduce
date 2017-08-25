@@ -1,4 +1,4 @@
-import {
+const {
   expect,
   expectIterator,
   ARRAY_5,
@@ -6,18 +6,18 @@ import {
   LIST_5,
   five,
   naturals
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   filter,
   reject,
   compact
-} from '../../../src/xform/filter';
+} = require('../../../src/xform/filter');
 
-import { fromJS } from 'immutable';
+const { fromJS } = require('immutable');
 
-import { sequence, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
+const { sequence, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
 const even = (x) => x % 2 === 0;
 const evenValue = ({k, v}) => v % 2 === 0;

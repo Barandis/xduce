@@ -1,4 +1,4 @@
-import {
+const {
   expect,
   expectIterator,
   ARRAY_5,
@@ -6,23 +6,23 @@ import {
   LIST_5,
   five,
   naturals
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   take,
   takeWhile,
   takeNth
-} from '../../../src/xform/take';
+} = require('../../../src/xform/take');
 
-import { List } from 'immutable';
+const { List } = require('immutable');
 
-import { complement, range } from '../../../src/modules/util';
+const { complement, range } = require('../../../src/modules/util');
 
-import { map } from '../../../src/xform/map';
-import { filter } from '../../../src/xform/filter';
+const { map } = require('../../../src/xform/map');
+const { filter } = require('../../../src/xform/filter');
 
-import { sequence, compose, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
+const { sequence, compose, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
 const lt4 = (x) => x < 4;
 const lt4Value = ({v}) => v < 4;

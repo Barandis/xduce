@@ -1,25 +1,25 @@
-import {
+const {
   expect,
-  ARRAY_5, 
+  ARRAY_5,
   OBJECT_AB,
   LIST_5,
   five,
   naturals,
   expectIterator
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   identity,
   flatten,
   repeat
-} from '../../../src/xform/core';
+} = require('../../../src/xform/core');
 
-import { take } from '../../../src/xform/take';
+const { take } = require('../../../src/xform/take');
 
-import { List } from 'immutable';
+const { List } = require('immutable');
 
-import { sequence, into, transduce, compose } from '../../../src/modules/transformation';
-import { toReducer, arrayReducer } from '../../../src/modules/reduction';
+const { sequence, into, transduce, compose } = require('../../../src/modules/transformation');
+const { toReducer, arrayReducer } = require('../../../src/modules/reduction');
 
 describe('Core transformers', () => {
   context('identity', () => {

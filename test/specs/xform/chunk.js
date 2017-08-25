@@ -1,4 +1,4 @@
-import {
+const {
   expect,
   expectIterator,
   ARRAY_5,
@@ -6,20 +6,20 @@ import {
   LIST_5,
   five,
   naturals
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   chunk,
   chunkBy
-} from '../../../src/xform/chunk';
+} = require('../../../src/xform/chunk');
 
-import { map } from '../../../src/xform/map';
-import { take } from '../../../src/xform/take';
+const { map } = require('../../../src/xform/map');
+const { take } = require('../../../src/xform/take');
 
-import { fromJS } from 'immutable';
+const { fromJS } = require('immutable');
 
-import { sequence, compose, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
+const { sequence, compose, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
 describe('Chunking transformers', () => {
   context('chunk', () => {

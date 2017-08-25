@@ -1,8 +1,8 @@
-import {
+const {
   expect
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   isArray,
   isFunction,
   isObject,
@@ -12,7 +12,7 @@ import {
   bmpLength,
   range,
   complement
-} from '../../../src/modules/util';
+} = require('../../../src/modules/util');
 
 describe('Type-checking functions', () => {
 

@@ -1,4 +1,4 @@
-import {
+const {
   expect,
   expectIterator,
   ARRAY_5,
@@ -6,18 +6,18 @@ import {
   LIST_5,
   five,
   naturals
-} from '../../helper';
+} = require('../../helper');
 
-import {
+const {
   distinct,
   distinctBy,
   distinctWith
-} from '../../../src/xform/distinct';
+} = require('../../../src/xform/distinct');
 
-import { fromJS, List } from 'immutable';
+const { fromJS, List } = require('immutable');
 
-import { sequence, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
+const { sequence, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
 const arrayEx = [1, 5, 2, 2, 4, 5, 3, 3, 2];
 const objectEx = {a: 1, b: 5, c: 2, d: 2, e: 4, f: 5, g: 4, h: 3, i: 3, j: 2};
