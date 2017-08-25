@@ -23,15 +23,7 @@
 // iteration.js
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const {
-  bmpCharAt,
-  bmpLength,
-  isArray,
-  isFunction,
-  isObject,
-  isString
-} = require('./util');
-
+const { bmpCharAt, bmpLength, isArray, isFunction, isObject, isString } = require('./util');
 const { protocols, isImplemented } = require('./protocol');
 const p = protocols;
 
@@ -42,12 +34,14 @@ function stringIterator(str) {
   let index = 0;
   return {
     next() {
-      return index < bmpLength(str) ? {
-        value: bmpCharAt(str, index++),
-        done: false
-      } : {
-        done: true
-      };
+      return index < bmpLength(str)
+        ? {
+            value: bmpCharAt(str, index++),
+            done: false
+          }
+        : {
+            done: true
+          };
     }
   };
 }
@@ -58,12 +52,14 @@ function arrayIterator(array) {
   let index = 0;
   return {
     next() {
-      return index < array.length ? {
-        value: array[index++],
-        done: false
-      } : {
-        done: true
-      };
+      return index < array.length
+        ? {
+            value: array[index++],
+            done: false
+          }
+        : {
+            done: true
+          };
     }
   };
 }
@@ -197,12 +193,18 @@ function isKvFormObject(obj) {
 // is a NEW iterator each time the call is made.
 function iterator(obj, sort, kv) {
   switch (true) {
-    case isFunction(obj[p.iterator]): return obj[p.iterator]();
-    case isFunction(obj.next):        return obj;
-    case isString(obj):               return stringIterator(obj);
-    case isArray(obj):                return arrayIterator(obj);
-    case isObject(obj):               return objectIterator(obj, sort, kv);
-    default:                          return null;
+    case isFunction(obj[p.iterator]):
+      return obj[p.iterator]();
+    case isFunction(obj.next):
+      return obj;
+    case isString(obj):
+      return stringIterator(obj);
+    case isArray(obj):
+      return arrayIterator(obj);
+    case isObject(obj):
+      return objectIterator(obj, sort, kv);
+    default:
+      return null;
   }
 }
 

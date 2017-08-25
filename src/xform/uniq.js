@@ -27,7 +27,6 @@ const { protocols } = require('../modules/protocol');
 const { sequence } = require('../modules/transformation');
 const { isFunction } = require('../modules/util');
 const { sameValueZero } = require('./core');
-
 const p = protocols;
 
 const uniqTransformer = (fn, xform) => ({
@@ -40,7 +39,7 @@ const uniqTransformer = (fn, xform) => ({
   },
 
   [p.step](acc, input) {
-    if (this.uniques.some((u) => this.fn(input, u))) {
+    if (this.uniques.some(u => this.fn(input, u))) {
       return acc;
     }
     this.uniques.push(input);
@@ -62,7 +61,7 @@ const uniqTransformer = (fn, xform) => ({
 // If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
 function uniqWith(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, uniqWith(func)) : (xform) => uniqTransformer(func, xform);
+  return col ? sequence(col, uniqWith(func)) : xform => uniqTransformer(func, xform);
 }
 
 // Returns a collection containing only unique elements from the input collection. Uniqueness is determined by passing

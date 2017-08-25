@@ -89,7 +89,8 @@ module.exports = {
     'func-call-spacing': [ERROR, 'never'],
     'func-name-matching': [ERROR],
     'indent': [ERROR, 2, {
-      'SwitchCase': 1
+      'SwitchCase': 1,
+      'MemberExpression': 'off'
     }],
     'key-spacing': [ERROR, {
       'beforeColon': false,

@@ -20,11 +20,11 @@
  */
 
 // Object's toString is explicitly used throughout because it could be redefined in any subclass of Object
-const {toString} = Object.prototype;
+const { toString } = Object.prototype;
 
 // Determines whether an object is an array. This is a completely unnecessary function that is here only for
 // consistency with the other type-checking functions below.
-const {isArray} = Array;
+const { isArray } = Array;
 
 // Determines whether an object is a function.
 function isFunction(x) {
@@ -49,9 +49,9 @@ function isObject(x) {
   // compare the constuctors' source code
   const functionToString = Function.prototype.toString;
   const ctor = Object.prototype.hasOwnProperty.call(proto, 'constructor') && proto.constructor;
-  return typeof ctor === 'function' &&
-         ctor instanceof ctor &&
-         functionToString.call(ctor) === functionToString.call(Object);
+  return (
+    typeof ctor === 'function' && ctor instanceof ctor && functionToString.call(ctor) === functionToString.call(Object)
+  );
 }
 
 // Determines whether an object is a number. It must be either an actual number or a Number object to return `true`;
@@ -89,8 +89,7 @@ function bmpCharAt(str, index) {
 
   let result = s.charAt(i);
 
-  if (/[\uD800-\uDBFF]/.test(result) &&
-      /[\uDC00-\uDFFF]/.test(s.charAt(i + 1))) {
+  if (/[\uD800-\uDBFF]/.test(result) && /[\uDC00-\uDFFF]/.test(s.charAt(i + 1))) {
     result += s.charAt(i + 1);
   }
 
