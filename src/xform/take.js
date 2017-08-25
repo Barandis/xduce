@@ -29,32 +29,32 @@ const { sequence } = require('../modules/transformation');
 const { isNumber, isFunction } = require('../modules/util');
 const p = protocols;
 
-const takeTransformer = (n, xform) => ({
-  n,
-  xform,
-  i: 0,
+function takeTransformer(n, xform) {
+  let i = 0;
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    let result = acc;
+    [p.step](acc, input) {
+      let result = acc;
 
-    if (this.i < this.n) {
-      result = this.xform[p.step](acc, input);
-      if (this.i === this.n - 1) {
-        result = ensureReduced(result);
+      if (i < n) {
+        result = xform[p.step](acc, input);
+        if (i === n - 1) {
+          result = ensureReduced(result);
+        }
       }
-    }
-    this.i++;
-    return result;
-  },
+      i++;
+      return result;
+    },
 
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Returns a collection that contains only the first `count` elements from the input collection.
 //
@@ -64,22 +64,21 @@ function take(collection, n) {
   return col ? sequence(col, take(num)) : xform => takeTransformer(num, xform);
 }
 
-const takeWhileTransformer = (fn, xform) => ({
-  fn,
-  xform,
+function takeWhileTransformer(fn, xform) {
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+    [p.step](acc, input) {
+      return fn(input) ? xform[p.step](acc, input) : ensureReduced(acc);
+    },
 
-  [p.step](acc, input) {
-    return this.fn(input) ? this.xform[p.step](acc, input) : ensureReduced(acc);
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Returns a collection that contains all of the elements from the input collection up until the first one that returns
 // `false` from the supplied predicate function.
@@ -93,23 +92,23 @@ function takeWhile(collection, fn, ctx) {
   return col ? sequence(col, takeWhile(func)) : xform => takeWhileTransformer(func, xform);
 }
 
-const takeNthTransformer = (n, xform) => ({
-  n,
-  xform,
-  i: -1,
+function takeNthTransformer(n, xform) {
+  let i = -1;
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    return ++this.i % this.n === 0 ? this.xform[p.step](acc, input) : acc;
-  },
+    [p.step](acc, input) {
+      return ++i % n === 0 ? xform[p.step](acc, input) : acc;
+    },
 
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
+    [p.result](value) {
+      return xform[p.result](value);
+    }
+  };
+}
 
 // Returns a collection containing the first and then every nth element after that of the input collection.
 //

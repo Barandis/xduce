@@ -76,7 +76,6 @@ function step(collection) {
 
     case isObject(collection):
       return (acc, input) => {
-        // Would love to use a do expression here, but they don't currently play nice with object literals
         let value = input;
 
         if (isKvFormObject(input)) {
