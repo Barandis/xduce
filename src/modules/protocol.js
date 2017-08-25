@@ -30,7 +30,7 @@
 
 const { isFunction } = require('./util');
 
-const USE_SYMBOLS = false;
+const USE_SYMBOLS = true;
 const symbol = typeof Symbol !== 'undefined';
 
 // Generation of the key used on an object to store a protocol function. This is a symbol if symbols are available and
