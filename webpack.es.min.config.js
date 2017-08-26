@@ -1,14 +1,18 @@
+const webpack = require('webpack');
+const fs = require('fs');
 const path = require('path');
+
+const banner = fs.readFileSync(path.resolve(__dirname, 'LICENSE'), 'utf8');
 
 module.exports = {
   entry: ['./src/api.js'],
   output: {
-    filename: 'xduce.js',
+    filename: 'xduce.es.min.js',
     library: 'xduce',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, 'dist')
   },
-  plugins: [],
+  plugins: [new webpack.BannerPlugin({ banner, entryOnly: true })],
   module: {
     rules: [
       {
@@ -16,8 +20,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            plugins: ['transform-runtime'],
-            presets: ['es2015', 'stage-3']
+            presets: ['minify']
           }
         },
         include: [path.resolve(__dirname, 'src')]

@@ -4,7 +4,7 @@ All notable changes to the library will be documented in this file.
 
 ## [unreleased]
 ### Added
-- A pure ES2015+ version of the library. This is in the file `dist/xduce.es.js` and is likely to work in all modern browers that are not named "Internet Explorer". There is not yet a good minifier for ES2015 so there is no minified library.
+- A pure ES2015+ version of the library. This is in the file `dist/xduce.es.js` and is likely to work in all modern browers that are not named "Internet Explorer". There is also a minified version, but the minifier is still in beta so, while all indications are that it's working quite well, use this version at your own risk.
 
 ### Changed
 - Added a consistent set of linting rules and ran them, fixing all of the linting errors.

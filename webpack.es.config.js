@@ -1,5 +1,12 @@
-const config = require('./webpack.config');
+const path = require('path');
 
-config.output.filename = 'xduce.es.js';
-config.module.loaders = [];
-module.exports = config;
+module.exports = {
+  entry: ['./src/api.js'],
+  output: {
+    filename: 'xduce.es.js',
+    library: 'xduce',
+    libraryTarget: 'umd',
+    path: path.resolve(__dirname, 'dist')
+  },
+  plugins: []
+};
