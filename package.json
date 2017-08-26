@@ -2,12 +2,13 @@
   "name": "xduce",
   "version": "0.8.2",
   "description": "Composable algorithmic transformations library for JavaScript",
-  "main": "lib/xduce.js",
+  "main": "dist/xduce.js",
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf dist",
     "build:dev": "webpack",
     "build:prod": "webpack --config=webpack.min.config.js",
-    "build": "npm run clean && npm run build:dev && npm run build:prod",
+    "build:es": "webpack --config=webpack.es.config.js",
+    "build": "npm run clean && npm run build:dev && npm run build:prod && npm run build:es",
     "lint": "eslint ./src",
     "test": "mocha --recursive",
     "test:cover": "nyc mocha --recursive",
@@ -30,7 +31,7 @@
   "author": "Thomas Otterson <tjotterson@gmail.com>",
   "license": "MIT",
   "files": [
-    "lib"
+    "dist"
   ],
   "devDependencies": {
     "babel-core": "^6.23.1",

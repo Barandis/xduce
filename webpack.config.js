@@ -1,6 +1,4 @@
-const fs = require('fs');
 const path = require('path');
-const webpack = require('webpack');
 
 module.exports = {
   entry: [
@@ -10,7 +8,7 @@ module.exports = {
     filename: 'xduce.js',
     library: 'xduce',
     libraryTarget: 'umd',
-    path: path.resolve(__dirname, 'lib')
+    path: path.resolve(__dirname, 'dist')
   },
   plugins: [],
   module: {
