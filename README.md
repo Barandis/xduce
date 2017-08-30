@@ -2,8 +2,11 @@
 
 A transducer library for JavaScript
 
-[![Build Status](https://travis-ci.org/Barandis/xduce.svg?branch=master)](https://travis-ci.org/Barandis/xduce)
-[![Coverage Status](https://coveralls.io/repos/github/Barandis/xduce/badge.svg)](https://coveralls.io/github/Barandis/xduce)
+[![Build Status](https://img.shields.io/travis/barandis/xduce/master.svg)](https://travis-ci.org/barandis/xduce)
+[![Coverage Status](https://img.shields.io/coveralls/barandis/xduce/master.svg)](https://coveralls.io/github/barandis/xduce)
+[![Version](https://img.shields.io/npm/v/xduce.svg)](https://www.npmjs.com/package/xduce)
+[![Downloads](https://img.shields.io/npm/dm/xduce.svg)](http://npm-stats.com/~packages/xduce)
+[![License](https://img.shields.io/github/license/barandis/xduce.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
 
