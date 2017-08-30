@@ -4,6 +4,7 @@
   "description": "Composable algorithmic transformations library for JavaScript",
   "main": "dist/xduce.js",
   "scripts": {
+    "commit": "git-cz",
     "clean": "rimraf dist",
     "clean:docs": "rimraf docs/api",
     "build:es5": "webpack --config=webpack.config.js",
@@ -46,7 +47,9 @@
     "babel-preset-stage-3": "^6.24.1",
     "babel-runtime": "^6.23.0",
     "chai": "^3.5.0",
+    "commitizen": "^2.9.6",
     "coveralls": "^2.12.0",
+    "cz-conventional-changelog": "^2.0.0",
     "docdash": "^0.4.0",
     "eslint": "^3.17.0",
     "eslint-plugin-no-class": "^0.1.0",
@@ -58,5 +61,8 @@
     "rimraf": "^2.6.1",
     "webpack": "^2.2.1"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
+  }
 }
