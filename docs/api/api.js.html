@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-xduce.html">xduce</a><ul class='methods'><li data-type='method'><a href="module-xduce.html#.asArray">asArray</a></li><li data-type='method'><a href="module-xduce.html#.asIterator">asIterator</a></li><li data-type='method'><a href="module-xduce.html#.asObject">asObject</a></li><li data-type='method'><a href="module-xduce.html#.asString">asString</a></li><li data-type='method'><a href="module-xduce.html#.compose">compose</a></li><li data-type='method'><a href="module-xduce.html#.into">into</a></li><li data-type='method'><a href="module-xduce.html#.iterator">iterator</a></li><li data-type='method'><a href="module-xduce.html#.reduce">reduce</a></li><li data-type='method'><a href="module-xduce.html#.sequence">sequence</a></li><li data-type='method'><a href="module-xduce.html#.toFunction">toFunction</a></li><li data-type='method'><a href="module-xduce.html#.toReducer">toReducer</a></li><li data-type='method'><a href="module-xduce.html#.transduce">transduce</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="module-xduce.util.html">util</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.html#.complement">complement</a></li><li data-type='method'><a href="module-xduce.util.html#.ensureReduced">ensureReduced</a></li><li data-type='method'><a href="module-xduce.util.html#.ensureUnreduced">ensureUnreduced</a></li><li data-type='method'><a href="module-xduce.util.html#.isArray">isArray</a></li><li data-type='method'><a href="module-xduce.util.html#.isFunction">isFunction</a></li><li data-type='method'><a href="module-xduce.util.html#.isNumber">isNumber</a></li><li data-type='method'><a href="module-xduce.util.html#.isObject">isObject</a></li><li data-type='method'><a href="module-xduce.util.html#.isReduced">isReduced</a></li><li data-type='method'><a href="module-xduce.util.html#.isString">isString</a></li><li data-type='method'><a href="module-xduce.util.html#.range">range</a></li><li data-type='method'><a href="module-xduce.util.html#.reduced">reduced</a></li><li data-type='method'><a href="module-xduce.util.html#.unreduced">unreduced</a></li></ul></li><li><a href="module-xduce.util.bmp.html">bmp</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.bmp.html#.charAt">charAt</a></li><li data-type='method'><a href="module-xduce.util.bmp.html#.length">length</a></li></ul></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-xduce.html">xduce</a><ul class='methods'><li data-type='method'><a href="module-xduce.html#.asArray">asArray</a></li><li data-type='method'><a href="module-xduce.html#.asIterator">asIterator</a></li><li data-type='method'><a href="module-xduce.html#.asObject">asObject</a></li><li data-type='method'><a href="module-xduce.html#.asString">asString</a></li><li data-type='method'><a href="module-xduce.html#.compose">compose</a></li><li data-type='method'><a href="module-xduce.html#.into">into</a></li><li data-type='method'><a href="module-xduce.html#.iterator">iterator</a></li><li data-type='method'><a href="module-xduce.html#.reduce">reduce</a></li><li data-type='method'><a href="module-xduce.html#.sequence">sequence</a></li><li data-type='method'><a href="module-xduce.html#.toFunction">toFunction</a></li><li data-type='method'><a href="module-xduce.html#.toReducer">toReducer</a></li><li data-type='method'><a href="module-xduce.html#.transduce">transduce</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="module-xduce.util.html">util</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.html#.complement">complement</a></li><li data-type='method'><a href="module-xduce.util.html#.isArray">isArray</a></li><li data-type='method'><a href="module-xduce.util.html#.isFunction">isFunction</a></li><li data-type='method'><a href="module-xduce.util.html#.isNumber">isNumber</a></li><li data-type='method'><a href="module-xduce.util.html#.isObject">isObject</a></li><li data-type='method'><a href="module-xduce.util.html#.isString">isString</a></li><li data-type='method'><a href="module-xduce.util.html#.range">range</a></li></ul></li><li><a href="module-xduce.util.bmp.html">bmp</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.bmp.html#.charAt">charAt</a></li><li data-type='method'><a href="module-xduce.util.bmp.html#.length">length</a></li></ul></li><li><a href="module-xduce.util.reduction.html">reduction</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.reduction.html#.ensureReduced">ensureReduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.ensureUnreduced">ensureUnreduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.isReduced">isReduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.reduced">reduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.unreduced">unreduced</a></li></ul></li></ul>
 </nav>
 
 <div id="main">
@@ -490,11 +490,30 @@ module.exports = {
     isObject,
     isString,
 
-    reduced,
-    unreduced,
-    isReduced,
-    ensureReduced,
-    ensureUnreduced
+    /**
+     * Helper functions for writing transducers. All of these relate to reducing values. Marking values as reduced
+     * should happen to tell the library's reduction engine to stop reducing, that the current collection is finished
+     * and can be returned as the final collection.
+     *
+     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as reduced
+     * when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
+     * input collection are processed.
+     *
+     * Values can be reduced multiple times. This nests a reduced value inside a reduced value, and so on. To unreduce
+     * values like this, {@link module:xduce.util.reduction.unreduced|unreduced} would have to be called multiple times.
+     *
+     * @memberof module:xduce.util
+     * @static
+     * @namespace reduction
+     * @type {object}
+     */
+    reduction: {
+      reduced,
+      unreduced,
+      isReduced,
+      ensureReduced,
+      ensureUnreduced
+    },
   },
   protocols,
   iterator,

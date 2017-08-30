@@ -451,11 +451,30 @@ module.exports = {
     isObject,
     isString,
 
-    reduced,
-    unreduced,
-    isReduced,
-    ensureReduced,
-    ensureUnreduced
+    /**
+     * Helper functions for writing transducers. All of these relate to reducing values. Marking values as reduced
+     * should happen to tell the library's reduction engine to stop reducing, that the current collection is finished
+     * and can be returned as the final collection.
+     *
+     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as reduced
+     * when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
+     * input collection are processed.
+     *
+     * Values can be reduced multiple times. This nests a reduced value inside a reduced value, and so on. To unreduce
+     * values like this, {@link module:xduce.util.reduction.unreduced|unreduced} would have to be called multiple times.
+     *
+     * @memberof module:xduce.util
+     * @static
+     * @namespace reduction
+     * @type {object}
+     */
+    reduction: {
+      reduced,
+      unreduced,
+      isReduced,
+      ensureReduced,
+      ensureUnreduced
+    },
   },
   protocols,
   iterator,
