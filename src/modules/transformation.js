@@ -364,11 +364,6 @@ function asIterator(collection, xform) {
   return xform ? transducingIterator(collection, xform) : iterator(collection, null, false);
 }
 
-// This is leaving. sequence does the same thing and more.
-function asReducible(collection, xform) {
-  return transduce(collection, xform, collection);
-}
-
 /**
  * **Transforms the elements of the input collection and reduces them into a new collection of the same type.**
  *
@@ -419,7 +414,7 @@ function sequence(collection, xform) {
     case isString(collection):
       return asString(collection, xform);
     case isImplemented(collection, 'step'):
-      return asReducible(collection, xform);
+      return transduce(collection, xform, collection);
     case isImplemented(collection, 'iterator'):
       return asIterator(collection, xform);
     default:
@@ -531,7 +526,6 @@ module.exports = {
   asObject,
   asString,
   asIterator,
-  asReducible,
   sequence,
   into,
   compose
