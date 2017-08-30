@@ -182,11 +182,11 @@ function arrayIterator(array) {
  * @param {object} obj The object to iterate over.
  * @param {module:xduce~sort} [sort] An optional sort function. This is applied to the keys of the object to
  *     determine the order of iteration.
- * @param {boolean} [kv=true] Whether or not this object should be iterated into kv-form (if false, it remains in the
+ * @param {boolean} [kv=false] Whether or not this object should be iterated into kv-form (if false, it remains in the
  *     normal key-value form).
  * @return {module:xduce~iterator} An iterator that returns one key-value pair per call to `next`.
  */
-function objectIterator(obj, sort, kv = true) {
+function objectIterator(obj, sort, kv = false) {
   let keys = Object.keys(obj);
   keys = typeof sort === 'function' ? keys.sort(sort) : keys.sort();
   let index = 0;
@@ -259,7 +259,7 @@ function isKvFormObject(obj) {
  * @param {*} obj The value to be iterated over.
  * @param {module:xduce~sort} [sort] A function used to determine the sorting of keys for an object iterator. It has
  *     no effect when iterating over anything that is not a plain object.
- * @param {boolean} [kv=true] Whether an object should be iterated into kv-form. This is only relevant when iterating
+ * @param {boolean} [kv=false] Whether an object should be iterated into kv-form. This is only relevant when iterating
  *     over an object; otherwise its value is ignored.
  * @return {module:xduce~iterator} An iterator over the provided value. If the value is not iterable (it's not an
  *     array, object, or string, and it doesn't have a protocol-defined iterator), `null` is returned.
