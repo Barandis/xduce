@@ -134,11 +134,11 @@ module.exports = {
     'spaced-comment': [ERROR, 'always', {
       'line': {
         'markers': ['/'],
-        'exceptions': ['-', '+']
+        'exceptions': ['-', '+', '/', '=']
       },
       'block': {
         'markers': ['!'],
-        'exceptions': ['*', '/', '='],
+        'exceptions': ['*', '='],
         'balanced': true
       }
     }],
