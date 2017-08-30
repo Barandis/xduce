@@ -62,7 +62,9 @@
     "webpack": "^2.2.1"
   },
   "dependencies": {},
-  "czConfig": {
-    "path": "node_modules/cz-conventional-changelog"
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
   }
 }
