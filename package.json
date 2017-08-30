@@ -4,7 +4,7 @@
   "description": "Composable algorithmic transformations library for JavaScript",
   "main": "dist/xduce.js",
   "scripts": {
-    "commit": "git-cz",
+    "cmt": "git-cz",
     "precommit": "npm test",
     "prepush": "npm test",
     "clean": "rimraf dist",
