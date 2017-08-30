@@ -89,7 +89,7 @@ adjustments to the reduced collection before returning it.</p>
 their own (though it should be noted that since <code>iterator</code> is built-in, many third-party collections will already
 implement this protocol). As an example, let's add transducer support to a third-party collection, the
 <code>Immutable.List</code> collection from <a href="https://facebook.github.io/immutable-js/">immutable-js</a>.</p>
-<pre class="prettyprint source lang-javascript"><code>Immutable.List.prototype[protocols.init] = () => Immutable.List().asMutable();
+<pre class="prettyprint source"><code>Immutable.List.prototype[protocols.init] = () => Immutable.List().asMutable();
 Immutable.List.prototype[protocols.step] = (acc, input) => acc.push(input);
 Immutable.List.prototype[protocols.result] = (value) => value.asImmutable();</code></pre><p><code>Immutable.List</code> already implements <code>iterator</code>, so we don't have to do it ourselves.</p>
 <p>The <code>init</code> function returns an empty mutable list. This is important for immutable-js because its default lists are
@@ -141,7 +141,7 @@ reason for this form is that it's much easier to write transformation functions 
 the regular single-property <code>{key: value}</code> form (which is still available by passing <code>false</code> as the third parameter
 to <code><a href="module-xduce.html#.iterator">iterator</a></code>), the name of the key is unknown; in kv-form, the names of the keys are
 <code>k</code> and <code>v</code>.</p>
-<pre class="prettyprint source lang-javascript"><code>var obj = {c: 1, a: 2, b: 3};
+<pre class="prettyprint source"><code>var obj = {c: 1, a: 2, b: 3};
 var reverseSort = function (a, b) { return a &lt; b ? 1 : b > a ? -1 : 0; };
 
 var result = iterator(obj);
@@ -411,7 +411,7 @@ names for protocol properties throughout the library.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line237">line 237</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line243">line 243</a>
     </li></ul></dd>
     
 
@@ -453,9 +453,9 @@ names for protocol properties throughout the library.</p>
 <div class="description">
     <p><strong>Transforms the elements of the input collection and reduces them into a new array.</strong></p>
 <p>The transformer is optional. If it isn't present, this function just converts the input collection into an array.</p>
-<pre class="prettyprint source"><code>var xform = map(function (x) { return x + 1; });
+<pre class="prettyprint source"><code>const xform = map(x => x + 1);
 
-var result = asArray([1, 2, 3, 4, 5], xform);
+let result = asArray([1, 2, 3, 4, 5], xform);
 // result = [2, 3, 4, 5, 6]
 
 result = asArray('12345', xform);
@@ -629,7 +629,7 @@ result = asArray({a: 1, b: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line360">line 360</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line363">line 363</a>
     </li></ul></dd>
     
 
@@ -673,17 +673,17 @@ result = asArray({a: 1, b: 2});
 <p>The transformer is optional. If it isn't present, this function just converts the input collection into an iterator.</p>
 <p><em>(The results here are shown passed through <code>asArray</code> because there's no literal interpretation of an iterator to
 show. The <code>asArray</code> calls are for demonstration purposes only.)</em></p>
-<pre class="prettyprint source"><code>var xform = map(function (x) { return x + 1; });
-var five = function* () {
-  for (var i = 1; i &lt;= 5; ++i) {
+<pre class="prettyprint source"><code>const xform = map(x => x + 1);
+function* five() {
+  for (let i = 1; i &lt;= 5; ++i) {
     yield i;
   }
 };
 
-var result = asIterator(five(), xform);
+let result = asIterator(five(), xform);
 // asArray(result) = [2, 3, 4, 5, 6]
 
-result = asString([1, 2, 3, 4, 5], xform);
+result = asIterator([1, 2, 3, 4, 5], xform);
 // asArray(result) = [2, 3, 4, 5, 6]
 
 result = asIterator([1, 2, 3, 4, 5]);
@@ -855,7 +855,7 @@ result = asIterator({a: 1, b: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line277">line 277</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line280">line 280</a>
     </li></ul></dd>
     
 
@@ -897,12 +897,9 @@ result = asIterator({a: 1, b: 2});
 <div class="description">
     <p><strong>Transforms the elements of the input collection and reduces them into a new object.</strong></p>
 <p>The transformer is optional. If it isn't present, this function just converts the input collection into an object.</p>
-<pre class="prettyprint source"><code>var xform = map(function (x) {
-  var result = {};
-  result[x.k] = x.v + 1;
-});
+<pre class="prettyprint source"><code>const xform = map(({ k, v }) => ({ [k]: v + 1 }));
 
-var result = asObject({a: 1, b: 2}, xform);
+let result = asObject({a: 1, b: 2}, xform);
 // result = {a: 2, b: 3}
 
 result = asObject([{a: 1}, {b: 2}], xform);
@@ -1076,7 +1073,7 @@ result = asObject('hello');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line314">line 314</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -1118,9 +1115,9 @@ result = asObject('hello');
 <div class="description">
     <p><strong>Transforms the elements of the input collection and reduces them into a new string.</strong></p>
 <p>The transformer is optional. If it isn't present, this function just converts the input collection into an string.</p>
-<pre class="prettyprint source"><code>var xform = map(function (x) { return x.toUpperCase(); });
+<pre class="prettyprint source"><code>const xform = map(x => x.toUpperCase());
 
-var result = asString('hello', xform);
+let result = asString('hello', xform);
 // result = 'HELLO'
 
 result = asString(['h', 'e', 'l', 'l', 'o'], xform);
@@ -1294,7 +1291,7 @@ result = asString({a: 1, b: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line530">line 530</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line523">line 523</a>
     </li></ul></dd>
     
 
@@ -1344,12 +1341,12 @@ called with a collection parameter. Instead, pass it like any transformer functi
 <p>NOTE: In functional programming, a compose function is generally ordered so that the first-executed function is
 listed last. This is done in the opposite way, with the first transducer executing first, etc. This is more sensible
 for transducer functions.</p>
-<pre class="prettyprint source"><code>var add1 = function (x) { return x + 1; };
-var odd = function (x) { return x % 2 !== 0; };
+<pre class="prettyprint source"><code>const add1 = x => x + 1;
+const odd = x => x % 2 !== 0;
 
-var xform = compose(map(add1), filter(odd), take(3));
+const xform = compose(map(add1), filter(odd), take(3));
 
-var result = sequence([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], xform);
+const result = sequence([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], xform);
 // result = [3, 5, 7];</code></pre>
 </div>
 
@@ -1481,7 +1478,7 @@ var result = sequence([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], xform);
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line471">line 471</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line474">line 474</a>
     </li></ul></dd>
     
 
@@ -1527,9 +1524,9 @@ var result = sequence([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], xform);
 collection implement the <code>init</code>, <code>result</code>, and <code>step</code> transducer protocol functions.</p>
 <p>If no transducer function is provided, the input collection elements are reduced into the target collection without
 being transformed. This can be used to convert one kind of collection into another.</p>
-<pre class="prettyprint source"><code>var xform = map(function (x) { return x + 1; });
+<pre class="prettyprint source"><code>const xform = map(x => x + 1);
 
-var result = into([], [1, 2, 3, 4, 5], xform);
+let result = into([], [1, 2, 3, 4, 5], xform);
 // result = [2, 3, 4, 5, 6]
 
 result = into('', [1, 2, 3, 4, 5], xform);
@@ -2216,7 +2213,7 @@ makes it easy to combine transformations with reductions and can optionally figu
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line410">line 410</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line413">line 413</a>
     </li></ul></dd>
     
 
@@ -2267,9 +2264,9 @@ is an iterator).</p>
 iterators, so they need not implement any protocol.</p>
 <p>The obvious limitation of this function is that the type of output collection cannot be chosen. Since it is always
 the same as the input collection, this function cannot be used to convert a collection into a different type.</p>
-<pre class="prettyprint source"><code>var xform = map(function (x) { return x + 1; });
+<pre class="prettyprint source"><code>const xform = map(x => x + 1);
 
-var result = sequence([1, 2, 3, 4, 5], xform);
+let result = sequence([1, 2, 3, 4, 5], xform);
 // result = [2, 3, 4, 5, 6]
 
 result = sequence('12345', xform);
@@ -2766,7 +2763,7 @@ and Lodash's <code>_.reduce</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line199">line 199</a>
+        <a href="modules_transformation.js.html">modules/transformation.js</a>, <a href="modules_transformation.js.html#line205">line 205</a>
     </li></ul></dd>
     
 
@@ -2814,22 +2811,24 @@ since the reducer is not tied to the input collection in any way.</p>
 parameter isn't present, then the initial value is determined from the transducer init protocol property on the
 reducer. Note however that many reducers may not provide an initial value, and in those cases it will <em>have</em> to be
 passed as a parameter.</p>
-<pre class="prettyprint source"><code>var xform = map(function (x) { return x + 1; });
+<pre class="prettyprint source"><code>const xform = map(x => x + 1);
 
-var arrayReducer = {};
-arrayReducer[protocols.init] = function () { return []; };
-arrayReducer[protocols.result] = function (x) { return x; };
-arrayReducer[protocols.step] = function (acc, x) {
-  acc.push(x);
-  return acc;
+const arrayReducer = {
+  [protocols.init]() { return []; },
+  [protocols.result](x) { return x; },
+  [protocols.step](acc, x) {
+    acc.push(x);
+    return acc;
+  }
 };
 
-var stringReducer = {};
-stringReducer[protocols.init] = function () { return ''; };
-stringReducer[protocols.result] = function (x) { return x; };
-stringReducer[protocols.step] = function (acc, x) { return acc + x; };
+const stringReducer = {
+  [protocols.init]() { return ''; },
+  [protocols.result](x) { return x; },
+  [protocols.step](acc, x) { return acc + x; }
+};
 
-var result = transduce([1, 2, 3, 4, 5], xform, arrayReducer);
+let result = transduce([1, 2, 3, 4, 5], xform, arrayReducer);
 // result = [2, 3, 4, 5, 6]
 
 result = transduce([1, 2, 3, 4, 5], xform, stringReducer);
@@ -2851,6 +2850,9 @@ it can produce any kind of output collection. The same <code>transduce</code> fu
 all four examples, despite the input/output combination being different in all four.</p>
 <p>The <code>init</code> collection doesn't have to be empty. If it isn't, the elements that are already in it are retained and the
 transformed input elements are reduced into the collection normally.</p>
+<p>Of course, the examples are not really necessary - the same thing could be accomplished using
+<code><a href="module-xduce.html#.into">into</a></code> without having to create the reducers (strings and arrays passed to
+<code><a href="module-xduce.html#.into">into</a></code> as targets know how to reduce themselves already).</p>
 </div>
 
 
