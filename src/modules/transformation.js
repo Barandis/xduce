@@ -67,7 +67,7 @@ function transducingIterator(collection, xform) {
     [p.result]: value => value
   };
 
-  const iter = iterator(collection);
+  const iter = iterator(collection, null, true);
   const xf = xform(stepReducer);
   let reduced = false;
 
@@ -361,7 +361,7 @@ function asString(collection, xform) {
  *     elements.
  */
 function asIterator(collection, xform) {
-  return xform ? transducingIterator(collection, xform) : iterator(collection, null, false);
+  return xform ? transducingIterator(collection, xform) : iterator(collection);
 }
 
 /**

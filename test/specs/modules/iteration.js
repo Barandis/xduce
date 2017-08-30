@@ -125,20 +125,20 @@ describe('Iterator', () => {
     const reverseSort = (a, b) => (a < b ? 1 : b < a ? -1 : 0);
     const obj = { c: 1, a: 2, b: 3 };
 
-    it('produces kv-form objects, alphabetized by key by default', () => {
-      expect(toArray(iterator(obj))).to.deep.equal([{ k: 'a', v: 2 }, { k: 'b', v: 3 }, { k: 'c', v: 1 }]);
-    });
-
-    it('can produce kv-form objects with a different sort function', () => {
-      expect(toArray(iterator(obj, reverseSort))).to.deep.equal([{ k: 'c', v: 1 }, { k: 'b', v: 3 }, { k: 'a', v: 2 }]);
-    });
-
-    it('can produce key-value pairs alphabetized by key by default', () => {
-      expect(toArray(iterator(obj, null, false))).to.deep.equal([{ a: 2 }, { b: 3 }, { c: 1 }]);
+    it('produces key-value pairs alphabetized by key by default', () => {
+      expect(toArray(iterator(obj, null))).to.deep.equal([{ a: 2 }, { b: 3 }, { c: 1 }]);
     });
 
     it('can produce key-value pairs with a different sort function', () => {
-      expect(toArray(iterator(obj, reverseSort, false))).to.deep.equal([{ c: 1 }, { b: 3 }, { a: 2 }]);
+      expect(toArray(iterator(obj, reverseSort))).to.deep.equal([{ c: 1 }, { b: 3 }, { a: 2 }]);
+    });
+
+    it('can produce kv-form objects, alphabetized by key by default', () => {
+      expect(toArray(iterator(obj, null, true))).to.deep.equal([{ k: 'a', v: 2 }, { k: 'b', v: 3 }, { k: 'c', v: 1 }]);
+    });
+
+    it('can produce kv-form objects with a different sort function', () => {
+      expect(toArray(iterator(obj, reverseSort, true))).to.deep.equal([{ k: 'c', v: 1 }, { k: 'b', v: 3 }, { k: 'a', v: 2 }]);
     });
   });
 

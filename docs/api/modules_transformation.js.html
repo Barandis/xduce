@@ -106,7 +106,7 @@ function transducingIterator(collection, xform) {
     [p.result]: value => value
   };
 
-  const iter = iterator(collection);
+  const iter = iterator(collection, null, true);
   const xf = xform(stepReducer);
   let reduced = false;
 
@@ -400,12 +400,7 @@ function asString(collection, xform) {
  *     elements.
  */
 function asIterator(collection, xform) {
-  return xform ? transducingIterator(collection, xform) : iterator(collection, null, false);
-}
-
-// This is leaving. sequence does the same thing and more.
-function asReducible(collection, xform) {
-  return transduce(collection, xform, collection);
+  return xform ? transducingIterator(collection, xform) : iterator(collection);
 }
 
 /**
@@ -458,7 +453,7 @@ function sequence(collection, xform) {
     case isString(collection):
       return asString(collection, xform);
     case isImplemented(collection, 'step'):
-      return asReducible(collection, xform);
+      return transduce(collection, xform, collection);
     case isImplemented(collection, 'iterator'):
       return asIterator(collection, xform);
     default:
@@ -570,7 +565,6 @@ module.exports = {
   asObject,
   asString,
   asIterator,
-  asReducible,
   sequence,
   into,
   compose

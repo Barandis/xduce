@@ -336,7 +336,7 @@ function reduce(collection, reducer, init) {
     return null;
   }
 
-  const iter = iterator(collection);
+  const iter = iterator(collection, null, true);
   if (!iter) {
     throw Error(`Cannot reduce an instance of ${collection.constructor.name}`);
   }
