@@ -71,7 +71,7 @@
  * implement this protocol). As an example, let's add transducer support to a third-party collection, the
  * `Immutable.List` collection from {@link https://facebook.github.io/immutable-js/|immutable-js}.
  *
- * ```javascript
+ * ```
  * Immutable.List.prototype[protocols.init] = () => Immutable.List().asMutable();
  * Immutable.List.prototype[protocols.step] = (acc, input) => acc.push(input);
  * Immutable.List.prototype[protocols.result] = (value) => value.asImmutable();
@@ -147,7 +147,7 @@
  * to `{@link module:xduce.iterator|iterator}`), the name of the key is unknown; in kv-form, the names of the keys are
  * `k` and `v`.
  *
- * ```javascript
+ * ```
  * var obj = {c: 1, a: 2, b: 3};
  * var reverseSort = function (a, b) { return a < b ? 1 : b > a ? -1 : 0; };
  *

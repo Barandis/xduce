@@ -174,22 +174,24 @@ function transducingIterator(collection, xform) {
  * passed as a parameter.
  *
  * ```
- * var xform = map(function (x) { return x + 1; });
+ * const xform = map(x => x + 1);
  *
- * var arrayReducer = {};
- * arrayReducer[protocols.init] = function () { return []; };
- * arrayReducer[protocols.result] = function (x) { return x; };
- * arrayReducer[protocols.step] = function (acc, x) {
- *   acc.push(x);
- *   return acc;
+ * const arrayReducer = {
+ *   [protocols.init]() { return []; },
+ *   [protocols.result](x) { return x; },
+ *   [protocols.step](acc, x) {
+ *     acc.push(x);
+ *     return acc;
+ *   }
  * };
  *
- * var stringReducer = {};
- * stringReducer[protocols.init] = function () { return ''; };
- * stringReducer[protocols.result] = function (x) { return x; };
- * stringReducer[protocols.step] = function (acc, x) { return acc + x; };
+ * const stringReducer = {
+ *   [protocols.init]() { return ''; },
+ *   [protocols.result](x) { return x; },
+ *   [protocols.step](acc, x) { return acc + x; }
+ * };
  *
- * var result = transduce([1, 2, 3, 4, 5], xform, arrayReducer);
+ * let result = transduce([1, 2, 3, 4, 5], xform, arrayReducer);
  * // result = [2, 3, 4, 5, 6]
  *
  * result = transduce([1, 2, 3, 4, 5], xform, stringReducer);
@@ -216,6 +218,10 @@ function transducingIterator(collection, xform) {
  *
  * The `init` collection doesn't have to be empty. If it isn't, the elements that are already in it are retained and the
  * transformed input elements are reduced into the collection normally.
+ *
+ * Of course, the examples are not really necessary - the same thing could be accomplished using
+ * `{@link module:xduce.into|into}` without having to create the reducers (strings and arrays passed to
+ * `{@link module:xduce.into|into}` as targets know how to reduce themselves already).
  *
  * @memberof module:xduce
  *
@@ -246,9 +252,9 @@ function transduce(collection, xform, reducer, init = reducer[p.init]()) {
  * The transformer is optional. If it isn't present, this function just converts the input collection into an array.
  *
  * ```
- * var xform = map(function (x) { return x + 1; });
+ * const xform = map(x => x + 1);
  *
- * var result = asArray([1, 2, 3, 4, 5], xform);
+ * let result = asArray([1, 2, 3, 4, 5], xform);
  * // result = [2, 3, 4, 5, 6]
  *
  * result = asArray('12345', xform);
@@ -283,12 +289,9 @@ function asArray(collection, xform) {
  * The transformer is optional. If it isn't present, this function just converts the input collection into an object.
  *
  * ```
- * var xform = map(function (x) {
- *   var result = {};
- *   result[x.k] = x.v + 1;
- * });
+ * const xform = map(({ k, v }) => ({ [k]: v + 1 }));
  *
- * var result = asObject({a: 1, b: 2}, xform);
+ * let result = asObject({a: 1, b: 2}, xform);
  * // result = {a: 2, b: 3}
  *
  * result = asObject([{a: 1}, {b: 2}], xform);
@@ -323,9 +326,9 @@ function asObject(collection, xform) {
  * The transformer is optional. If it isn't present, this function just converts the input collection into an string.
  *
  * ```
- * var xform = map(function (x) { return x.toUpperCase(); });
+ * const xform = map(x => x.toUpperCase());
  *
- * var result = asString('hello', xform);
+ * let result = asString('hello', xform);
  * // result = 'HELLO'
  *
  * result = asString(['h', 'e', 'l', 'l', 'o'], xform);
@@ -363,17 +366,17 @@ function asString(collection, xform) {
  * show. The `asArray` calls are for demonstration purposes only.)*
  *
  * ```
- * var xform = map(function (x) { return x + 1; });
- * var five = function* () {
- *   for (var i = 1; i &lt;= 5; ++i) {
+ * const xform = map(x => x + 1);
+ * function* five() {
+ *   for (let i = 1; i &lt;= 5; ++i) {
  *     yield i;
  *   }
  * };
  *
- * var result = asIterator(five(), xform);
+ * let result = asIterator(five(), xform);
  * // asArray(result) = [2, 3, 4, 5, 6]
  *
- * result = asString([1, 2, 3, 4, 5], xform);
+ * result = asIterator([1, 2, 3, 4, 5], xform);
  * // asArray(result) = [2, 3, 4, 5, 6]
  *
  * result = asIterator([1, 2, 3, 4, 5]);
@@ -422,9 +425,9 @@ function asReducible(collection, xform) {
  * the same as the input collection, this function cannot be used to convert a collection into a different type.
  *
  * ```
- * var xform = map(function (x) { return x + 1; });
+ * const xform = map(x => x + 1);
  *
- * var result = sequence([1, 2, 3, 4, 5], xform);
+ * let result = sequence([1, 2, 3, 4, 5], xform);
  * // result = [2, 3, 4, 5, 6]
  *
  * result = sequence('12345', xform);
@@ -474,9 +477,9 @@ function sequence(collection, xform) {
  * being transformed. This can be used to convert one kind of collection into another.
  *
  * ```
- * var xform = map(function (x) { return x + 1; });
+ * const xform = map(x => x + 1);
  *
- * var result = into([], [1, 2, 3, 4, 5], xform);
+ * let result = into([], [1, 2, 3, 4, 5], xform);
  * // result = [2, 3, 4, 5, 6]
  *
  * result = into('', [1, 2, 3, 4, 5], xform);
@@ -522,16 +525,6 @@ function into(target, collection, xform) {
   }
 }
 
-// Composes multiple transformer functions into a single transformer function. Unlike most compose functions, this one
-// works first-to-last: the first function is run first, passing its result to the second function, etc. This is because
-// that's much more natural in working with transformers.
-//
-// This function is designed to work specifically with transformer functions. It depends on those functions taking
-// another transformer function and chaining them together.
-//
-// Note that when using this with transduction functions, the result must be passed to a sequencing function (sequence,
-// into, as-array, etc.). The composed function can only take one parameter, so it can't be used like the shortcut
-// transducer functions.
 /**
  * **Composes two or more transducer functions into a single transducer function.**
  *
@@ -548,12 +541,12 @@ function into(target, collection, xform) {
  * for transducer functions.
  *
  * ```
- * var add1 = function (x) { return x + 1; };
- * var odd = function (x) { return x % 2 !== 0; };
+ * const add1 = x => x + 1;
+ * const odd = x => x % 2 !== 0;
  *
- * var xform = compose(map(add1), filter(odd), take(3));
+ * const xform = compose(map(add1), filter(odd), take(3));
  *
- * var result = sequence([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], xform);
+ * const result = sequence([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], xform);
  * // result = [3, 5, 7];
  * ```
  *
