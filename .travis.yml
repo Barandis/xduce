@@ -6,12 +6,6 @@ notifications:
   email: false
 node_js:
   - '8'
-before_install:
-  - npm install -g npm@5.4.0
-before_script:
-  - npm prune
-script:
-  - npm test
 after_success:
   - npm run semantic-release
   - npm run test:cover:upload
