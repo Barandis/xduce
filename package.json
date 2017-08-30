@@ -1,6 +1,6 @@
 {
   "name": "xduce",
-  "version": "0.8.2",
+  "version": "0.0.0-development",
   "description": "Composable algorithmic transformations library for JavaScript",
   "main": "dist/xduce.js",
   "scripts": {
@@ -20,7 +20,8 @@
     "test:cover": "nyc mocha --recursive",
     "test:check": "nyc --check-coverage --lines 90 --branches 90 --functions 90 --statements 90 mocha --recursive",
     "test:cover:upload": "npm run test:cover -s && cat ./coverage/lcov.info | coveralls",
-    "test:watch": "npm run test -- --watch"
+    "test:watch": "npm run test -- --watch",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
     "transducer",
@@ -63,7 +64,8 @@
     "mocha": "^3.2.0",
     "nyc": "^10.1.2",
     "rimraf": "^2.6.1",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "semantic-release": "^7.0.2"
   },
   "dependencies": {},
   "config": {
