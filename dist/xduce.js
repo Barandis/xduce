@@ -614,7 +614,7 @@ var _require2 = __webpack_require__(20),
     iterator = _require2.iterator;
 
 var _require3 = __webpack_require__(13),
-    isComplete = _require3.isComplete,
+    isCompleted = _require3.isCompleted,
     reduce = _require3.reduce,
     arrayReducer = _require3.arrayReducer,
     objectReducer = _require3.objectReducer,
@@ -699,7 +699,7 @@ function transducingIterator(collection, xform) {
         xf[p.result](this);
         break;
       }
-      reduced = isComplete(xf[p.step](this, step.value));
+      reduced = isCompleted(xf[p.step](this, step.value));
     }
   }), _ref2;
 }
@@ -1584,7 +1584,7 @@ function uncomplete(value) {
  * @param {*} value The value to test for its complete status.
  * @return {boolean} Either `true` if the value is complete, or `false` if it is not.
  */
-function isComplete(value) {
+function isCompleted(value) {
   if (value == null) {
     return false;
   }
@@ -1604,7 +1604,7 @@ function isComplete(value) {
  *     the value is returned.
  */
 function ensureCompleted(value) {
-  return isComplete(value) ? value : complete(value);
+  return isCompleted(value) ? value : complete(value);
 }
 
 /**
@@ -1620,7 +1620,7 @@ function ensureCompleted(value) {
  *     the value is returned.
  */
 function ensureUncompleted(value) {
-  return isComplete(value) ? uncomplete(value) : value;
+  return isCompleted(value) ? uncomplete(value) : value;
 }
 
 /**
@@ -1668,7 +1668,7 @@ function reduce(collection, reducer, init) {
 
   while (!step.done) {
     acc = reducer[p.step](acc, step.value);
-    if (isComplete(acc)) {
+    if (isCompleted(acc)) {
       acc = uncomplete(acc);
       break;
     }
@@ -1689,7 +1689,7 @@ module.exports = {
   toFunction: toFunction,
   complete: complete,
   uncomplete: uncomplete,
-  isComplete: isComplete,
+  isCompleted: isCompleted,
   ensureCompleted: ensureCompleted,
   ensureUncompleted: ensureUncompleted,
   reduce: reduce
@@ -1754,7 +1754,7 @@ var _require4 = __webpack_require__(0),
     isNumber = _require4.isNumber;
 
 var _require5 = __webpack_require__(13),
-    isComplete = _require5.isComplete,
+    isCompleted = _require5.isCompleted,
     complete = _require5.complete,
     reduce = _require5.reduce;
 
@@ -1844,7 +1844,7 @@ function flattenTransducer(xform) {
       return xform[p.init]();
     }), (0, _defineProperty3.default)(_subXform, p.step, function (acc, input) {
       var v = xform[p.step](acc, input);
-      return isComplete(v) ? complete(v) : v;
+      return isCompleted(v) ? complete(v) : v;
     }), (0, _defineProperty3.default)(_subXform, p.result, function (value) {
       return xform[p.result](value);
     }), _subXform);
@@ -1904,7 +1904,7 @@ function repeatTransducer(n, xform) {
     var result = acc;
     for (var i = 0; i < n; ++i) {
       result = xform[p.step](result, input);
-      if (isComplete(result)) {
+      if (isCompleted(result)) {
         break;
       }
     }
@@ -3528,7 +3528,7 @@ var _require = __webpack_require__(0),
 var _require2 = __webpack_require__(13),
     complete = _require2.complete,
     uncomplete = _require2.uncomplete,
-    isComplete = _require2.isComplete,
+    isCompleted = _require2.isCompleted,
     ensureCompleted = _require2.ensureCompleted,
     ensureUncompleted = _require2.ensureUncompleted,
     toReducer = _require2.toReducer,
@@ -3628,10 +3628,10 @@ module.exports = {
     isString: isString,
 
     /**
-     * Helper functions for writing transducers. These are markers for telling the transducer engine that operatio on
-     * a value should be complete, even if there are still input elements left
+     * Helper functions for writing transducers. These are markers for telling the transducer engine that operation on
+     * a value should be complete, even if there are still input elements left.
      *
-     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as complete
+     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as completed
      * when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
      * input collection are processed.
      *
@@ -3640,8 +3640,8 @@ module.exports = {
      * not add any of the elements after a certain number to the output collection. This would be inefficient and would
      * also make it impossible for {@link module:xduce.transducers.take|take} to handle infinite iterators.
      *
-     * Values can be completed multiple times. This nests a complete value inside a complete value, and so on. To
-     * un-complete values like this, {@link module:xduce.util.status.uncomplete|uncomplete} would have to be called
+     * Values can be completed multiple times. This nests a completed value inside a completed value, and so on. To
+     * uncomplete values like this, {@link module:xduce.util.status.uncomplete|uncomplete} would have to be called
      * multiple times. This is used in the library in the `{@link module:xduce.transducers.flatten|flatten}` transducer.
      *
      * @memberof module:xduce.util
@@ -3652,7 +3652,7 @@ module.exports = {
     status: {
       complete: complete,
       uncomplete: uncomplete,
-      isComplete: isComplete,
+      isCompleted: isCompleted,
       ensureCompleted: ensureCompleted,
       ensureUncompleted: ensureUncompleted
     }
