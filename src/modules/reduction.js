@@ -243,19 +243,19 @@ function toFunction(xform, reducer) {
 }
 
 /**
- * **Marks a value as reduced.**
+ * **Marks a value as complete.**
  *
- * This is done by wrapping the value. This means three things: first, a reduced obejct may be marked as reduced again;
- * second, a reduced value isn't usable without being unreduced first; and third any type of value (including
- * `undefined`) may be marked as reduced.
+ * This is done by wrapping the value. This means three things: first, a complete object may be marked as complete
+ * again; second, a complete value isn't usable without being uncompleted first; and third any type of value (including
+ * `undefined`) may be marked as complete.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be reduced.
- * @return {*} A reduced version of the provided value. This reduction is achieved by wrapping the value in a marker
+ * @param {*} value The value to be completed.
+ * @return {*} A completed version of the provided value. This reduction is achieved by wrapping the value in a marker
  *     object.
  */
-function reduced(value) {
+function complete(value) {
   return {
     [p.reduced]: true,
     [p.value]: value
@@ -263,18 +263,18 @@ function reduced(value) {
 }
 
 /**
- * **Removes the reduced status from a reduced value.**
+ * **Removes the complete status from a completed value.**
  *
- * This function is intended to be used when it's certain that a value is already marked as reduced. If it is not,
+ * This function is intended to be used when it's certain that a value is already marked as complete. If it is not,
  * `undefined` will be returned instead of the value.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be unreduced.
- * @return {*} An unreduced version of the provided value. If the value was not reduced in the first place, `undefined`
- *     will be returned instead.
+ * @param {*} value The value to be uncompleted.
+ * @return {*} An uncompleted version of the provided value. If the value was not complete in the first place,
+ *     `undefined` will be returned instead.
  */
-function unreduced(value) {
+function uncomplete(value) {
   if (value == null) {
     return;
   }
@@ -282,14 +282,14 @@ function unreduced(value) {
 }
 
 /**
- * **Determines whether a value is marked as reduced.**
+ * **Determines whether a value is marked as complete.**
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to test for its reduced status.
- * @return {boolean} Eitheehr `true` if the value is reduced, or `false` if it is not.
+ * @param {*} value The value to test for its complete status.
+ * @return {boolean} Either `true` if the value is complete, or `false` if it is not.
  */
-function isReduced(value) {
+function isCompleted(value) {
   if (value == null) {
     return false;
   }
@@ -297,35 +297,35 @@ function isReduced(value) {
 }
 
 /**
- * **Makes sure that a value is marked as reduced; if it is not, it will be marked as reduced.**
+ * **Makes sure that a value is marked as complete; if it is not, it will be marked as complete.**
  *
- * This differs from {@link module:xduce.util.reduced|reduced} in that if the value is already reduced, this function
- * won't reduce it again. Therefore thus function can't be used to make a value reduced multiple times.
+ * This differs from {@link module:xduce.util.status.complete|complete} in that if the value is already complete, this
+ * function won't complete it again. Therefore thus function can't be used to make a value complete multiple times.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be reduced.
- * @return {*} If the value is already reduced, then the value is simply returned. Otherwise, a reduced version of the
- *     value is returned.
+ * @param {*} value The value to be completed.
+ * @return {*} If the value is already complete, then the value is simply returned. Otherwise, a completed version of
+ *     the value is returned.
  */
-function ensureReduced(value) {
-  return isReduced(value) ? value : reduced(value);
+function ensureCompleted(value) {
+  return isCompleted(value) ? value : complete(value);
 }
 
 /**
- * **Removes the reduced status from a value, as long as it actually is reduced.**
+ * **Removes the complete status from a value, as long as it actually is complete.**
  *
- * This does a check to make sure the value passed in actually is reduced. If it isn't, the value itself is returned.
- * It's meant to be used when the reduced status is uncertain.
+ * This does a check to make sure the value passed in actually is complete. If it isn't, the value itself is returned.
+ * It's meant to be used when the completed status is uncertain.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The reduced value to be unreduced.
- * @return {*} If the value is already unreduced, the value is simply returned. Otherwise an unreduced version of the
- *     value is returned.
+ * @param {*} value The complete value to be uncompleted.
+ * @return {*} If the value is already uncompleted, the value is simply returned. Otherwise an uncompleted version of
+ *     the value is returned.
  */
-function ensureUnreduced(value) {
-  return isReduced(value) ? unreduced(value) : value;
+function ensureUncompleted(value) {
+  return isCompleted(value) ? uncomplete(value) : value;
 }
 
 /**
@@ -373,8 +373,8 @@ function reduce(collection, reducer, init) {
 
   while (!step.done) {
     acc = reducer[p.step](acc, step.value);
-    if (isReduced(acc)) {
-      acc = unreduced(acc);
+    if (isCompleted(acc)) {
+      acc = uncomplete(acc);
       break;
     }
     step = iter.next();
@@ -392,10 +392,10 @@ module.exports = {
   objectReducer,
   stringReducer,
   toFunction,
-  reduced,
-  unreduced,
-  isReduced,
-  ensureReduced,
-  ensureUnreduced,
+  complete,
+  uncomplete,
+  isCompleted,
+  ensureCompleted,
+  ensureUncompleted,
   reduce
 };

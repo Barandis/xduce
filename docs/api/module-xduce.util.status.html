@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>status - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-xduce.html">xduce</a><ul class='methods'><li data-type='method'><a href="module-xduce.html#.asArray">asArray</a></li><li data-type='method'><a href="module-xduce.html#.asIterator">asIterator</a></li><li data-type='method'><a href="module-xduce.html#.asObject">asObject</a></li><li data-type='method'><a href="module-xduce.html#.asString">asString</a></li><li data-type='method'><a href="module-xduce.html#.compose">compose</a></li><li data-type='method'><a href="module-xduce.html#.into">into</a></li><li data-type='method'><a href="module-xduce.html#.iterator">iterator</a></li><li data-type='method'><a href="module-xduce.html#.reduce">reduce</a></li><li data-type='method'><a href="module-xduce.html#.sequence">sequence</a></li><li data-type='method'><a href="module-xduce.html#.toFunction">toFunction</a></li><li data-type='method'><a href="module-xduce.html#.toReducer">toReducer</a></li><li data-type='method'><a href="module-xduce.html#.transduce">transduce</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="module-xduce.transducers.html">transducers</a><ul class='methods'><li data-type='method'><a href="module-xduce.transducers.html#.chunk">chunk</a></li><li data-type='method'><a href="module-xduce.transducers.html#.chunkBy">chunkBy</a></li><li data-type='method'><a href="module-xduce.transducers.html#.compact">compact</a></li><li data-type='method'><a href="module-xduce.transducers.html#.distinct">distinct</a></li><li data-type='method'><a href="module-xduce.transducers.html#.distinctBy">distinctBy</a></li><li data-type='method'><a href="module-xduce.transducers.html#.distinctWith">distinctWith</a></li><li data-type='method'><a href="module-xduce.transducers.html#.drop">drop</a></li><li data-type='method'><a href="module-xduce.transducers.html#.dropWhile">dropWhile</a></li><li data-type='method'><a href="module-xduce.transducers.html#.filter">filter</a></li><li data-type='method'><a href="module-xduce.transducers.html#.flatMap">flatMap</a></li><li data-type='method'><a href="module-xduce.transducers.html#.flatten">flatten</a></li><li data-type='method'><a href="module-xduce.transducers.html#.identity">identity</a></li><li data-type='method'><a href="module-xduce.transducers.html#.map">map</a></li><li data-type='method'><a href="module-xduce.transducers.html#.reject">reject</a></li><li data-type='method'><a href="module-xduce.transducers.html#.repeat">repeat</a></li><li data-type='method'><a href="module-xduce.transducers.html#.take">take</a></li><li data-type='method'><a href="module-xduce.transducers.html#.takeNth">takeNth</a></li><li data-type='method'><a href="module-xduce.transducers.html#.takeWhile">takeWhile</a></li><li data-type='method'><a href="module-xduce.transducers.html#.unique">unique</a></li><li data-type='method'><a href="module-xduce.transducers.html#.uniqueBy">uniqueBy</a></li><li data-type='method'><a href="module-xduce.transducers.html#.uniqueWith">uniqueWith</a></li></ul></li><li><a href="module-xduce.util.html">util</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.html#.complement">complement</a></li><li data-type='method'><a href="module-xduce.util.html#.isArray">isArray</a></li><li data-type='method'><a href="module-xduce.util.html#.isFunction">isFunction</a></li><li data-type='method'><a href="module-xduce.util.html#.isNumber">isNumber</a></li><li data-type='method'><a href="module-xduce.util.html#.isObject">isObject</a></li><li data-type='method'><a href="module-xduce.util.html#.isString">isString</a></li><li data-type='method'><a href="module-xduce.util.html#.range">range</a></li></ul></li><li><a href="module-xduce.util.bmp.html">bmp</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.bmp.html#.charAt">charAt</a></li><li data-type='method'><a href="module-xduce.util.bmp.html#.length">length</a></li></ul></li><li><a href="module-xduce.util.status.html">status</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.status.html#.complete">complete</a></li><li data-type='method'><a href="module-xduce.util.status.html#.ensureCompleted">ensureCompleted</a></li><li data-type='method'><a href="module-xduce.util.status.html#.ensureUncompleted">ensureUncompleted</a></li><li data-type='method'><a href="module-xduce.util.status.html#.isCompleted">isCompleted</a></li><li data-type='method'><a href="module-xduce.util.status.html#.uncomplete">uncomplete</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">status</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-xduce.html">xduce</a><a href="module-xduce.util.html">.util</a>.</span>
+        
+        status
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">api.js</a>, <a href="api.js.html#line504">line 504</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+        
+            <div class="description"><p>Helper functions for writing transducers. These are markers for telling the transducer engine that operation on
+a value should be complete, even if there are still input elements left.</p>
+<p>For example, the <a href="module-xduce.transducers.html#.take">take</a> transducer marks its output collection as completed
+when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
+input collection are processed.</p>
+<p>Without being able to be marked as completed, the only other option for the
+<a href="module-xduce.transducers.html#.take">take</a> transducer would be to process the collection to its end and simply
+not add any of the elements after a certain number to the output collection. This would be inefficient and would
+also make it impossible for <a href="module-xduce.transducers.html#.take">take</a> to handle infinite iterators.</p>
+<p>Values can be completed multiple times. This nests a completed value inside a completed value, and so on. To
+uncomplete values like this, <a href="module-xduce.util.status.html#.uncomplete">uncomplete</a> would have to be called
+multiple times. This is used in the library in the <code><a href="module-xduce.transducers.html#.flatten">flatten</a></code> transducer.</p></div>
+        
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".complete"><span class="type-signature">(static) </span>complete<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line258">line 258</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Marks a value as complete.</strong></p>
+<p>This is done by wrapping the value. This means three things: first, a complete object may be marked as complete
+again; second, a complete value isn't usable without being uncompleted first; and third any type of value (including
+<code>undefined</code>) may be marked as complete.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to be completed.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A completed version of the provided value. This reduction is achieved by wrapping the value in a marker
+    object.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".ensureCompleted"><span class="type-signature">(static) </span>ensureCompleted<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line311">line 311</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Makes sure that a value is marked as complete; if it is not, it will be marked as complete.</strong></p>
+<p>This differs from <a href="module-xduce.util.status.html#.complete">complete</a> in that if the value is already complete, this
+function won't complete it again. Therefore thus function can't be used to make a value complete multiple times.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to be completed.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If the value is already complete, then the value is simply returned. Otherwise, a completed version of
+    the value is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".ensureUncompleted"><span class="type-signature">(static) </span>ensureUncompleted<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line327">line 327</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Removes the complete status from a value, as long as it actually is complete.</strong></p>
+<p>This does a check to make sure the value passed in actually is complete. If it isn't, the value itself is returned.
+It's meant to be used when the completed status is uncertain.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The complete value to be uncompleted.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If the value is already uncompleted, the value is simply returned. Otherwise an uncompleted version of
+    the value is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".isCompleted"><span class="type-signature">(static) </span>isCompleted<span class="signature">(value)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line292">line 292</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Determines whether a value is marked as complete.</strong></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to test for its complete status.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Either <code>true</code> if the value is complete, or <code>false</code> if it is not.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".uncomplete"><span class="type-signature">(static) </span>uncomplete<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line277">line 277</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Removes the complete status from a completed value.</strong></p>
+<p>This function is intended to be used when it's certain that a value is already marked as complete. If it is not,
+<code>undefined</code> will be returned instead of the value.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to be uncompleted.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>An uncompleted version of the provided value. If the value was not complete in the first place,
+    <code>undefined</code> will be returned instead.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

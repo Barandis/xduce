@@ -26,7 +26,7 @@
 
 const { protocols, isImplemented } = require('./protocol');
 const { isKvFormObject, iterator } = require('./iteration');
-const { isReduced, reduce, arrayReducer, objectReducer, stringReducer } = require('./reduction');
+const { isCompleted, reduce, arrayReducer, objectReducer, stringReducer } = require('./reduction');
 const { isArray, isObject, isString } = require('./util');
 const p = protocols;
 
@@ -107,8 +107,8 @@ function transducingIterator(collection, xform) {
     // items array); otherwise the while loop continues to the next element of the input collection. This ensures that
     // there's something for the `next` function to return each time it's called.
     //
-    // If the collection has completed or if the step function returns a reduced object (which take will do after its
-    // limit of elements has been reached, for instance), the iteration is completed by calling the result function.
+    // If the collection has finished or if the step function returns a completed object (which take will do after its
+    // limit of elements has been reached, for instance), the iteration is finished by calling the result function.
     step() {
       const count = this.items.length;
       while (this.items.length === count) {
@@ -117,7 +117,7 @@ function transducingIterator(collection, xform) {
           xf[p.result](this);
           break;
         }
-        reduced = isReduced(xf[p.step](this, step.value));
+        reduced = isCompleted(xf[p.step](this, step.value));
       }
     }
   };

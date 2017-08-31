@@ -129,9 +129,9 @@ describe('xduce.util object', () => {
     expect(isObject(util.bmp)).to.be.true;
   });
 
-  it('contains reduction', () => {
-    expect(util).to.have.property('reduction');
-    expect(isObject(util.reduction)).to.be.true;
+  it('contains status', () => {
+    expect(util).to.have.property('status');
+    expect(isObject(util.status)).to.be.true;
   });
 });
 
@@ -149,32 +149,32 @@ describe('xduce.util.bmp object', () => {
   });
 });
 
-describe('xduce.util.reduction object', () => {
-  const reduction = xduce.util.reduction;
+describe('xduce.util.status object', () => {
+  const status = xduce.util.status;
 
-  it('contains isReduced', () => {
-    expect(reduction).to.have.property('isReduced');
-    expect(isFunction(reduction.isReduced)).to.be.true;
+  it('contains isCompleted', () => {
+    expect(status).to.have.property('isCompleted');
+    expect(isFunction(status.isCompleted)).to.be.true;
   });
 
-  it('contains reduced', () => {
-    expect(reduction).to.have.property('reduced');
-    expect(isFunction(reduction.reduced)).to.be.true;
+  it('contains complete', () => {
+    expect(status).to.have.property('complete');
+    expect(isFunction(status.complete)).to.be.true;
   });
 
-  it('contains unreduced', () => {
-    expect(reduction).to.have.property('unreduced');
-    expect(isFunction(reduction.unreduced)).to.be.true;
+  it('contains uncomplete', () => {
+    expect(status).to.have.property('uncomplete');
+    expect(isFunction(status.uncomplete)).to.be.true;
   });
 
-  it('contains ensureReduced', () => {
-    expect(reduction).to.have.property('ensureReduced');
-    expect(isFunction(reduction.ensureReduced)).to.be.true;
+  it('contains ensureCompleted', () => {
+    expect(status).to.have.property('ensureCompleted');
+    expect(isFunction(status.ensureCompleted)).to.be.true;
   });
 
-  it('contains ensureUnreduced', () => {
-    expect(reduction).to.have.property('ensureUnreduced');
-    expect(isFunction(reduction.ensureUnreduced)).to.be.true;
+  it('contains ensureUncompleted', () => {
+    expect(status).to.have.property('ensureUncompleted');
+    expect(isFunction(status.ensureUncompleted)).to.be.true;
   });
 });
 

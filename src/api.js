@@ -428,11 +428,20 @@ const {
   isObject,
   isString
 } = require('./modules/util');
-const { reduced, unreduced, isReduced, ensureReduced, ensureUnreduced } = require('./modules/reduction');
+
+const {
+  complete,
+  uncomplete,
+  isCompleted,
+  ensureCompleted,
+  ensureUncompleted,
+  toReducer,
+  toFunction,
+  reduce
+} = require('./modules/reduction');
 
 const { protocols } = require('./modules/protocol');
 const { iterator } = require('./modules/iteration');
-const { toReducer, toFunction, reduce } = require('./modules/reduction');
 const {
   transduce,
   into,
@@ -493,12 +502,10 @@ module.exports = {
     isString,
 
     /**
-     * Helper functions for writing transducers. These do not relate to the actual *operation* of reducing, but instead
-     * to the marking and unmarking of a value as being reduced. If a value is marked as reduced, that is a signal to
-     * the transduction engine that it should be finished now and return the value, even if there are still elements in
-     * the input collection that have not been processed.
+     * Helper functions for writing transducers. These are markers for telling the transducer engine that operation on
+     * a value should be complete, even if there are still input elements left.
      *
-     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as reduced
+     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as completed
      * when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
      * input collection are processed.
      *
@@ -507,20 +514,21 @@ module.exports = {
      * not add any of the elements after a certain number to the output collection. This would be inefficient and would
      * also make it impossible for {@link module:xduce.transducers.take|take} to handle infinite iterators.
      *
-     * Values can be reduced multiple times. This nests a reduced value inside a reduced value, and so on. To unreduce
-     * values like this, {@link module:xduce.util.reduction.unreduced|unreduced} would have to be called multiple times.
+     * Values can be completed multiple times. This nests a completed value inside a completed value, and so on. To
+     * uncomplete values like this, {@link module:xduce.util.status.uncomplete|uncomplete} would have to be called
+     * multiple times. This is used in the library in the `{@link module:xduce.transducers.flatten|flatten}` transducer.
      *
      * @memberof module:xduce.util
      * @static
-     * @namespace reduction
+     * @namespace status
      * @type {object}
      */
-    reduction: {
-      reduced,
-      unreduced,
-      isReduced,
-      ensureReduced,
-      ensureUnreduced
+    status: {
+      complete,
+      uncomplete,
+      isCompleted,
+      ensureCompleted,
+      ensureUncompleted
     }
   },
   protocols,
