@@ -138,7 +138,11 @@ describe('Iterator', () => {
     });
 
     it('can produce kv-form objects with a different sort function', () => {
-      expect(toArray(iterator(obj, reverseSort, true))).to.deep.equal([{ k: 'c', v: 1 }, { k: 'b', v: 3 }, { k: 'a', v: 2 }]);
+      expect(toArray(iterator(obj, reverseSort, true))).to.deep.equal([
+        { k: 'c', v: 1 },
+        { k: 'b', v: 3 },
+        { k: 'a', v: 2 }
+      ]);
     });
   });
 

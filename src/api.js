@@ -515,7 +515,7 @@ module.exports = {
       isReduced,
       ensureReduced,
       ensureUnreduced
-    },
+    }
   },
   protocols,
   iterator,
