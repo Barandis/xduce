@@ -1,0 +1,4971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>transducers - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-xduce.html">xduce</a><ul class='methods'><li data-type='method'><a href="module-xduce.html#.asArray">asArray</a></li><li data-type='method'><a href="module-xduce.html#.asIterator">asIterator</a></li><li data-type='method'><a href="module-xduce.html#.asObject">asObject</a></li><li data-type='method'><a href="module-xduce.html#.asString">asString</a></li><li data-type='method'><a href="module-xduce.html#.compose">compose</a></li><li data-type='method'><a href="module-xduce.html#.into">into</a></li><li data-type='method'><a href="module-xduce.html#.iterator">iterator</a></li><li data-type='method'><a href="module-xduce.html#.reduce">reduce</a></li><li data-type='method'><a href="module-xduce.html#.sequence">sequence</a></li><li data-type='method'><a href="module-xduce.html#.toFunction">toFunction</a></li><li data-type='method'><a href="module-xduce.html#.toReducer">toReducer</a></li><li data-type='method'><a href="module-xduce.html#.transduce">transduce</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="module-xduce.transducers.html">transducers</a><ul class='methods'><li data-type='method'><a href="module-xduce.transducers.html#.chunk">chunk</a></li><li data-type='method'><a href="module-xduce.transducers.html#.chunkBy">chunkBy</a></li><li data-type='method'><a href="module-xduce.transducers.html#.compact">compact</a></li><li data-type='method'><a href="module-xduce.transducers.html#.distinct">distinct</a></li><li data-type='method'><a href="module-xduce.transducers.html#.distinctBy">distinctBy</a></li><li data-type='method'><a href="module-xduce.transducers.html#.distinctWith">distinctWith</a></li><li data-type='method'><a href="module-xduce.transducers.html#.drop">drop</a></li><li data-type='method'><a href="module-xduce.transducers.html#.dropWhile">dropWhile</a></li><li data-type='method'><a href="module-xduce.transducers.html#.filter">filter</a></li><li data-type='method'><a href="module-xduce.transducers.html#.flatMap">flatMap</a></li><li data-type='method'><a href="module-xduce.transducers.html#.flatten">flatten</a></li><li data-type='method'><a href="module-xduce.transducers.html#.identity">identity</a></li><li data-type='method'><a href="module-xduce.transducers.html#.map">map</a></li><li data-type='method'><a href="module-xduce.transducers.html#.reject">reject</a></li><li data-type='method'><a href="module-xduce.transducers.html#.repeat">repeat</a></li><li data-type='method'><a href="module-xduce.transducers.html#.take">take</a></li><li data-type='method'><a href="module-xduce.transducers.html#.takeNth">takeNth</a></li><li data-type='method'><a href="module-xduce.transducers.html#.takeWhile">takeWhile</a></li><li data-type='method'><a href="module-xduce.transducers.html#.uniq">uniq</a></li><li data-type='method'><a href="module-xduce.transducers.html#.uniqBy">uniqBy</a></li><li data-type='method'><a href="module-xduce.transducers.html#.uniqWith">uniqWith</a></li></ul></li><li><a href="module-xduce.util.html">util</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.html#.complement">complement</a></li><li data-type='method'><a href="module-xduce.util.html#.isArray">isArray</a></li><li data-type='method'><a href="module-xduce.util.html#.isFunction">isFunction</a></li><li data-type='method'><a href="module-xduce.util.html#.isNumber">isNumber</a></li><li data-type='method'><a href="module-xduce.util.html#.isObject">isObject</a></li><li data-type='method'><a href="module-xduce.util.html#.isString">isString</a></li><li data-type='method'><a href="module-xduce.util.html#.range">range</a></li></ul></li><li><a href="module-xduce.util.bmp.html">bmp</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.bmp.html#.charAt">charAt</a></li><li data-type='method'><a href="module-xduce.util.bmp.html#.length">length</a></li></ul></li><li><a href="module-xduce.util.reduction.html">reduction</a><ul class='methods'><li data-type='method'><a href="module-xduce.util.reduction.html#.ensureReduced">ensureReduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.ensureUnreduced">ensureUnreduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.isReduced">isReduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.reduced">reduced</a></li><li data-type='method'><a href="module-xduce.util.reduction.html#.unreduced">unreduced</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">transducers</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-xduce.html">xduce</a>.</span>
+        
+        transducers
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="api.js.html">api.js</a>, <a href="api.js.html#line534">line 534</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+        
+            <div class="description"><p>Functions which actually perform transformations on the elements of input collections.</p>
+<p>Each of these is a function of type <a href="module-xduce.html#~transducer">module:xduce~transducer</a>. They can operate either by transforming a
+collection themselves or, if no collection is supplied, by creating a
+<a href="module-xduce.html#~transducerFunction">transducer function</a> that can be passed to any of the functions that
+require one (<code><a href="module-xduce.html#.sequence">sequence</a></code>, <code><a href="module-xduce.html#.into">into</a></code>,
+<code><a href="module-xduce.html#.transduce">transduce</a></code>, <code><a href="module-xduce.html#.asArray">asArray</a></code>, etc.).</p>
+<p>For example, here are transducers operating directly on collections.</p>
+<pre class="prettyprint source"><code>const collection = [1, 2, 3, 4, 5];
+
+let result = map(collection, x => x + 1);
+// result = [2, 3, 4, 5, 6]
+
+result = filter(collection, x => x &lt; 3);
+// result = [1, 2]</code></pre><p>Here are transducers producing transducer functions, which are then used by
+<code><a href="module-xduce.html#.sequence">sequence</a></code> to perform the same transformations.</p>
+<pre class="prettyprint source"><code>const collection = [1, 2, 3, 4, 5];
+
+let result = sequence(collection, map(x => x + 1));
+// result = [2, 3, 4, 5, 6]
+
+result = sequence(collection, filter(x => x &lt; 3));</code></pre><p>The shortcut form, the one that takes a collection, is extremely convenient but limited. It cannot, for example,
+transform one type of collection into another type (turning an array of numbers into a string of numbers, for
+instance). Shortcuts also cannot be composed. Here are examples of both of these, showing how they're done by
+using transducers to create transducer functions (which are then passed to <code><a href="module-xduce.html#.asArray">asArray</a></code>
+and <code><a href="module-xduce.html#.compose">compose</a></code> in these cases).</p>
+<pre class="prettyprint source"><code>const collection = [1, 2, 3, 4, 5];
+
+let result = asString(collection, map(x => x + 1));
+// result = '23456'
+
+result = sequence(collection, compose(filter(x => x &lt; 3), map(x => x + 1)));
+// result = [2, 3]</code></pre></div>
+        
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".chunk"><span class="type-signature">(static) </span>chunk<span class="signature">(collection<span class="signature-attributes">opt</span>, n)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_chunk.js.html">xform/chunk.js</a>, <a href="xform_chunk.js.html#line125">line 125</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Groups the elements of the input collection into arrays of length <code>n</code> in the output collection.</strong></p>
+<p>Whatever the type of input collection, the groups inside the output collection will always be arrays (the output
+collection itself will still be definable as normal). Because of this, <code>chunk</code> doesn't do anything meaningful to
+collection types that cannot contain arrays (strings and objects, for instance).</p>
+<p>If there are not enough remaining elements in the input collection to create a chunk of the proper size in the output
+collection, the last chunk in the output will only be large enough to contain those remaining elements.</p>
+<p><code>chunk</code> works on iterators (it returns a new iterator whose values are arrays), but because of technical reasons,
+the function has no way of knowing when the end of an iterator comes unless it happens to be at the same place as the
+last element of a chunk. For example, if an iterator has six values and it gets <code>chunk</code>ed into groups of three, the
+function will terminate correctly (because the last value of the iterator coincides with the last element of one of
+the chunks). However, if the same iterator had only five values, <code>chunk</code> would not terminate properly. It would
+return <code>[1, 2, 3]</code> for the first chunk, <code>[4, 5]</code> for the second chunk, and then <code>[4, 5]</code> over and over ad infinitum.</p>
+<p>A workaround is to compose <code>chunk</code> with a previous <code><a href="module-xduce.transducers.html#.take">take</a></code> with the same <code>n</code> as
+the length of the iterator. Since <code><a href="module-xduce.transducers.html#.take">take</a></code> knows when it's reached the right
+number of elements, it can communicate that to <code>chunk</code>.</p>
+<p>Another is to check the length of the chunk after each call to <code>next</code> on the iterator. If it's less than the size of
+the chunk, then it must be the last one.</p>
+<p><code>chunk</code> works as expected on infinite iterators.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = chunk([1, 2, 3, 4, 5], 3);
+// result = [[1, 2, 3], [4, 5]]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The number of elements that should be in each array in the output collection.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection chunked. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".chunkBy"><span class="type-signature">(static) </span>chunkBy<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_chunk.js.html">xform/chunk.js</a>, <a href="xform_chunk.js.html#line202">line 202</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Breaks the elements of an input collection into arrays of consecutive elements that return the same value from a
+predicate function.</strong></p>
+<p>Whatever the type of input collection, the groups inside the output collection will always be arrays (the output
+collection itself will still be of the same type as the input collection). Because of this, <code>chunkBy</code> doesn't do
+anything meaningful to collection types that cannot contain arrays (strings and objects, for instance).</p>
+<p>Unlike <code><a href="module-xduce.transducers.html#.chunk">chunk</a></code>, this function does not know how many elements will be in each
+array until the first one that turns out to be part of the next array. Therefore, for the same reasons as in
+<code><a href="module-xduce.transducers.html#.chunk">chunk</a></code> above, an iterator result is never terminated. This works fine for
+infinite iterators, but finite iterators should be treated with care. The same
+<code><a href="module-xduce.transducers.html#.chunk">chunk</a></code> workaround with <code><a href="module-xduce.transducers.html#.take">take</a></code> works
+with <code>chunkBy</code> as well.</p>
+<pre class="prettyprint source"><code>const result = chunkBy([0, 1, 1, 2, 3, 5, 8, 13, 21, 34], x => x % 2 === 0);
+// result = [[0], [1, 1], [2], [3, 5], [8], [13, 21], [34]]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The function that defines when a chunk ends and the next chunk begins.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection chunked. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".compact"><span class="type-signature">(static) </span>compact<span class="signature">(collection<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_filter.js.html">xform/filter.js</a>, <a href="xform_filter.js.html#line154">line 154</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Removes any 'falsey' elements from the collection.</strong></p>
+<p>'Falsey' means any value in JavaScript that is considered to be false. These values are <code>false</code>, <code>null</code>, <code>undefined</code>,
+the empty string, and <code>0</code>. This function is good for removing empy elements from a collection.</p>
+<p>If the semantics don't suit - for example, if you want to remove empty elements but retain <code>0</code>s - then use an
+appropriate function with either <code><a href="module-xduce.transducers.html#.filter">filter</a></code> or
+<code><a href="module-xduce.transducers.html#.reject">reject</a></code>.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = compact([1, 0, 2, null, 3, undefined, 4, '', 5]);
+// result = [1, 2, 3, 4, 5]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the falsey elements of that collection removed. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".distinct"><span class="type-signature">(static) </span>distinct<span class="signature">(collection<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_distinct.js.html">xform/distinct.js</a>, <a href="xform_distinct.js.html#line198">line 198</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Removes consecutive duplicate elements from a collection.</strong></p>
+<p>This differs from <code><a href="module-xduce.transducers.html#.uniq">uniq</a></code> in that an element is removed only if it equals the
+element <em>immediately preceeding</em> it. Comparisons between elements are done with
+<a href="http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero">SameValueZero</a>.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>let result = distinct([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+// result = [1, 2, 3, 4, 5, 3, 1, 5];
+
+// Compare to uniq with the same input
+result = uniq([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+// result = [1, 2, 3, 4, 5];</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection transformed. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".distinctBy"><span class="type-signature">(static) </span>distinctBy<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_distinct.js.html">xform/distinct.js</a>, <a href="xform_distinct.js.html#line166">line 166</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Applies a function each element of a collection and removes consecutive elements that create duplicate return
+values.</strong></p>
+<p>Once the function is applied to the collection elements, a comparison is made using
+<a href="http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero">SameValueZero</a>. If a comparison indicates that
+the return value from the function for one element is the same as the return value for the element that comes right
+before it, only the first element is retained in the output collection.</p>
+<p>Also note that even though the function can cause a completely different value to be compared, the <em>element</em> (not the
+return value of the function) is what is added to the output collection.</p>
+<p>A very common use for <code>distinctBy</code> is to refer to a particular property in an array of objects. Another is to do a
+case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
+can be used in any number of different ways, depending on the function used.</p>
+<p>This is different from <code><a href="module-xduce.transducers.html#.uniqBy">uniqBy</a></code> in that this transform only eliminates
+consecutive duplicate elements, not all duplicate elements.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const array = [{x: 1}, {x: 1}, {x: 2}, {x: 3}, {x: 3}, {x: 3},
+               {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}];
+
+let result = distinctBy(array, obj => obj.x);
+// result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}]
+
+// Compare to uniqBy for the same parameters
+result = uniqBy(array, obj => obj.x);
+// result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A function of one parameter applied to each element in the input collection before testing the
+    results for uniqueness.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection transformed. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".distinctWith"><span class="type-signature">(static) </span>distinctWith<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_distinct.js.html">xform/distinct.js</a>, <a href="xform_distinct.js.html#line115">line 115</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Applies a comparator function to consecutive elements of a collection and removes the second if the comparator
+indicates they're equal.</strong></p>
+<p>Comparisons are made by passing each pair of elements to the function, which must take two parameters and return a
+boolean indicating whether or not the values are equal. As an example, the
+<code><a href="module-xduce.transducers.html#.distinct">distinct</a></code> transducer could be regarded as the same as this transformer,
+with a <a href="http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero">SameValueZero</a> function serving as the
+comparator.</p>
+<p>This is different from <code><a href="module-xduce.transducers.html#.uniqWith">uniqWith</a></code> in that this transform only eliminates
+consecutive duplicate elements, not all duplicate elements.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>// magnitude returns the number of digits in a number
+function magnitude(x) {
+  return Math.floor(Math.log(x) / Math.LN10 + 0.000000001);
+}
+function comparator(a, b) {
+  return magnitude(a) === magnitude(b);
+}
+
+let result = distinctWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+// result = [1, 10, 100, 42, 893, 1111]
+
+// Compare to uniqWith with the same parameters
+result = uniqWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+// result = [1, 10, 100, 1111]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A comparator function. This takes two arguments and returns <code>true</code> if they're to be regarded as
+    equal.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection transformed. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".drop"><span class="type-signature">(static) </span>drop<span class="signature">(collection<span class="signature-attributes">opt</span>, n)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_drop.js.html">xform/drop.js</a>, <a href="xform_drop.js.html#line86">line 86</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a new collection consisting of all of the elements of the input collection <em>except</em> for the first <code>n</code>
+elements.</strong></p>
+<p>While this could be considered an opposite of <code><a href="module-xduce.transducers.html#.take">take</a></code>, there is one difference:
+<code>drop</code> cannot return a finite collection when provided an infinite one.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = drop([1, 2, 3, 4, 5], 3);
+// result = [4, 5]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The number of elements at the beginning of the input collection that should be discarded in the
+    output collection.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type without its first <code>n</code> elements. If no collection is supplied, a transducer function,
+    suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>, <code><a href="module-xduce.html#.into">into</a></code>, etc. is
+    returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".dropWhile"><span class="type-signature">(static) </span>dropWhile<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_drop.js.html">xform/drop.js</a>, <a href="xform_drop.js.html#line162">line 162</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a new collection containing the elements of the input collection including the first one that causes a
+predicate function to return <code>false</code> and all elements thereafter.</strong></p>
+<p>This is rather the opposite of <code><a href="module-xduce.transducers.html#.takeWhile">takeWhile</a></code>, though unlike that function,
+this one cannot return a finite collection when given an infinite one. It's also related to
+<code><a href="module-xduce.transducers.html#.reject">reject</a></code>, except that once the first element is not rejected, every element
+after that is also not rejected (even if they would make the predicate return <code>true</code>).</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const array = [2, 4, 6, 8, 1, 3, 5, 7, 9, 10];
+const even = x => x % 2 === 0;
+
+let result = dropWhile(array, even);
+// result = [1, 3, 5, 7, 9, 10];
+
+// This shows the difference between `dropWhile` and `reject` with the same parameters
+result = reject(array, even);
+// result = [1, 3, 5, 7, 9];</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A predicate function. This takes each element of the input collection and returns <code>true</code> or
+    <code>false</code> based on that element. The first one to return <code>false</code> is the first element of the output collection.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with some of the elements of the input collection dropped. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".filter"><span class="type-signature">(static) </span>filter<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_filter.js.html">xform/filter.js</a>, <a href="xform_filter.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a collection containing only the elements from the input collection that pass a predicate function.</strong></p>
+<p>The elements are not in any way modified. Quite simply, if the predicate returns <code>true</code> for an element, it's included
+in the output collection, and if it returns <code>false</code>, that element is not included.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const even = x => x % 2 === 0; *
+const result = filter([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], even);
+// result = [2, 4, 6, 8, 10]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A predicate function. This takes each element of the input collection and returns <code>true</code> or
+    <code>false</code> based on that element. Each that returns <code>true</code> will be included in the output collection.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type containing only the elements that pass the predicate function. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".flatMap"><span class="type-signature">(static) </span>flatMap<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_map.js.html">xform/map.js</a>, <a href="xform_map.js.html#line134">line 134</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>A map function that flattens any collections among the return values.</strong></p>
+<p>This is a composition of <code><a href="module-xduce.transducers.html#.map">map</a></code> and
+<code><a href="module-xduce.transducers.html#.flatten">flatten</a></code>. In fact it could be defined by the user by using those two
+functions with <code><a href="module-xduce.html#.compose">compose</a></code>, but the concept of a flatmap is so fundamental that it's
+included separately.</p>
+<p>Because the map is followed by flattening, there are the same notes as with
+<code><a href="module-xduce.transducers.html#.flatten">flatten</a></code>; this function doesn't make a lot of sense with functions that
+return objects, strings, or iterators.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const duplicate = x => [x, x];
+
+let result = flatMap([1, 2, 3, 4, 5], duplicate);
+// result = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+
+// The following is equivalent
+const fn = compose(map(duplicate), flatten());
+result = sequence([1, 2, 3, 4, 5], fn);
+// result = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+
+// To illustrate the difference from `map`, here's what `map` would do with
+// the same parameters
+result = map([1, 2, 3, 4, 5], duplicate);
+// result = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A function that is supplied each input collection element in turn. The return values of this
+    function are flattened to become the elements of the output collection.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type containing those elements, mapped and flattened. If no collection is supplied, a
+    transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".flatten"><span class="type-signature">(static) </span>flatten<span class="signature">(collection<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_core.js.html">xform/core.js</a>, <a href="xform_core.js.html#line167">line 167</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Flattens a collection by merging elements in any sub-collection into the main collection.</strong></p>
+<p>Elements of the main collection that are not collections themselves are not changed. It's fine to have a combination
+of the two, some elements that are collections and some that are not.</p>
+<p>Since there aren't sub-collections in objects, strings, or iterators, <code>flatten</code> doesn't make sense with those types
+of collections.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = flatten([[1, 2], [3, 4, 5], 6, [7]]);
+// result = [1, 2, 3, 4, 5, 6, 7]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection flattened. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".identity"><span class="type-signature">(static) </span>identity<span class="signature">(collection<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_core.js.html">xform/core.js</a>, <a href="xform_core.js.html#line99">line 99</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Returns exactly the same collection sent to it.</strong></p>
+<p>This is generally a function used when a transducer function is required but there is no desire to do an actual
+transformation. The &quot;transformation&quot; implemented here is to pass each element through exactly as it is.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = identity([1, 2, 3, 4, 5]);
+// result = [1, 2, 3, 4, 5]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection untouched. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".map"><span class="type-signature">(static) </span>map<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_map.js.html">xform/map.js</a>, <a href="xform_map.js.html#line85">line 85</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a new collection whose values are the results of mapping input collection elements over a function.</strong></p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = map([1, 2, 3, 4, 5], x => x * x);
+// result = [1, 4, 9, 16, 25]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A function that is supplied each input collection element in turn. The return values of this
+    function become the elements of the output collection.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type containing the return values of <code>fn</code> when passed those elements. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".reject"><span class="type-signature">(static) </span>reject<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_filter.js.html">xform/filter.js</a>, <a href="xform_filter.js.html#line123">line 123</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a collection containing only the elements from the input collection that do not pass a predicate
+function.</strong></p>
+<p>This is the opposite of <code><a href="module-xduce.transducers.html#.filter">filter</a></code>. None of the elements of the input
+collection are modified, and only those for which the predicate returns <code>false</code> are included in the output
+collection.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const even = x => x % 2 === 0;
+const result = reject([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], even);
+// result = [1, 3, 5, 7, 9]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A predicate function. This takes each element of the input collection and returns <code>true</code> or
+    <code>false</code> based on that element. Each that returns <code>false</code> will be included in the output collection.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type containing only the elements that fail the predicate function. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".repeat"><span class="type-signature">(static) </span>repeat<span class="signature">(collection<span class="signature-attributes">opt</span>, n)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_core.js.html">xform/core.js</a>, <a href="xform_core.js.html#line227">line 227</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Repeats each element from the input collection <code>n</code> times in the output collection.</strong></p>
+<p>These elements are put into the main output collection, not into subcollections. In other words, each input element
+creates <code>n</code> output elements.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = repeat([1, 2, 3, 4, 5], 3);
+// result = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The number of times that each element from the input collection should be repeated in the output
+    collection.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection repeated. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".take"><span class="type-signature">(static) </span>take<span class="signature">(collection<span class="signature-attributes">opt</span>, n)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_take.js.html">xform/take.js</a>, <a href="xform_take.js.html#line107">line 107</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a new collection containing only the first <code>n</code> elements of the input collection.</strong></p>
+<p>Note that this is an excellent way to turn an 'infinite' collection - one that doesn't have a well-defined end, like
+a stream, channel, or infinite generator - into a finite collection.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>// An iterator that will return every positive integer, one at a time per next() call
+function* naturals() {
+  let x = 1;
+  while (true) {
+    yield x++;
+  }
+}
+
+const result = take(naturals(), 3);
+// result is now an iterator that has only three values in it
+result.next().value === 1;  // true
+result.next().value === 2;  // true
+result.next().value === 3;  // true
+result.next().done;         // true</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The number of elements at the beginning of the input collection that should be kept in the
+    output collection.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type containing only the first <code>n</code> elements. If no collection is supplied, a transducer
+    function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>, <code><a href="module-xduce.html#.into">into</a></code>,
+    etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".takeNth"><span class="type-signature">(static) </span>takeNth<span class="signature">(collection<span class="signature-attributes">opt</span>, n)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_take.js.html">xform/take.js</a>, <a href="xform_take.js.html#line236">line 236</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a new collection consisting of the first element of the input collection, and then every <code>n</code>th element
+after that.</strong></p>
+<p>Note that unlike <code><a href="module-xduce.transducers.html#.take">take</a></code> and
+<code><a href="module-xduce.transducers.html#.takeWhile">takeWhile</a></code>, this function is not capable of returning a finite collection
+when given an infinite collection.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const result = takeNth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3);
+// result = [1, 4, 7, 10]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The skip value. Every <code>n</code>th element of the input collection, after the first, will be a part of
+    the output collection.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type containing only every <code>n</code> elements. If no collection is supplied, a transducer
+    function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>, <code><a href="module-xduce.html#.into">into</a></code>,
+    etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".takeWhile"><span class="type-signature">(static) </span>takeWhile<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_take.js.html">xform/take.js</a>, <a href="xform_take.js.html#line177">line 177</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Creates a new collection containing the elements of the input collection up until the first one that causes a
+predicate function to return <code>false</code>.</strong></p>
+<p>While this is similar to <code><a href="module-xduce.transducers.html#.filter">filter</a></code>, there is one key difference. <code>takeWhile</code>
+will not add any further elements to a collection once the first fails the predicate, including later elements that
+might pass the predicate. <code><a href="module-xduce.transducers.html#.filter">filter</a></code>, on the other hand, will continue to add
+those later elements. Therefore <code>takeWhile</code> will convert an infinite collection to a finite one while
+<code><a href="module-xduce.transducers.html#.filter">filter</a></code> cannot.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>const array = [2, 4, 6, 8, 1, 3, 5, 7, 9, 10];
+const even = x => x % 2 === 0;
+
+let result = takeWhile(array, even);
+// result = [2, 4, 6, 8];
+
+// This shows the difference between takeWhile and filter with the same parameters
+result = filter(array, even);
+// result = [2, 4, 6, 8, 10];</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A predicate function. This takes each element of the input collection and returns <code>true</code> or
+    <code>false</code> based on that element. The first one to return <code>false</code> is the first element of the input collection that
+    does <em>not</em> appear in the output collection.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with some of the elements of the input collection dropped. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".uniq"><span class="type-signature">(static) </span>uniq<span class="signature">(collection<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_uniq.js.html">xform/uniq.js</a>, <a href="xform_uniq.js.html#line184">line 184</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Removes all duplicates from a collection.</strong></p>
+<p>Once an element is added to the output collection, an equal element will never be added to the output collection
+again. 'Equal' according to this transformer is a
+<a href="http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero">SameValueZero</a> comparison.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>var result = uniq([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+// result = [1, 2, 3, 4, 5];</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection transformed. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".uniqBy"><span class="type-signature">(static) </span>uniqBy<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_uniq.js.html">xform/uniq.js</a>, <a href="xform_uniq.js.html#line156">line 156</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Applies a function each element of a collection and removes elements that create duplicate return values.</strong></p>
+<p>Once the function is applied to the collection elements, a comparison is made using
+<a href="http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero">SameValueZero</a>. If a comparison indicates that
+the return value from the function for one element is the same as the return value for another element, only the
+first element is retained in the output collection.</p>
+<p>Also note that even though the function can cause a completely different value to be compared, the <em>element</em> (not
+the return value of the function) is what is added to the output collection.</p>
+<p>A very common use for <code>uniqBy</code> is to refer to a particular property in an array of objects. Another is to do a
+case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
+can be used in any number of different ways, depending on the function used.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<pre class="prettyprint source"><code>var array = [{x: 1}, {x: 1}, {x: 2}, {x: 3}, {x: 3}, {x: 3},
+             {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}];
+
+var result = uniqBy(array, obj => obj.x);
+// result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]
+
+// Comparison is case-insensitive, the duplicate letter retained is the first one that appears
+// This is why 'N' is present in the output, not 'n', for example
+result = uniqBy('aNtidiseSTablIshmENtaRianiSM', x => x.toLowerCase());
+// result = 'aNtidseblhmR'</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A function of one parameter applied to each element in the input collection before testing the
+    results for uniqueness.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection transformed. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".uniqWith"><span class="type-signature">(static) </span>uniqWith<span class="signature">(collection<span class="signature-attributes">opt</span>, fn, ctx<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*|<a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="xform_uniq.js.html">xform/uniq.js</a>, <a href="xform_uniq.js.html#line108">line 108</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Removes all duplicates from a collection, using a comparator function to determine what's unique.</strong></p>
+<p>Comparisons are made by passing each pair of elements to the function, which must take two parameters and return a
+boolean indicating whether or not the values are equal. As an example, the
+<code><a href="module-xduce.transducers.html#.uniq">uniq</a></code> transducer could be regarded as the same as this transducer, with a
+<a href="http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero">SameValueZero</a> function serving as the
+comparator.</p>
+<p>If no collection is provided, a function is returned that can be passed to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+et al.</p>
+<p>Example:</p>
+<pre class="prettyprint source"><code>// magnitude returns the number of digits in a number
+function magnitude(x) {
+  return Math.floor(Math.log(x) / Math.LN10 + 0.000000001);
+}
+function comparator(a, b) {
+  return magnitude(a) === magnitude(b);
+}
+
+// Returns only the first value of each magnitude
+const result = uniqWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+// result = [1, 10, 100, 1111]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional input collection that is to be transduced.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A comparator function. This takes two arguments and returns <code>true</code> if they're to be regarded as
+    equal.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional context object which is set to <code>this</code> for the function <code>fn</code>. This does not work if
+    <code>fn</code> is an arrow function, as they cannot be bound to contexts.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If a collection is supplied, then the function returns a new
+    collection of the same type with all of the elements of the input collection transformed. If no collection is
+    supplied, a transducer function, suitable for passing to <code><a href="module-xduce.html#.sequence">sequence</a></code>,
+    <code><a href="module-xduce.html#.into">into</a></code>, etc. is returned.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+|
+
+<span class="param-type"><a href="module-xduce.html#~transducerFunction">module:xduce~transducerFunction</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

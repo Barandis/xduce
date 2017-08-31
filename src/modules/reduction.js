@@ -204,8 +204,11 @@ const stringReducer = toReducer('');
  *
  * @memberof module:xduce
  *
- * @param {module:xduce~transducer} xform A transducer whose step function will become the returned reduction function.
- * @param {module:xduce~step} reducer A function that reduces values into the target collection.
+ * @param {module:xduce~transducerObject} xform A transducer object whose step function will become the returned
+ *     reduction function.
+ * @param {(module:xduce~step|module:xduce~transducerObject)} reducer A reducer that knows how to reduce values into an
+ *     output collection. This can either be a reducing function or a transducer object whose `step` function knows how
+ *     to perform this reduction.
  * @return {module:xduce~step} A function that handles both the transformation and the reduction of a value onto a
  *     target function.
  */
@@ -222,7 +225,7 @@ function toFunction(xform, reducer) {
  * second, a reduced value isn't usable without being unreduced first; and third any type of value (including
  * `undefined`) may be marked as reduced.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to be reduced.
  * @return {*} A reduced version of the provided value. This reduction is achieved by wrapping the value in a marker
@@ -241,7 +244,7 @@ function reduced(value) {
  * This function is intended to be used when it's certain that a value is already marked as reduced. If it is not,
  * `undefined` will be returned instead of the value.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to be unreduced.
  * @return {*} An unreduced version of the provided value. If the value was not reduced in the first place, `undefined`
@@ -257,7 +260,7 @@ function unreduced(value) {
 /**
  * **Determines whether a value is marked as reduced.**
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to test for its reduced status.
  * @return {boolean} Eitheehr `true` if the value is reduced, or `false` if it is not.
@@ -275,7 +278,7 @@ function isReduced(value) {
  * This differs from {@link module:xduce.util.reduced|reduced} in that if the value is already reduced, this function
  * won't reduce it again. Therefore thus function can't be used to make a value reduced multiple times.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to be reduced.
  * @return {*} If the value is already reduced, then the value is simply returned. Otherwise, a reduced version of the
@@ -291,7 +294,7 @@ function ensureReduced(value) {
  * This does a check to make sure the value passed in actually is reduced. If it isn't, the value itself is returned.
  * It's meant to be used when the reduced status is uncertain.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The reduced value to be unreduced.
  * @return {*} If the value is already unreduced, the value is simply returned. Otherwise an unreduced version of the

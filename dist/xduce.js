@@ -649,8 +649,9 @@ var p = protocols;
  * @private
  *
  * @param {*} collection the input collection that the produced iterator will be iterating over.
- * @param {module:xduce~transducer} xform The transducer function defining the transformation that the generated
- *     iterator will perform on its elements.
+ * @param {module:xduce~transducerFunction} xform A function that creates a transducer object that defines the
+ *     transformation being done to the iterator's elements. Any of the {@link module:xduce.transducers|transducers} in
+ *     this library can produce a suitable transducer function.
  * @return {module:xduce~iterator} An iterator that will transform its input elements using the transducer function as
  *     its `{@link module:xduce~next|next}` function is called.
  */
@@ -770,10 +771,9 @@ function transducingIterator(collection, xform) {
  * @param {*} collection The input collection. The only requirement of this collection is that it implement the
  *     `iterator` protocol. Special support is provided by the library for objects and pre-ES2015 arrays and strings
  *     (ES2015 arrays and strings already implement `iterator`), so any of those can also be used.
- * @param {module:xduce~transducer} xform The function used to transform the input collection elements before they're
- *     reduced into the output collection. This must be a function that takes one parameter, expected to be another
- *     transducer function for chaining, and returns an object that implements the transducer protocols (`init`, `step`,
- *     and `result`). Any of the transducer functions in this library are suitable.
+ * @param {module:xduce~transducerFunction} xform A function that creates a transducer object that defines the
+ *     transformation being done to the input collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function.
  * @param {object} reducer An object that implements the transducer protocols (`init` is only required if the `init`
  *     parameter is not present). This object must know how to produce an output collection through its `step` and
  *     `result` protocol functions.
@@ -816,11 +816,10 @@ function transduce(collection, xform, reducer) {
  * @param {*} collection The input collection. The only requirement of this collection is that it implement the
  *     `iterator` protocol. Special support is provided by the library for objects and pre-ES2015 arrays and strings
  *     (ES2015 arrays and strings already implement `iterator`), so any of those can also be used.
- * @param {module:xduce~transducer} [xform] The function used to transform the input collection elements before they're
- *     reduced into the output array. This must be a function that takes one parameter, expected to be another
- *     transducer function for chaining, and returns an object that implements the transducer protocols (`init`, `step`,
- *     and `result`). Any of the transducers in this library are suitable functions. If this isn't present, the input
- *     collection will simply be reduced into an array without transformation.
+ * @param {module:xduce~transducerFunction} [xform] A function that creates a transducer object that defines the
+ *     transformation being done to the input collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function. If this
+ *     isn't present, the input collection will simply be reduced into an array without transformation.
  * @return {array} An array containing all of the transformed values from the input collection elements.
  */
 function asArray(collection, xform) {
@@ -853,11 +852,10 @@ function asArray(collection, xform) {
  * @param {*} collection The input collection. The only requirement of this collection is that it implement the
  *     `iterator` protocol. Special support is provided by the library for objects and pre-ES2015 arrays and strings
  *     (ES2015 arrays and strings already implement `iterator`), so any of those can also be used.
- * @param {module:xduce~tranducer} [xform] The function used to transform the input collection elements before they're
- *     reduced into the output object. This must be a function that takes one parameter, expected to be another
- *     transducer function for chaining, and returns an object that implements the transducer protocols (`init`, `step`,
- *     and `result`). Any of the transducers in this library are suitable functions. If this isn't present, the input
- *     collection will simply be reduced into an object without transformation.
+ * @param {module:xduce~tranducerFunction} [xform] A function that creates a transducer object that defines the
+ *     transformation being done to the input collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function. If this
+ *     isn't present, the input collection will simply be reduced into an object without transformation.
  * @return {object} An object containing all of the transformed values from the input collection elements.
  */
 function asObject(collection, xform) {
@@ -890,11 +888,10 @@ function asObject(collection, xform) {
  * @param {*} collection The input collection. The only requirement of this collection is that it implement the
  *     `iterator` protocol. Special support is provided by the library for objects and pre-ES2015 arrays and strings
  *     (ES2015 arrays and strings already implement `iterator`), so any of those can also be used.
- * @param {module:xduce~transducer} [xform] The function used to transform the input collection elements before they're
- *     reduced into the output string. This must be a function that takes one parameter, expected to be another
- *     transducer function for chaining, and returns an object that implements the transducer protocols (`init`, `step`,
- *     and `result`). Any of the transducers in this library are suitable functions. If this isn't present, the input
- *     collection will simply be reduced into a string without transformation.
+ * @param {module:xduce~transducerFunction} [xform] A function that creates a transducer object that defines the
+ *     transformation being done to the input collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function. If this
+ *     isn't present, the input collection will simply be reduced into a string without transformation.
  * @return {string} A string containing all of the transformed values from the input collection elements.
  */
 function asString(collection, xform) {
@@ -935,11 +932,10 @@ function asString(collection, xform) {
  * @param {*} collection The input collection. The only requirement of this collection is that it implement the
  *     `iterator` protocol. Special support is provided by the library for objects and pre-ES2015 arrays and strings
  *     (ES2015 arrays and strings already implement `iterator`), so any of those can also be used.
- * @param {module:xduce~transducer} [xform] The function used to transform the input collection elements before they're
- *     reduced into the output iterator. This must be a function that takes one parameter, expected to be another
- *     transducer function for chaining, and returns an object that implements the transducer protocols (`init`, `step`,
- *     and `result`). Any of the transducers in this library are suitable functions. If this isn't present, the input
- *     collection will simply be reduced into an iterator without transformation.
+ * @param {module:xduce~transducerFunction} [xform] A function that creates a transducer object that defines the
+ *     transformation being done to the input collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function. If this
+ *     isn't present, the input collection will simply be reduced into an iterator without transformation.
  * @return {module:xduce~iterator} An iterator containing all of the transformed values from the input collection
  *     elements.
  */
@@ -981,10 +977,9 @@ function asIterator(collection, xform) {
  * @param {*} collection The input collection. This must implement the `iterator`, `init`, `result`, and `step`
  *     protocols. Special support is provided for arrays, strings, objects, and iterators, so they do not have to
  *     implement any protocols.
- * @param {module:xduce~transducer} xform The transducer function used to transform the input collection elements before
- *     they're reduced into the target collection. This must be a function that takes one parameter, expected to be
- *     another transformer function for chaining, and returns an object that implements the transducer protocols
- *     (`init`, `step`, and `result`). Any of the transfducrs in this library are suitable functions.
+ * @param {module:xduce~transducerFunction} xform A function that creates a transducer object that defines the
+ *     transformation being done to the input collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function.
  * @return {*} A collection of the same type as the input collection, containing all of the transformed values from the
  *     input collection elements.
  */
@@ -1042,11 +1037,10 @@ function sequence(collection, xform) {
  * @param {*} collection The input collection. The only requirement of this collection is that it implement the
  *     `iterator` protocol. Special support is provided by the library for objects and pre-ES2015 arrays and strings
  *     (ES2015 arrays and strings already implement `iterator`), so any of those can also be used.
- * @param {module:xduce~transducer} [xform] The transducer function used to transform the input collection elements
- *     before they're reduced into the target collection. This must be a function that takes one parameter, expected to
- *     be another transducer function for chaining, and returns an object that implements the transducer protocols
- *     (`init`, `step`, and `result`). Any of the transducers in this library are suitable functions. If this isn't
- *     present, the input collection will simply be reduced into the target collection without transformation.
+ * @param {module:xduce~transducerFunction} [xform] A function that creates a transducer object that defines the
+ *     transformation being done to the input collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function. If this
+ *     isn't present, the input collection will simply be reduced into the target collection without transformation.
  * @return {*} The `target` collection, with all of the tranformed input collection elements reduced onto it.
  */
 function into(target, collection, xform) {
@@ -1067,13 +1061,15 @@ function into(target, collection, xform) {
 /**
  * **Composes two or more transducer functions into a single transducer function.**
  *
- * Each function that takes a transducer function is only capable of accepting one of them. If there is a need to have
+ * Each function that takes a transducer function (`{@link module:xduce.sequence|sequence}`,
+ * `{@link module:xduce.into|into}`, etc.) is only capable of accepting one of them. If there is a need to have
  * several transducers chained together, then use `compose` to create a transducer function that does what all of them
  * do.
  *
- * Note that while the transducers have shortcut functions, this composition is not a shortcut function. It cannot be
- * called with a collection parameter. Instead, pass it like any transformer function would be passed to
- * `{@link module:xduce.sequence|sequence}`, `{@link module:xduce.into|into}`, and the like.
+ * This operates only on {@link module:xduce~transducerFunction|transducer functions}, not on
+ * {@link module:xduce~transducer|transducers} themselves. There is no option for a shortcut form on a composed
+ * transducer function. They must be passed to functions that operate on them (`{@link module:xduce.sequence|sequence}`
+ * and the like).
  *
  * NOTE: In functional programming, a compose function is generally ordered so that the first-executed function is
  * listed last. This is done in the opposite way, with the first transducer executing first, etc. This is more sensible
@@ -1091,12 +1087,11 @@ function into(target, collection, xform) {
  *
  * @memberof module:xduce
  *
- * @param {...module:xduce~transducer} fns One or more functions used to transform the input collection elements before
- *     they're reduced into the output collection. These must be functions that take one parameter, expected to be
- *     another transducer function for chaining, and return an object that implements the transducer protocols (`init`,
- *     `step`, and `result`). Any of the transducers in this library are suitable functions.
- * @return {module:xduce~transducer} A transducer function that performs all of the transformations of the input
- *     functions, in the order that they're given.
+ * @param {...module:xduce~transducerFunction} fns One or more function that each create a transducer object that
+ *     defines the transformation being done to a collection's elements. Any of the
+ *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function.
+ * @return {module:xduce~transducerFunction} A transducer function that produces a transducer object that performs
+ *     *all* of the transformations of the objects produced by the input transducer functions.
  */
 function compose() {
   for (var _len = arguments.length, fns = Array(_len), _key = 0; _key < _len; _key++) {
@@ -1492,8 +1487,11 @@ var stringReducer = toReducer('');
  *
  * @memberof module:xduce
  *
- * @param {module:xduce~transducer} xform A transducer whose step function will become the returned reduction function.
- * @param {module:xduce~step} reducer A function that reduces values into the target collection.
+ * @param {module:xduce~transducerObject} xform A transducer object whose step function will become the returned
+ *     reduction function.
+ * @param {(module:xduce~step|module:xduce~transducerObject)} reducer A reducer that knows how to reduce values into an
+ *     output collection. This can either be a reducing function or a transducer object whose `step` function knows how
+ *     to perform this reduction.
  * @return {module:xduce~step} A function that handles both the transformation and the reduction of a value onto a
  *     target function.
  */
@@ -1510,7 +1508,7 @@ function toFunction(xform, reducer) {
  * second, a reduced value isn't usable without being unreduced first; and third any type of value (including
  * `undefined`) may be marked as reduced.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to be reduced.
  * @return {*} A reduced version of the provided value. This reduction is achieved by wrapping the value in a marker
@@ -1528,7 +1526,7 @@ function reduced(value) {
  * This function is intended to be used when it's certain that a value is already marked as reduced. If it is not,
  * `undefined` will be returned instead of the value.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to be unreduced.
  * @return {*} An unreduced version of the provided value. If the value was not reduced in the first place, `undefined`
@@ -1544,7 +1542,7 @@ function unreduced(value) {
 /**
  * **Determines whether a value is marked as reduced.**
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to test for its reduced status.
  * @return {boolean} Eitheehr `true` if the value is reduced, or `false` if it is not.
@@ -1562,7 +1560,7 @@ function isReduced(value) {
  * This differs from {@link module:xduce.util.reduced|reduced} in that if the value is already reduced, this function
  * won't reduce it again. Therefore thus function can't be used to make a value reduced multiple times.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The value to be reduced.
  * @return {*} If the value is already reduced, then the value is simply returned. Otherwise, a reduced version of the
@@ -1578,7 +1576,7 @@ function ensureReduced(value) {
  * This does a check to make sure the value passed in actually is reduced. If it isn't, the value itself is returned.
  * It's meant to be used when the reduced status is uncertain.
  *
- * @memberof module:xduce.util
+ * @memberof module:xduce.util.reduction
  *
  * @param {*} value The reduced value to be unreduced.
  * @return {*} If the value is already unreduced, the value is simply returned. Otherwise an unreduced version of the
@@ -1711,9 +1709,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// core.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Basic functions necessary across transducers, along with a number of transducers that don't belong in other
+ * categories.
+ *
+ * @module core
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -1734,13 +1736,30 @@ var _require5 = __webpack_require__(12),
 
 var p = protocols;
 
-// Function for defining equality in some of the transducers, like uniq and distinct. This is based on the definition of
-// SameValueZero in the JS spec,and this is the comparison used in similar situations by Lodash and other libraries.
-// It's the same as === in JavaScript, except that NaN is equal to itself.
+/**
+ * Defines equality per the definition of SameValueZero in the JS spec, This is the comparison used in similar
+ * situations by Lodash and other libraries. It's the same as `===` in JavaScript, except that `NaN` is equal to itself.
+ *
+ * @private
+ *
+ * @param {number} a The first number.
+ * @param {number} b The second number.
+ * @return {boolean} Either `true` if the numbers are equal per `===` or if both numbers are `NaN`, or `false`
+ *     otherwise.
+ */
 function sameValueZero(a, b) {
   return a === b || isNaN(a) && isNaN(b);
 }
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.identity|identity}` transducer.
+ *
+ * @private
+ *
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function identityTransducer(xform) {
   var _ref;
 
@@ -1753,17 +1772,42 @@ function identityTransducer(xform) {
   }), _ref;
 }
 
-// Returns the collection as-is, without transforming any of its elements. The collection's iteration and reduction
-// protocols are invoked, which means that this function cannot guarantee that the output collection is the same as
-// the input collection unless those protocols are well-behaved.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Returns exactly the same collection sent to it.**
+ *
+ * This is generally a function used when a transducer function is required but there is no desire to do an actual
+ * transformation. The "transformation" implemented here is to pass each element through exactly as it is.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = identity([1, 2, 3, 4, 5]);
+ * // result = [1, 2, 3, 4, 5]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection untouched. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function identity(collection) {
   return collection ? sequence(collection, identity()) : function (xform) {
     return identityTransducer(xform);
   };
 }
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.flatten|flatten}` transducer.
+ *
+ * @private
+ *
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
+ */
 function flattenTransducer(xform) {
   var _ref2;
 
@@ -1787,17 +1831,46 @@ function flattenTransducer(xform) {
   }), _ref2;
 }
 
-// Flattens any sub-collections in the input collection, returning a flat collection. Any element in the input
-// collection that is iterable will be flattened. This includes strings and objects, types of collections that don't
-// make much sense to flatten on their own.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Flattens a collection by merging elements in any sub-collection into the main collection.**
+ *
+ * Elements of the main collection that are not collections themselves are not changed. It's fine to have a combination
+ * of the two, some elements that are collections and some that are not.
+ *
+ * Since there aren't sub-collections in objects, strings, or iterators, `flatten` doesn't make sense with those types
+ * of collections.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = flatten([[1, 2], [3, 4, 5], 6, [7]]);
+ * // result = [1, 2, 3, 4, 5, 6, 7]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection flattened. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function flatten(collection) {
   return collection ? sequence(collection, flatten()) : function (xform) {
     return flattenTransducer(xform);
   };
 }
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.flatten|flatten}` transducer.
+ *
+ * @private
+ *
+ * @param {number} n The number of times that each element should be repeated in the output collection.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
+ */
 function repeatTransducer(n, xform) {
   var _ref3;
 
@@ -1817,9 +1890,30 @@ function repeatTransducer(n, xform) {
   }), _ref3;
 }
 
-// Duplicates the elements of the input collection n times in the output collection.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Repeats each element from the input collection `n` times in the output collection.**
+ *
+ * These elements are put into the main output collection, not into subcollections. In other words, each input element
+ * creates `n` output elements.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = repeat([1, 2, 3, 4, 5], 3);
+ * // result = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {number} n The number of times that each element from the input collection should be repeated in the output
+ *     collection.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection repeated. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function repeat(collection, n) {
   var _ref4 = isNumber(collection) ? [null, collection] : [collection, n],
       _ref5 = (0, _slicedToArray3.default)(_ref4, 2),
@@ -3339,20 +3433,61 @@ setToStringTag(global.JSON, 'JSON', true);
  */
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Transducers
 
 /**
- * A function that transforms data and can be chained to other transducers. This is handled by separate libraries; the
- * only involvement of this library is as a consumer of transducers. A transducer is stepped through each time a value
- * is taken from a channel.
+ * An object implementing all three transduction protocols (`init`, `step`, and `result`) which is used by the engine
+ * to define transduction.
  *
- * Transducers work by having step functions that are known via protocol, and it is these step functions that take the
- * data to be transformed as arguments. The arguments to the transducers themselves are other transducers that are then
- * composed into a single transducer, which is then returned. These values should not be a concern of a user of this
- * library; just pass a transducer to {@link module:cispy~chan|chan} and everything else will be handled.
+ * Transducer objects can (and must) be chained together. For instance, none of the transducer functions defined in
+ * {@link module:xduce.transducers} produces objects that know how to reduce transformed values into an output
+ * collection. This is the entire point; reduction is separate from transformation, which allows transformations to be
+ * used no matter the type of the output collection. So the engine automatically chains transducer objects to a reducer
+ * object (which is basically a specialized transducer objects whose `step` function transforms its inputs by adding
+ * them to a collection) that *does* know how to create an output collection. Thus, the protocol methods need to call
+ * the protocol methods of the next transducer object in the chain.
+ *
+ * For that reason, transducer objects are not created manually. They are instead created by
+ * {@link module:xduce~transducerFunction|transducer functions} that automatically create transducer objects and link
+ * them to the next transducer object in the chain.
+ *
+ * @typedef {object} transducerObject
+ * @property {module:xduce~init} @@transducer/init An implementation of the transducer `init` protocol. In environments
+ *     where symbols are available, this will be named `Symbol.for('transducer/init')`.
+ * @property {module:xduce~step} @@transducer/step An implementation of the transducer `step` protocol. In environments
+ *     where symbols are available, this will be named `Symbol.for('transducer/step')`.
+ * @property {module:xduce~result} @@transducer/result An implementation of the transducer `result` protocol. In
+ *     environments where symbols are available, this will be named `Symbol.for('transducer/result')`.
+ */
+
+/**
+ * A function that creates a {@link module:xduce~transducerObject|transducer object} and links it to the next one in
+ * the chain.
+ *
+ * @callback transducerFunction
+ * @param {module:xduce~transducerObject} xform A transducer object to chain the new transducer object to.
+ * @return {module:xduce~transducerObject} A new transducer object already chained to `xform`.
+ */
+
+/**
+ * A function that is responsible for performing transductions on collections.
+ *
+ * These functions have two forms. If no input collection is supplied, then this takes a set of configuration parameters
+ * and returns a {@link module:xduce~transducerFunction|transducer function} configured to handle that specific
+ * transformation.
+ *
+ * There is also a shortcut form, where an input collection *is* supplied. In this case, a transducer function is still
+ * configured and created, but then it is immediately applied as though `{@link module:xduce.sequence|sequence}` was
+ * called with that collection and transducer function. The transformed collection is then returned.
  *
  * @callback transducer
- * @param {module:xduce~transducer} xform A transducer to chain this transducer to.
- * @return {module:xduce~transducer} A new transducer chaining this one to `xform`.
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {...*} params Parameters that are used to configure the underlying transformation. Which parameters are
+ *     necessary depends on the transducer. See the {@link module:xduce.transducers|individual transducers} for details.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
  */
 
 var _require = __webpack_require__(0),
@@ -3470,11 +3605,30 @@ module.exports = {
     isObject: isObject,
     isString: isString,
 
-    reduced: reduced,
-    unreduced: unreduced,
-    isReduced: isReduced,
-    ensureReduced: ensureReduced,
-    ensureUnreduced: ensureUnreduced
+    /**
+     * Helper functions for writing transducers. All of these relate to reducing values. Marking values as reduced
+     * should happen to tell the library's reduction engine to stop reducing, that the current collection is finished
+     * and can be returned as the final collection.
+     *
+     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as reduced
+     * when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
+     * input collection are processed.
+     *
+     * Values can be reduced multiple times. This nests a reduced value inside a reduced value, and so on. To unreduce
+     * values like this, {@link module:xduce.util.reduction.unreduced|unreduced} would have to be called multiple times.
+     *
+     * @memberof module:xduce.util
+     * @static
+     * @namespace reduction
+     * @type {object}
+     */
+    reduction: {
+      reduced: reduced,
+      unreduced: unreduced,
+      isReduced: isReduced,
+      ensureReduced: ensureReduced,
+      ensureUnreduced: ensureUnreduced
+    }
   },
   protocols: protocols,
   iterator: iterator,
@@ -3489,27 +3643,84 @@ module.exports = {
   asObject: asObject,
   asString: asString,
   compose: compose,
-  chunk: chunk,
-  chunkBy: chunkBy,
-  identity: identity,
-  flatten: flatten,
-  repeat: repeat,
-  distinct: distinct,
-  distinctBy: distinctBy,
-  distinctWith: distinctWith,
-  drop: drop,
-  dropWhile: dropWhile,
-  filter: filter,
-  reject: reject,
-  compact: compact,
-  map: map,
-  flatMap: flatMap,
-  take: take,
-  takeWhile: takeWhile,
-  takeNth: takeNth,
-  uniq: uniq,
-  uniqBy: uniqBy,
-  uniqWith: uniqWith
+
+  /**
+   * Functions which actually perform transformations on the elements of input collections.
+   *
+   * Each of these is a function of type {@link module:xduce~transducer}. They can operate either by transforming a
+   * collection themselves or, if no collection is supplied, by creating a
+   * {@link module:xduce~transducerFunction|transducer function} that can be passed to any of the functions that
+   * require one (`{@link module:xduce.sequence|sequence}`, `{@link module:xduce.into|into}`,
+   * `{@link module:xduce.transduce|transduce}`, `{@link module:xduce.asArray|asArray}`, etc.).
+   *
+   * For example, here are transducers operating directly on collections.
+   *
+   * ```
+   * const collection = [1, 2, 3, 4, 5];
+   *
+   * let result = map(collection, x => x + 1);
+   * // result = [2, 3, 4, 5, 6]
+   *
+   * result = filter(collection, x => x < 3);
+   * // result = [1, 2]
+   * ```
+   *
+   * Here are transducers producing transducer functions, which are then used by
+   * `{@link module:xduce.sequence|sequence}` to perform the same transformations.
+   *
+   * ```
+   * const collection = [1, 2, 3, 4, 5];
+   *
+   * let result = sequence(collection, map(x => x + 1));
+   * // result = [2, 3, 4, 5, 6]
+   *
+   * result = sequence(collection, filter(x => x < 3));
+   * ```
+   *
+   * The shortcut form, the one that takes a collection, is extremely convenient but limited. It cannot, for example,
+   * transform one type of collection into another type (turning an array of numbers into a string of numbers, for
+   * instance). Shortcuts also cannot be composed. Here are examples of both of these, showing how they're done by
+   * using transducers to create transducer functions (which are then passed to `{@link module:xduce.asArray|asArray}`
+   * and `{@link module:xduce.compose|compose}` in these cases).
+   *
+   * ```
+   * const collection = [1, 2, 3, 4, 5];
+   *
+   * let result = asString(collection, map(x => x + 1));
+   * // result = '23456'
+   *
+   * result = sequence(collection, compose(filter(x => x < 3), map(x => x + 1)));
+   * // result = [2, 3]
+   * ```
+   *
+   * @memberof module:xduce
+   * @static
+   * @namespace transducers
+   * @type {object}
+   */
+  transducers: {
+    chunk: chunk,
+    chunkBy: chunkBy,
+    identity: identity,
+    flatten: flatten,
+    repeat: repeat,
+    distinct: distinct,
+    distinctBy: distinctBy,
+    distinctWith: distinctWith,
+    drop: drop,
+    dropWhile: dropWhile,
+    filter: filter,
+    reject: reject,
+    compact: compact,
+    map: map,
+    flatMap: flatMap,
+    take: take,
+    takeWhile: takeWhile,
+    takeNth: takeNth,
+    uniq: uniq,
+    uniqBy: uniqBy,
+    uniqWith: uniqWith
+  }
 };
 
 /***/ }),
@@ -3554,9 +3765,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// chunk.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers related to breaking input elements into groups.
+ *
+ * @module chunk
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -3576,8 +3790,23 @@ var _require5 = __webpack_require__(14),
 
 var p = protocols;
 
+/**
+ * A constant indicating no value at all.
+ *
+ * @private
+ * @type {symbol}
+ */
 var NO_VALUE = (0, _symbol2.default)('NO_VALUE');
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.chunk|chunk}` transducer.
+ *
+ * @private
+ *
+ * @param {number} n The number of elements that should be in each chunk.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
+ */
 function chunkTransducer(n, xform) {
   var _ref;
 
@@ -3603,10 +3832,49 @@ function chunkTransducer(n, xform) {
   }), _ref;
 }
 
-// Splits the input collection into chunks of `n` elements each. Each of these chunks is an array, no matter what the
-// type of the input collection.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Groups the elements of the input collection into arrays of length `n` in the output collection.**
+ *
+ * Whatever the type of input collection, the groups inside the output collection will always be arrays (the output
+ * collection itself will still be definable as normal). Because of this, `chunk` doesn't do anything meaningful to
+ * collection types that cannot contain arrays (strings and objects, for instance).
+ *
+ * If there are not enough remaining elements in the input collection to create a chunk of the proper size in the output
+ * collection, the last chunk in the output will only be large enough to contain those remaining elements.
+ *
+ * `chunk` works on iterators (it returns a new iterator whose values are arrays), but because of technical reasons,
+ * the function has no way of knowing when the end of an iterator comes unless it happens to be at the same place as the
+ * last element of a chunk. For example, if an iterator has six values and it gets `chunk`ed into groups of three, the
+ * function will terminate correctly (because the last value of the iterator coincides with the last element of one of
+ * the chunks). However, if the same iterator had only five values, `chunk` would not terminate properly. It would
+ * return `[1, 2, 3]` for the first chunk, `[4, 5]` for the second chunk, and then `[4, 5]` over and over ad infinitum.
+ *
+ * A workaround is to compose `chunk` with a previous `{@link module:xduce.transducers.take|take}` with the same `n` as
+ * the length of the iterator. Since `{@link module:xduce.transducers.take|take}` knows when it's reached the right
+ * number of elements, it can communicate that to `chunk`.
+ *
+ * Another is to check the length of the chunk after each call to `next` on the iterator. If it's less than the size of
+ * the chunk, then it must be the last one.
+ *
+ * `chunk` works as expected on infinite iterators.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = chunk([1, 2, 3, 4, 5], 3);
+ * // result = [[1, 2, 3], [4, 5]]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {number} n The number of elements that should be in each array in the output collection.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection chunked. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function chunk(collection, n) {
   var _ref2 = isNumber(collection) ? [null, collection] : [collection, n],
       _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
@@ -3618,6 +3886,15 @@ function chunk(collection, n) {
   };
 }
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.chunkBy|chunkBy}` transducer.
+ *
+ * @private
+ *
+ * @param {function} fn The function that defines when a chunk ends and the next chunk begins.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
+ */
 function chunkByTransducer(fn, xform) {
   var _ref4;
 
@@ -3646,13 +3923,37 @@ function chunkByTransducer(fn, xform) {
   }), _ref4;
 }
 
-// Splits the input collection into chunks whose boundaries are defined by the supplied function. One chunk ends and
-// the next begins when the function returns a different value for an input element than it did for the prior element.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Breaks the elements of an input collection into arrays of consecutive elements that return the same value from a
+ * predicate function.**
+ *
+ * Whatever the type of input collection, the groups inside the output collection will always be arrays (the output
+ * collection itself will still be of the same type as the input collection). Because of this, `chunkBy` doesn't do
+ * anything meaningful to collection types that cannot contain arrays (strings and objects, for instance).
+ *
+ * Unlike `{@link module:xduce.transducers.chunk|chunk}`, this function does not know how many elements will be in each
+ * array until the first one that turns out to be part of the next array. Therefore, for the same reasons as in
+ * `{@link module:xduce.transducers.chunk|chunk}` above, an iterator result is never terminated. This works fine for
+ * infinite iterators, but finite iterators should be treated with care. The same
+ * `{@link module:xduce.transducers.chunk|chunk}` workaround with `{@link module:xduce.transducers.take|take}` works
+ * with `chunkBy` as well.
+ *
+ * ```
+ * const result = chunkBy([0, 1, 1, 2, 3, 5, 8, 13, 21, 34], x => x % 2 === 0);
+ * // result = [[0], [1, 1], [2], [3, 5], [8], [13, 21], [34]]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn The function that defines when a chunk ends and the next chunk begins.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection chunked. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function chunkBy(collection, fn, ctx) {
   var _ref5 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref6 = (0, _slicedToArray3.default)(_ref5, 2),
@@ -3711,9 +4012,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// distinct.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers for rejecting repeated consecutive elements in a collection.
+ *
+ * @module distinct
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -3731,6 +4035,17 @@ var p = protocols;
 
 var NO_VALUE = (0, _symbol2.default)('NO_VALUE');
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.distinct|distinct}`,
+ * `{@link module:xduce.transducers.distinctBy|distinctBy}`, and
+ * `{@link module:xduce.transducers.distinctWith|distinctWith}` transducers.
+ *
+ * @private
+ *
+ * @param {function} fn The two-argument comparator function that defines when two values are equal.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
+ */
 function distinctTransducer(fn, xform) {
   var _ref;
 
@@ -3749,14 +4064,51 @@ function distinctTransducer(fn, xform) {
   }), _ref;
 }
 
-// Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
-// the provided function; if two consecutive elements produce the same result from the function, then the second of
-// them is suppressed.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Applies a comparator function to consecutive elements of a collection and removes the second if the comparator
+ * indicates they're equal.**
+ *
+ * Comparisons are made by passing each pair of elements to the function, which must take two parameters and return a
+ * boolean indicating whether or not the values are equal. As an example, the
+ * `{@link module:xduce.transducers.distinct|distinct}` transducer could be regarded as the same as this transformer,
+ * with a {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero} function serving as the
+ * comparator.
+ *
+ * This is different from `{@link module:xduce.transducers.uniqWith|uniqWith}` in that this transform only eliminates
+ * consecutive duplicate elements, not all duplicate elements.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * // magnitude returns the number of digits in a number
+ * function magnitude(x) {
+ *   return Math.floor(Math.log(x) / Math.LN10 + 0.000000001);
+ * }
+ * function comparator(a, b) {
+ *   return magnitude(a) === magnitude(b);
+ * }
+ *
+ * let result = distinctWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * // result = [1, 10, 100, 42, 893, 1111]
+ *
+ * // Compare to uniqWith with the same parameters
+ * result = uniqWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * // result = [1, 10, 100, 1111]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A comparator function. This takes two arguments and returns `true` if they're to be regarded as
+ *     equal.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function distinctWith(collection, fn, ctx) {
   var _ref2 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
@@ -3768,14 +4120,52 @@ function distinctWith(collection, fn, ctx) {
   };
 }
 
-// Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
-// comparing the return values of the provided function (with SameValueZero) when pairs of input elements are passed
-// into it. If the return values are equal for two elements, then the second is suppressed.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Applies a function each element of a collection and removes consecutive elements that create duplicate return
+ * values.**
+ *
+ * Once the function is applied to the collection elements, a comparison is made using
+ * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero}. If a comparison indicates that
+ * the return value from the function for one element is the same as the return value for the element that comes right
+ * before it, only the first element is retained in the output collection.
+ *
+ * Also note that even though the function can cause a completely different value to be compared, the *element* (not the
+ * return value of the function) is what is added to the output collection.
+ *
+ * A very common use for `distinctBy` is to refer to a particular property in an array of objects. Another is to do a
+ * case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
+ * can be used in any number of different ways, depending on the function used.
+ *
+ * This is different from `{@link module:xduce.transducers.uniqBy|uniqBy}` in that this transform only eliminates
+ * consecutive duplicate elements, not all duplicate elements.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const array = [{x: 1}, {x: 1}, {x: 2}, {x: 3}, {x: 3}, {x: 3},
+ *                {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}];
+ *
+ * let result = distinctBy(array, obj => obj.x);
+ * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}]
+ *
+ * // Compare to uniqBy for the same parameters
+ * result = uniqBy(array, obj => obj.x);
+ * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A function of one parameter applied to each element in the input collection before testing the
+ *     results for uniqueness.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function distinctBy(collection, fn, ctx) {
   var _ref4 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref5 = (0, _slicedToArray3.default)(_ref4, 2),
@@ -3787,11 +4177,33 @@ function distinctBy(collection, fn, ctx) {
   });
 }
 
-// Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
-// comparing consecutive elements using SameValueZero. If two consecutive elements are the same, then the second will
-// be suppressed.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Removes consecutive duplicate elements from a collection.**
+ *
+ * This differs from `{@link module:xduce.transducers.uniq|uniq}` in that an element is removed only if it equals the
+ * element *immediately preceeding* it. Comparisons between elements are done with
+ * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero}.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * let result = distinct([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * // result = [1, 2, 3, 4, 5, 3, 1, 5];
+ *
+ * // Compare to uniq with the same input
+ * result = uniq([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * // result = [1, 2, 3, 4, 5];
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function distinct(collection) {
   return distinctWith(collection, sameValueZero);
 }
@@ -3840,9 +4252,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// drop.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers for dropping some number of elements at the beginning of a collection.
+ *
+ * @module drop
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -3856,6 +4271,15 @@ var _require3 = __webpack_require__(0),
 
 var p = protocols;
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.drop|drop}` transducer.
+ *
+ * @private
+ *
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function dropTransducer(n, xform) {
   var _ref;
 
@@ -3870,9 +4294,31 @@ function dropTransducer(n, xform) {
   }), _ref;
 }
 
-// Returns a collection containing all of the elements of the input collection except for the first `n` of them.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a new collection consisting of all of the elements of the input collection *except* for the first `n`
+ * elements.**
+ *
+ * While this could be considered an opposite of `{@link module:xduce.transducers.take|take}`, there is one difference:
+ * `drop` cannot return a finite collection when provided an infinite one.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = drop([1, 2, 3, 4, 5], 3);
+ * // result = [4, 5]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {number} n The number of elements at the beginning of the input collection that should be discarded in the
+ *     output collection.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type without its first `n` elements. If no collection is supplied, a transducer function,
+ *     suitable for passing to `{@link module:xduce.sequence|sequence}`, `{@link module:xduce.into|into}`, etc. is
+ *     returned.
+ */
 function drop(collection, n) {
   var _ref2 = isNumber(collection) ? [null, collection] : [collection, n],
       _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
@@ -3884,6 +4330,17 @@ function drop(collection, n) {
   };
 }
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.dropWhile|dropWhile}` transducer.
+ *
+ * @private
+ *
+ * @param {function} fn A single-parameter predicate function that determines which is the first element to be included
+ *     in the output collection.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function dropWhileTransducer(fn, xform) {
   var _ref4;
 
@@ -3904,14 +4361,42 @@ function dropWhileTransducer(fn, xform) {
   }), _ref4;
 }
 
-// Returns a collection containing all of the elements of the input collection starting from the first one that returns
-// `false` from the supplied predicate function. After the first element that fails this test, no further elements are
-// tested.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a new collection containing the elements of the input collection including the first one that causes a
+ * predicate function to return `false` and all elements thereafter.**
+ *
+ * This is rather the opposite of `{@link module:xduce.transducers.takeWhile|takeWhile}`, though unlike that function,
+ * this one cannot return a finite collection when given an infinite one. It's also related to
+ * `{@link module:xduce.transducers.reject|reject}`, except that once the first element is not rejected, every element
+ * after that is also not rejected (even if they would make the predicate return `true`).
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const array = [2, 4, 6, 8, 1, 3, 5, 7, 9, 10];
+ * const even = x => x % 2 === 0;
+ *
+ * let result = dropWhile(array, even);
+ * // result = [1, 3, 5, 7, 9, 10];
+ *
+ * // This shows the difference between `dropWhile` and `reject` with the same parameters
+ * result = reject(array, even);
+ * // result = [1, 3, 5, 7, 9];
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A predicate function. This takes each element of the input collection and returns `true` or
+ *     `false` based on that element. The first one to return `false` is the first element of the output collection.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with some of the elements of the input collection dropped. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function dropWhile(collection, fn, ctx) {
   var _ref5 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref6 = (0, _slicedToArray3.default)(_ref5, 2),
@@ -3966,9 +4451,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// filter.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers for removing or retaining certain elements based on their properties.
+ *
+ * @module filter
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -3982,6 +4470,18 @@ var _require3 = __webpack_require__(0),
 
 var p = protocols;
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.filter|filter}`,
+ * `{@link module:xduce.transducers.reject|reject}`, and `{@link module:xduce.transducers.compact|compact}` transducers.
+ *
+ * @private
+ *
+ * @param {function} fn A single-parameter predicate function that determines which elements should be retained in the
+ *     output collection.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function filterTransducer(fn, xform) {
   var _ref;
 
@@ -3994,13 +4494,33 @@ function filterTransducer(fn, xform) {
   }), _ref;
 }
 
-// Filters the elements of the input collection by only passing the ones that pass the predicate function on into the
-// output collection.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a collection containing only the elements from the input collection that pass a predicate function.**
+ *
+ * The elements are not in any way modified. Quite simply, if the predicate returns `true` for an element, it's included
+ * in the output collection, and if it returns `false`, that element is not included.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const even = x => x % 2 === 0; *
+ * const result = filter([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], even);
+ * // result = [2, 4, 6, 8, 10]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A predicate function. This takes each element of the input collection and returns `true` or
+ *     `false` based on that element. Each that returns `true` will be included in the output collection.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type containing only the elements that pass the predicate function. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function filter(collection, fn, ctx) {
   var _ref2 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
@@ -4012,13 +4532,35 @@ function filter(collection, fn, ctx) {
   };
 }
 
-// Filters the elements of the input collection by rejecting the ones that pass the predicate function, preventing them
-// from being in the output collection.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a collection containing only the elements from the input collection that do not pass a predicate
+ * function.**
+ *
+ * This is the opposite of `{@link module:xduce.transducers.filter|filter}`. None of the elements of the input
+ * collection are modified, and only those for which the predicate returns `false` are included in the output
+ * collection.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const even = x => x % 2 === 0;
+ * const result = reject([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], even);
+ * // result = [1, 3, 5, 7, 9]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A predicate function. This takes each element of the input collection and returns `true` or
+ *     `false` based on that element. Each that returns `false` will be included in the output collection.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type containing only the elements that fail the predicate function. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function reject(collection, fn, ctx) {
   var _ref4 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref5 = (0, _slicedToArray3.default)(_ref4, 2),
@@ -4028,10 +4570,32 @@ function reject(collection, fn, ctx) {
   return filter(col, complement(func));
 }
 
-// Filters out any falsey (0, false, null, undefined) values in the input collection, letting the rest join the output
-// collection.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Removes any 'falsey' elements from the collection.**
+ *
+ * 'Falsey' means any value in JavaScript that is considered to be false. These values are `false`, `null`, `undefined`,
+ * the empty string, and `0`. This function is good for removing empy elements from a collection.
+ *
+ * If the semantics don't suit - for example, if you want to remove empty elements but retain `0`s - then use an
+ * appropriate function with either `{@link module:xduce.transducers.filter|filter}` or
+ * `{@link module:xduce.transducers.reject|reject}`.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = compact([1, 0, 2, null, 3, undefined, 4, '', 5]);
+ * // result = [1, 2, 3, 4, 5]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the falsey elements of that collection removed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function compact(collection) {
   return filter(collection, function (x) {
     return !!x;
@@ -4082,9 +4646,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// map.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers for using functions to determine new values of collection elements.
+ *
+ * @module map
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -4101,6 +4668,17 @@ var _require4 = __webpack_require__(14),
 
 var p = protocols;
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.map|map}` transducer.
+ *
+ * @private
+ *
+ * @param {function} fn A single-parameter function which is supplied each input collection element in turn. The return
+ *     values of these calls become the elements of the output collection.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function mapTransducer(fn, xform) {
   var _ref;
 
@@ -4113,13 +4691,29 @@ function mapTransducer(fn, xform) {
   }), _ref;
 }
 
-// Maps the elements of a collection over a function. The output collection consists of the return values from that
-// function when the elements of the input function are fed into it.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a new collection whose values are the results of mapping input collection elements over a function.**
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = map([1, 2, 3, 4, 5], x => x * x);
+ * // result = [1, 4, 9, 16, 25]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A function that is supplied each input collection element in turn. The return values of this
+ *     function become the elements of the output collection.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type containing the return values of `fn` when passed those elements. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function map(collection, fn, ctx) {
   var _ref2 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
@@ -4131,12 +4725,50 @@ function map(collection, fn, ctx) {
   };
 }
 
-// Maps the elements of a collection over a function, flattening any collections that are returned from that function.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **A map function that flattens any collections among the return values.**
+ *
+ * This is a composition of `{@link module:xduce.transducers.map|map}` and
+ * `{@link module:xduce.transducers.flatten|flatten}`. In fact it could be defined by the user by using those two
+ * functions with `{@link module:xduce.compose|compose}`, but the concept of a flatmap is so fundamental that it's
+ * included separately.
+ *
+ * Because the map is followed by flattening, there are the same notes as with
+ * `{@link module:xduce.transducers.flatten|flatten}`; this function doesn't make a lot of sense with functions that
+ * return objects, strings, or iterators.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const duplicate = x => [x, x];
+ *
+ * let result = flatMap([1, 2, 3, 4, 5], duplicate);
+ * // result = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+ *
+ * // The following is equivalent
+ * const fn = compose(map(duplicate), flatten());
+ * result = sequence([1, 2, 3, 4, 5], fn);
+ * // result = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+ *
+ * // To illustrate the difference from `map`, here's what `map` would do with
+ * // the same parameters
+ * result = map([1, 2, 3, 4, 5], duplicate);
+ * // result = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A function that is supplied each input collection element in turn. The return values of this
+ *     function are flattened to become the elements of the output collection.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type containing those elements, mapped and flattened. If no collection is supplied, a
+ *     transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function flatMap(collection, fn, ctx) {
   var _ref4 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref5 = (0, _slicedToArray3.default)(_ref4, 2),
@@ -4189,9 +4821,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// take.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers for dropping some number of elements at the end of a collection.
+ *
+ * @module take
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -4208,6 +4843,15 @@ var _require4 = __webpack_require__(0),
 
 var p = protocols;
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.take|take}` transducer.
+ *
+ * @private
+ *
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function takeTransducer(n, xform) {
   var _ref;
 
@@ -4231,9 +4875,42 @@ function takeTransducer(n, xform) {
   }), _ref;
 }
 
-// Returns a collection that contains only the first `count` elements from the input collection.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a new collection containing only the first `n` elements of the input collection.**
+ *
+ * Note that this is an excellent way to turn an 'infinite' collection - one that doesn't have a well-defined end, like
+ * a stream, channel, or infinite generator - into a finite collection.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * // An iterator that will return every positive integer, one at a time per next() call
+ * function* naturals() {
+ *   let x = 1;
+ *   while (true) {
+ *     yield x++;
+ *   }
+ * }
+ *
+ * const result = take(naturals(), 3);
+ * // result is now an iterator that has only three values in it
+ * result.next().value === 1;  // true
+ * result.next().value === 2;  // true
+ * result.next().value === 3;  // true
+ * result.next().done;         // true
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {number} n The number of elements at the beginning of the input collection that should be kept in the
+ *     output collection.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type containing only the first `n` elements. If no collection is supplied, a transducer
+ *     function, suitable for passing to `{@link module:xduce.sequence|sequence}`, `{@link module:xduce.into|into}`,
+ *     etc. is returned.
+ */
 function take(collection, n) {
   var _ref2 = isNumber(collection) ? [null, collection] : [collection, n],
       _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
@@ -4245,6 +4922,17 @@ function take(collection, n) {
   };
 }
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.takeWhile|takeWhile}` transducer.
+ *
+ * @private
+ *
+ * @param {function} fn A single-parameter predicate function that determines which is the first element to be rejected
+ *     in the output collection.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function takeWhileTransducer(fn, xform) {
   var _ref4;
 
@@ -4257,13 +4945,44 @@ function takeWhileTransducer(fn, xform) {
   }), _ref4;
 }
 
-// Returns a collection that contains all of the elements from the input collection up until the first one that returns
-// `false` from the supplied predicate function.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a new collection containing the elements of the input collection up until the first one that causes a
+ * predicate function to return `false`.**
+ *
+ * While this is similar to `{@link module:xduce.transducers.filter|filter}`, there is one key difference. `takeWhile`
+ * will not add any further elements to a collection once the first fails the predicate, including later elements that
+ * might pass the predicate. `{@link module:xduce.transducers.filter|filter}`, on the other hand, will continue to add
+ * those later elements. Therefore `takeWhile` will convert an infinite collection to a finite one while
+ * `{@link module:xduce.transducers.filter|filter}` cannot.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const array = [2, 4, 6, 8, 1, 3, 5, 7, 9, 10];
+ * const even = x => x % 2 === 0;
+ *
+ * let result = takeWhile(array, even);
+ * // result = [2, 4, 6, 8];
+ *
+ * // This shows the difference between takeWhile and filter with the same parameters
+ * result = filter(array, even);
+ * // result = [2, 4, 6, 8, 10];
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A predicate function. This takes each element of the input collection and returns `true` or
+ *     `false` based on that element. The first one to return `false` is the first element of the input collection that
+ *     does *not* appear in the output collection.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with some of the elements of the input collection dropped. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function takeWhile(collection, fn, ctx) {
   var _ref5 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref6 = (0, _slicedToArray3.default)(_ref5, 2),
@@ -4275,6 +4994,16 @@ function takeWhile(collection, fn, ctx) {
   };
 }
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.takeNth|takeNth}` transducer.
+ *
+ * @private
+ *
+ * @param {number} n The skip value, meaning that only every `n`th element is retained.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object, performing no transformation and chaining to the
+ *     provided transducer object.
+ */
 function takeNthTransducer(n, xform) {
   var _ref7;
 
@@ -4289,9 +5018,32 @@ function takeNthTransducer(n, xform) {
   }), _ref7;
 }
 
-// Returns a collection containing the first and then every nth element after that of the input collection.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Creates a new collection consisting of the first element of the input collection, and then every `n`th element
+ * after that.**
+ *
+ * Note that unlike `{@link module:xduce.transducers.take|take}` and
+ * `{@link module:xduce.transducers.takeWhile|takeWhile}`, this function is not capable of returning a finite collection
+ * when given an infinite collection.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const result = takeNth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3);
+ * // result = [1, 4, 7, 10]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {number} n The skip value. Every `n`th element of the input collection, after the first, will be a part of
+ *     the output collection.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type containing only every `n` elements. If no collection is supplied, a transducer
+ *     function, suitable for passing to `{@link module:xduce.sequence|sequence}`, `{@link module:xduce.into|into}`,
+ *     etc. is returned.
+ */
 function takeNth(collection, n) {
   var _ref8 = isNumber(collection) ? [null, collection] : [collection, n],
       _ref9 = (0, _slicedToArray3.default)(_ref8, 2),
@@ -4347,9 +5099,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// uniq.js
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers for rejecting repeated elements in a collection.
+ *
+ * @module unique
+ * @private
+ */
 
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
@@ -4365,6 +5120,17 @@ var _require4 = __webpack_require__(14),
 
 var p = protocols;
 
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.uniq|uniq}`,
+ * `{@link module:xduce.transducers.uniqBy|uniqBy}`, and
+ * `{@link module:xduce.transducers.uniqWith|uniqWith}` transducers.
+ *
+ * @private
+ *
+ * @param {function} fn The two-argument comparator function that defines when two values are equal.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
+ */
 function uniqTransducer(fn, xform) {
   var _ref;
 
@@ -4385,14 +5151,46 @@ function uniqTransducer(fn, xform) {
   }), _ref;
 }
 
-// Returns a collection containing only unique elements from the input collection. Uniqueness is determined by passing
-// each pair of elements through the provided function; those that return the same value from this function are
-// considered equal (and therefore only one of them will make its way to the output collection).
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Removes all duplicates from a collection, using a comparator function to determine what's unique.**
+ *
+ * Comparisons are made by passing each pair of elements to the function, which must take two parameters and return a
+ * boolean indicating whether or not the values are equal. As an example, the
+ * `{@link module:xduce.transducers.uniq|uniq}` transducer could be regarded as the same as this transducer, with a
+ * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero} function serving as the
+ * comparator.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * Example:
+ *
+ * ```
+ * // magnitude returns the number of digits in a number
+ * function magnitude(x) {
+ *   return Math.floor(Math.log(x) / Math.LN10 + 0.000000001);
+ * }
+ * function comparator(a, b) {
+ *   return magnitude(a) === magnitude(b);
+ * }
+ *
+ * // Returns only the first value of each magnitude
+ * const result = uniqWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * // result = [1, 10, 100, 1111]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A comparator function. This takes two arguments and returns `true` if they're to be regarded as
+ *     equal.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function uniqWith(collection, fn, ctx) {
   var _ref2 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref3 = (0, _slicedToArray3.default)(_ref2, 2),
@@ -4404,14 +5202,49 @@ function uniqWith(collection, fn, ctx) {
   };
 }
 
-// Returns a collection containing only unique elements from the input collection. Uniqueness is determined by passing
-// each pair of elements through the provided function; the values that are returned from this function are
-// compared (using SameValueZero) to determine whether they're unique.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Applies a function each element of a collection and removes elements that create duplicate return values.**
+ *
+ * Once the function is applied to the collection elements, a comparison is made using
+ * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero}. If a comparison indicates that
+ * the return value from the function for one element is the same as the return value for another element, only the
+ * first element is retained in the output collection.
+ *
+ * Also note that even though the function can cause a completely different value to be compared, the *element* (not
+ * the return value of the function) is what is added to the output collection.
+ *
+ * A very common use for `uniqBy` is to refer to a particular property in an array of objects. Another is to do a
+ * case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
+ * can be used in any number of different ways, depending on the function used.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * var array = [{x: 1}, {x: 1}, {x: 2}, {x: 3}, {x: 3}, {x: 3},
+ *              {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}];
+ *
+ * var result = uniqBy(array, obj => obj.x);
+ * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]
+ *
+ * // Comparison is case-insensitive, the duplicate letter retained is the first one that appears
+ * // This is why 'N' is present in the output, not 'n', for example
+ * result = uniqBy('aNtidiseSTablIshmENtaRianiSM', x => x.toLowerCase());
+ * // result = 'aNtidseblhmR'
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A function of one parameter applied to each element in the input collection before testing the
+ *     results for uniqueness.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function uniqBy(collection, fn, ctx) {
   var _ref4 = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)],
       _ref5 = (0, _slicedToArray3.default)(_ref4, 2),
@@ -4423,10 +5256,29 @@ function uniqBy(collection, fn, ctx) {
   });
 }
 
-// Returns a collection containing only unique elements from the input collection. Unique elements are those that are
-// not equal (using SameValueZero) to any other element in the collection.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
+/**
+ * **Removes all duplicates from a collection.**
+ *
+ * Once an element is added to the output collection, an equal element will never be added to the output collection
+ * again. 'Equal' according to this transformer is a
+ * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero} comparison.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * var result = uniq([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * // result = [1, 2, 3, 4, 5];
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
 function uniq(collection) {
   return uniqWith(collection, sameValueZero);
 }

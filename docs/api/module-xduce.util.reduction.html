@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>bmp - Documentation</title>
+    <title>reduction - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">bmp</h1>
+    <h1 class="page-title">reduction</h1>
     
 
     
@@ -42,7 +42,7 @@
         <h2>
             <span class="ancestors"><a href="module-xduce.html">xduce</a><a href="module-xduce.util.html">.util</a>.</span>
         
-        bmp
+        reduction
         </h2>
         
     
@@ -58,7 +58,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="api.js.html">api.js</a>, <a href="api.js.html#line468">line 468</a>
+        <a href="api.js.html">api.js</a>, <a href="api.js.html#line495">line 495</a>
     </li></ul></dd>
     
 
@@ -97,12 +97,14 @@
 
 
         
-            <div class="description"><p>These functions are used by xduce to create iterators for strings in pre-ES2015 environments. String iterators in
-ES2015+ account for double-width characters in the Basic Multilingual Plane, returning those double-wide
-characters as one iterator value. Older environments do not do this; double-width characters would in that case
-be returned as two distinct characters, but for Xduce's use of these functions.</p>
-<p>Note that the built-in <code>charAt</code> and <code>length</code> do <em>not</em> take double-width characters into account even in ES2015+
-environments even though iterators do. These functions are still useful as utility functions in any environment.</p></div>
+            <div class="description"><p>Helper functions for writing transducers. All of these relate to reducing values. Marking values as reduced
+should happen to tell the library's reduction engine to stop reducing, that the current collection is finished
+and can be returned as the final collection.</p>
+<p>For example, the <a href="module-xduce.transducers.html#.take">take</a> transducer marks its output collection as reduced
+when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
+input collection are processed.</p>
+<p>Values can be reduced multiple times. This nests a reduced value inside a reduced value, and so on. To unreduce
+values like this, <a href="module-xduce.util.reduction.html#.unreduced">unreduced</a> would have to be called multiple times.</p></div>
         
 
         
@@ -129,7 +131,7 @@ environments even though iterators do. These functions are still useful as utili
 
     
 
-    <h4 class="name" id=".charAt"><span class="type-signature">(static) </span>charAt<span class="signature">(str, index)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id=".ensureReduced"><span class="type-signature">(static) </span>ensureReduced<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
 
     
 
@@ -141,7 +143,7 @@ environments even though iterators do. These functions are still useful as utili
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_util.js.html">modules/util.js</a>, <a href="modules_util.js.html#line125">line 125</a>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line287">line 287</a>
     </li></ul></dd>
     
 
@@ -181,12 +183,9 @@ environments even though iterators do. These functions are still useful as utili
 
 
 <div class="description">
-    <p><strong>Returns the character at a particular index in a string, taking double-width
-<abbr title="Basic Multilingual Plane">BMP</abbr> characters into account.</strong></p>
-<p>This is a BMP version of the standard JavaScript <code>string.charAt</code> function. The index is adjusted to account for
-double-width characters in the input string, and if the resulting character is double-width, it will be returned as a
-two-character string. The second half of these double-width characters don't get assigned an index at all, so it
-works seemlessly between character widths.</p>
+    <p><strong>Makes sure that a value is marked as reduced; if it is not, it will be marked as reduced.</strong></p>
+<p>This differs from reduced in that if the value is already reduced, this function
+won't reduce it again. Therefore thus function can't be used to make a value reduced multiple times.</p>
 </div>
 
 
@@ -224,13 +223,13 @@ works seemlessly between character widths.</p>
 
         <tr>
             
-                <td class="name"><code>str</code></td>
+                <td class="name"><code>value</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
             
@@ -240,30 +239,7 @@ works seemlessly between character widths.</p>
 
             
 
-            <td class="description last"><p>The input string whose character at the given index is sought.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>index</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The index in the input string of the character being sought.</p></td>
+            <td class="description last"><p>The value to be reduced.</p></td>
         </tr>
 
     
@@ -287,8 +263,8 @@ works seemlessly between character widths.</p>
 
         
 <div class="param-desc">
-    <p>The character at the given index in the provided string. If this character is a BMP character,
-    the full character will be returned as a two-character string.</p>
+    <p>If the value is already reduced, then the value is simply returned. Otherwise, a reduced version of the
+    value is returned.</p>
 </div>
 
 
@@ -299,7 +275,7 @@ works seemlessly between character widths.</p>
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
     </dd>
@@ -313,7 +289,7 @@ works seemlessly between character widths.</p>
 
     
 
-    <h4 class="name" id=".length"><span class="type-signature">(static) </span>length<span class="signature">(str)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id=".ensureUnreduced"><span class="type-signature">(static) </span>ensureUnreduced<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
 
     
 
@@ -325,7 +301,7 @@ works seemlessly between character widths.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_util.js.html">modules/util.js</a>, <a href="modules_util.js.html#line170">line 170</a>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line303">line 303</a>
     </li></ul></dd>
     
 
@@ -365,11 +341,9 @@ works seemlessly between character widths.</p>
 
 
 <div class="description">
-    <p><strong>Calculates the length of a string, taking double-width <abbr title="Basic Multilingual Plane">BMP</abbr>
-characters into account.</strong></p>
-<p>Since this function takes double-width characters into account and the build in string <code>length</code> property does not,
-it is entirely possible for this function to provide a different result than querying the same string's <code>length</code>
-property.</p>
+    <p><strong>Removes the reduced status from a value, as long as it actually is reduced.</strong></p>
+<p>This does a check to make sure the value passed in actually is reduced. If it isn't, the value itself is returned.
+It's meant to be used when the reduced status is uncertain.</p>
 </div>
 
 
@@ -407,13 +381,13 @@ property.</p>
 
         <tr>
             
-                <td class="name"><code>str</code></td>
+                <td class="name"><code>value</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">*</span>
 
 
             
@@ -423,7 +397,7 @@ property.</p>
 
             
 
-            <td class="description last"><p>The string whose length is being determined.</p></td>
+            <td class="description last"><p>The reduced value to be unreduced.</p></td>
         </tr>
 
     
@@ -447,7 +421,8 @@ property.</p>
 
         
 <div class="param-desc">
-    <p>The number of characters in the string, counting double-width BMP characters as single characters.</p>
+    <p>If the value is already unreduced, the value is simply returned. Otherwise an unreduced version of the
+    value is returned.</p>
 </div>
 
 
@@ -458,7 +433,479 @@ property.</p>
     </dt>
     <dd>
         
-<span class="param-type">number</span>
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".isReduced"><span class="type-signature">(static) </span>isReduced<span class="signature">(value)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line268">line 268</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Determines whether a value is marked as reduced.</strong></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to test for its reduced status.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Eitheehr <code>true</code> if the value is reduced, or <code>false</code> if it is not.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".reduced"><span class="type-signature">(static) </span>reduced<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line234">line 234</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Marks a value as reduced.</strong></p>
+<p>This is done by wrapping the value. This means three things: first, a reduced obejct may be marked as reduced again;
+second, a reduced value isn't usable without being unreduced first; and third any type of value (including
+<code>undefined</code>) may be marked as reduced.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to be reduced.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A reduced version of the provided value. This reduction is achieved by wrapping the value in a marker
+    object.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".unreduced"><span class="type-signature">(static) </span>unreduced<span class="signature">(value)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line253">line 253</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p><strong>Removes the reduced status from a reduced value.</strong></p>
+<p>This function is intended to be used when it's certain that a value is already marked as reduced. If it is not,
+<code>undefined</code> will be returned instead of the value.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to be unreduced.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>An unreduced version of the provided value. If the value was not reduced in the first place, <code>undefined</code>
+    will be returned instead.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
 
 
     </dd>
