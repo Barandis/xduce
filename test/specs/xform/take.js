@@ -11,7 +11,7 @@ const lt4 = x => x < 4;
 const lt4Value = ({ v }) => v < 4;
 const isVowel = x => !!~'aeoiu'.indexOf(x);
 
-describe('Taking transformers', () => {
+describe('Taking transducers', () => {
   context('take', () => {
     it('works with arrays', () => {
       expect(take(ARRAY_5, 3)).to.deep.equal([1, 2, 3]);

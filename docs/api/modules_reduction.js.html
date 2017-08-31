@@ -210,6 +210,30 @@ function result(collection) {
  * exactly the same kind of function that is passed to reduction functions like JavaScript's `Array.prototype.reduce`
  * and Lodash's `_.reduce`.
  *
+ * Note in particular that the output of this reducer does not need to be a collection. It can be anything. While
+ * transducing normally involves transforming one collection into another, it need not be so. For example, here is a
+ * reducer that will result in summing of the collection values.
+ *
+ * ```
+ * const { toReducer, reduce } = xduce;
+ *
+ * const sumReducer = toReducer((acc, input) => acc + input);
+ * const sum = reduce([1, 2, 3, 4, 5], sumReducer, 0);
+ * // sum = 15
+ * ```
+ *
+ * This can be combined with transducers as well, as in this calculation of the sum of the *squares* of the collection
+ * values.
+ *
+ * ```
+ * const { toReducer, transduce } = xduce;
+ * const { map } = xduce.transducers;
+ *
+ * const sumReducer = toReducer((acc, input) => acc + input);
+ * const sum = transduce([1, 2, 3, 4, 5], map(x => x * x), sumReducer, 0);
+ * // sum = 55
+ * ```
+ *
  * @memberof module:xduce
  *
  * @param {*} collection An iterable collection or a reducer function.

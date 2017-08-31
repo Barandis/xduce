@@ -6,7 +6,7 @@ const { fromJS } = require('immutable');
 const { sequence, compose, transduce } = require('../../../src/modules/transformation');
 const { arrayReducer } = require('../../../src/modules/reduction');
 
-describe('Chunking transformers', () => {
+describe('Chunking transducers', () => {
   context('chunk', () => {
     it('works with arrays', () => {
       expect(chunk(ARRAY_5, 3)).to.deep.equal([[1, 2, 3], [4, 5]]);

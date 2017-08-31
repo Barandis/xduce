@@ -8,7 +8,7 @@ const add1 = x => x + 1;
 const ucaseKey = ({ k, v }) => ({ [k.toUpperCase()]: v + 1 });
 const ucase = x => x.toUpperCase();
 
-describe('Mapping transformers', () => {
+describe('Mapping transducers', () => {
   context('map', () => {
     it('works with arrays', () => {
       expect(map(ARRAY_5, add1)).to.deep.equal([2, 3, 4, 5, 6]);
