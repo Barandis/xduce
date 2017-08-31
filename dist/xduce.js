@@ -613,8 +613,8 @@ var _require2 = __webpack_require__(20),
     isKvFormObject = _require2.isKvFormObject,
     iterator = _require2.iterator;
 
-var _require3 = __webpack_require__(12),
-    isReduced = _require3.isReduced,
+var _require3 = __webpack_require__(13),
+    isComplete = _require3.isComplete,
     reduce = _require3.reduce,
     arrayReducer = _require3.arrayReducer,
     objectReducer = _require3.objectReducer,
@@ -699,7 +699,7 @@ function transducingIterator(collection, xform) {
         xf[p.result](this);
         break;
       }
-      reduced = isReduced(xf[p.step](this, step.value));
+      reduced = isComplete(xf[p.step](this, step.value));
     }
   }), _ref2;
 }
@@ -1253,6 +1253,19 @@ module.exports = function(it){
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var dP         = __webpack_require__(10)
+  , createDesc = __webpack_require__(22);
+module.exports = __webpack_require__(8) ? function(object, key, value){
+  return dP.f(object, key, createDesc(1, value));
+} : function(object, key, value){
+  object[key] = value;
+  return object;
+};
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -1456,6 +1469,30 @@ function result(collection) {
  * exactly the same kind of function that is passed to reduction functions like JavaScript's `Array.prototype.reduce`
  * and Lodash's `_.reduce`.
  *
+ * Note in particular that the output of this reducer does not need to be a collection. It can be anything. While
+ * transducing normally involves transforming one collection into another, it need not be so. For example, here is a
+ * reducer that will result in summing of the collection values.
+ *
+ * ```
+ * const { toReducer, reduce } = xduce;
+ *
+ * const sumReducer = toReducer((acc, input) => acc + input);
+ * const sum = reduce([1, 2, 3, 4, 5], sumReducer, 0);
+ * // sum = 15
+ * ```
+ *
+ * This can be combined with transducers as well, as in this calculation of the sum of the *squares* of the collection
+ * values.
+ *
+ * ```
+ * const { toReducer, transduce } = xduce;
+ * const { map } = xduce.transducers;
+ *
+ * const sumReducer = toReducer((acc, input) => acc + input);
+ * const sum = transduce([1, 2, 3, 4, 5], map(x => x * x), sumReducer, 0);
+ * // sum = 55
+ * ```
+ *
  * @memberof module:xduce
  *
  * @param {*} collection An iterable collection or a reducer function.
@@ -1502,37 +1539,37 @@ function toFunction(xform, reducer) {
 }
 
 /**
- * **Marks a value as reduced.**
+ * **Marks a value as complete.**
  *
- * This is done by wrapping the value. This means three things: first, a reduced obejct may be marked as reduced again;
- * second, a reduced value isn't usable without being unreduced first; and third any type of value (including
- * `undefined`) may be marked as reduced.
+ * This is done by wrapping the value. This means three things: first, a complete object may be marked as complete
+ * again; second, a complete value isn't usable without being uncompleted first; and third any type of value (including
+ * `undefined`) may be marked as complete.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be reduced.
- * @return {*} A reduced version of the provided value. This reduction is achieved by wrapping the value in a marker
+ * @param {*} value The value to be completed.
+ * @return {*} A completed version of the provided value. This reduction is achieved by wrapping the value in a marker
  *     object.
  */
-function reduced(value) {
+function complete(value) {
   var _ref3;
 
   return _ref3 = {}, (0, _defineProperty3.default)(_ref3, p.reduced, true), (0, _defineProperty3.default)(_ref3, p.value, value), _ref3;
 }
 
 /**
- * **Removes the reduced status from a reduced value.**
+ * **Removes the complete status from a completed value.**
  *
- * This function is intended to be used when it's certain that a value is already marked as reduced. If it is not,
+ * This function is intended to be used when it's certain that a value is already marked as complete. If it is not,
  * `undefined` will be returned instead of the value.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be unreduced.
- * @return {*} An unreduced version of the provided value. If the value was not reduced in the first place, `undefined`
- *     will be returned instead.
+ * @param {*} value The value to be uncompleted.
+ * @return {*} An uncompleted version of the provided value. If the value was not complete in the first place,
+ *     `undefined` will be returned instead.
  */
-function unreduced(value) {
+function uncomplete(value) {
   if (value == null) {
     return;
   }
@@ -1540,14 +1577,14 @@ function unreduced(value) {
 }
 
 /**
- * **Determines whether a value is marked as reduced.**
+ * **Determines whether a value is marked as complete.**
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to test for its reduced status.
- * @return {boolean} Eitheehr `true` if the value is reduced, or `false` if it is not.
+ * @param {*} value The value to test for its complete status.
+ * @return {boolean} Either `true` if the value is complete, or `false` if it is not.
  */
-function isReduced(value) {
+function isComplete(value) {
   if (value == null) {
     return false;
   }
@@ -1555,35 +1592,35 @@ function isReduced(value) {
 }
 
 /**
- * **Makes sure that a value is marked as reduced; if it is not, it will be marked as reduced.**
+ * **Makes sure that a value is marked as complete; if it is not, it will be marked as complete.**
  *
- * This differs from {@link module:xduce.util.reduced|reduced} in that if the value is already reduced, this function
- * won't reduce it again. Therefore thus function can't be used to make a value reduced multiple times.
+ * This differs from {@link module:xduce.util.status.complete|complete} in that if the value is already complete, this
+ * function won't complete it again. Therefore thus function can't be used to make a value complete multiple times.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be reduced.
- * @return {*} If the value is already reduced, then the value is simply returned. Otherwise, a reduced version of the
- *     value is returned.
+ * @param {*} value The value to be completed.
+ * @return {*} If the value is already complete, then the value is simply returned. Otherwise, a completed version of
+ *     the value is returned.
  */
-function ensureReduced(value) {
-  return isReduced(value) ? value : reduced(value);
+function ensureCompleted(value) {
+  return isComplete(value) ? value : complete(value);
 }
 
 /**
- * **Removes the reduced status from a value, as long as it actually is reduced.**
+ * **Removes the complete status from a value, as long as it actually is complete.**
  *
- * This does a check to make sure the value passed in actually is reduced. If it isn't, the value itself is returned.
- * It's meant to be used when the reduced status is uncertain.
+ * This does a check to make sure the value passed in actually is complete. If it isn't, the value itself is returned.
+ * It's meant to be used when the completed status is uncertain.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The reduced value to be unreduced.
- * @return {*} If the value is already unreduced, the value is simply returned. Otherwise an unreduced version of the
- *     value is returned.
+ * @param {*} value The complete value to be uncompleted.
+ * @return {*} If the value is already uncompleted, the value is simply returned. Otherwise an uncompleted version of
+ *     the value is returned.
  */
-function ensureUnreduced(value) {
-  return isReduced(value) ? unreduced(value) : value;
+function ensureUncompleted(value) {
+  return isComplete(value) ? uncomplete(value) : value;
 }
 
 /**
@@ -1631,8 +1668,8 @@ function reduce(collection, reducer, init) {
 
   while (!step.done) {
     acc = reducer[p.step](acc, step.value);
-    if (isReduced(acc)) {
-      acc = unreduced(acc);
+    if (isComplete(acc)) {
+      acc = uncomplete(acc);
       break;
     }
     step = iter.next();
@@ -1650,25 +1687,12 @@ module.exports = {
   objectReducer: objectReducer,
   stringReducer: stringReducer,
   toFunction: toFunction,
-  reduced: reduced,
-  unreduced: unreduced,
-  isReduced: isReduced,
-  ensureReduced: ensureReduced,
-  ensureUnreduced: ensureUnreduced,
+  complete: complete,
+  uncomplete: uncomplete,
+  isComplete: isComplete,
+  ensureCompleted: ensureCompleted,
+  ensureUncompleted: ensureUncompleted,
   reduce: reduce
-};
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var dP         = __webpack_require__(10)
-  , createDesc = __webpack_require__(22);
-module.exports = __webpack_require__(8) ? function(object, key, value){
-  return dP.f(object, key, createDesc(1, value));
-} : function(object, key, value){
-  object[key] = value;
-  return object;
 };
 
 /***/ }),
@@ -1729,9 +1753,9 @@ var _require3 = __webpack_require__(20),
 var _require4 = __webpack_require__(0),
     isNumber = _require4.isNumber;
 
-var _require5 = __webpack_require__(12),
-    isReduced = _require5.isReduced,
-    reduced = _require5.reduced,
+var _require5 = __webpack_require__(13),
+    isComplete = _require5.isComplete,
+    complete = _require5.complete,
     reduce = _require5.reduce;
 
 var p = protocols;
@@ -1820,7 +1844,7 @@ function flattenTransducer(xform) {
       return xform[p.init]();
     }), (0, _defineProperty3.default)(_subXform, p.step, function (acc, input) {
       var v = xform[p.step](acc, input);
-      return isReduced(v) ? reduced(v) : v;
+      return isComplete(v) ? complete(v) : v;
     }), (0, _defineProperty3.default)(_subXform, p.result, function (value) {
       return xform[p.result](value);
     }), _subXform);
@@ -1880,7 +1904,7 @@ function repeatTransducer(n, xform) {
     var result = acc;
     for (var i = 0; i < n; ++i) {
       result = xform[p.step](result, input);
-      if (isReduced(result)) {
+      if (isComplete(result)) {
         break;
       }
     }
@@ -1949,7 +1973,7 @@ module.exports = function(it){
 var global    = __webpack_require__(7)
   , core      = __webpack_require__(2)
   , ctx       = __webpack_require__(80)
-  , hide      = __webpack_require__(13)
+  , hide      = __webpack_require__(12)
   , PROTOTYPE = 'prototype';
 
 var $export = function(type, name, source){
@@ -2561,7 +2585,7 @@ __webpack_require__(43)(String, 'String', function(iterated){
 
 __webpack_require__(99);
 var global        = __webpack_require__(7)
-  , hide          = __webpack_require__(13)
+  , hide          = __webpack_require__(12)
   , Iterators     = __webpack_require__(18)
   , TO_STRING_TAG = __webpack_require__(6)('toStringTag');
 
@@ -2630,7 +2654,7 @@ module.exports = !__webpack_require__(8) && !__webpack_require__(17)(function(){
 var LIBRARY        = __webpack_require__(28)
   , $export        = __webpack_require__(16)
   , redefine       = __webpack_require__(50)
-  , hide           = __webpack_require__(13)
+  , hide           = __webpack_require__(12)
   , has            = __webpack_require__(9)
   , Iterators      = __webpack_require__(18)
   , $iterCreate    = __webpack_require__(85)
@@ -2821,7 +2845,7 @@ module.exports = function(KEY, exec){
 /* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(13);
+module.exports = __webpack_require__(12);
 
 /***/ }),
 /* 51 */
@@ -3056,7 +3080,7 @@ $JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function(){
 });
 
 // 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(13)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(12)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
 // 19.4.3.5 Symbol.prototype[@@toStringTag]
 setToStringTag($Symbol, 'Symbol');
 // 20.2.1.9 Math[@@toStringTag]
@@ -3501,12 +3525,15 @@ var _require = __webpack_require__(0),
     isObject = _require.isObject,
     isString = _require.isString;
 
-var _require2 = __webpack_require__(12),
-    reduced = _require2.reduced,
-    unreduced = _require2.unreduced,
-    isReduced = _require2.isReduced,
-    ensureReduced = _require2.ensureReduced,
-    ensureUnreduced = _require2.ensureUnreduced;
+var _require2 = __webpack_require__(13),
+    complete = _require2.complete,
+    uncomplete = _require2.uncomplete,
+    isComplete = _require2.isComplete,
+    ensureCompleted = _require2.ensureCompleted,
+    ensureUncompleted = _require2.ensureUncompleted,
+    toReducer = _require2.toReducer,
+    toFunction = _require2.toFunction,
+    reduce = _require2.reduce;
 
 var _require3 = __webpack_require__(1),
     protocols = _require3.protocols;
@@ -3514,57 +3541,52 @@ var _require3 = __webpack_require__(1),
 var _require4 = __webpack_require__(20),
     iterator = _require4.iterator;
 
-var _require5 = __webpack_require__(12),
-    toReducer = _require5.toReducer,
-    toFunction = _require5.toFunction,
-    reduce = _require5.reduce;
+var _require5 = __webpack_require__(4),
+    transduce = _require5.transduce,
+    into = _require5.into,
+    sequence = _require5.sequence,
+    asArray = _require5.asArray,
+    asIterator = _require5.asIterator,
+    asObject = _require5.asObject,
+    asString = _require5.asString,
+    compose = _require5.compose;
 
-var _require6 = __webpack_require__(4),
-    transduce = _require6.transduce,
-    into = _require6.into,
-    sequence = _require6.sequence,
-    asArray = _require6.asArray,
-    asIterator = _require6.asIterator,
-    asObject = _require6.asObject,
-    asString = _require6.asString,
-    compose = _require6.compose;
+var _require6 = __webpack_require__(53),
+    chunk = _require6.chunk,
+    chunkBy = _require6.chunkBy;
 
-var _require7 = __webpack_require__(53),
-    chunk = _require7.chunk,
-    chunkBy = _require7.chunkBy;
+var _require7 = __webpack_require__(14),
+    identity = _require7.identity,
+    flatten = _require7.flatten,
+    repeat = _require7.repeat;
 
-var _require8 = __webpack_require__(14),
-    identity = _require8.identity,
-    flatten = _require8.flatten,
-    repeat = _require8.repeat;
+var _require8 = __webpack_require__(54),
+    distinct = _require8.distinct,
+    distinctBy = _require8.distinctBy,
+    distinctWith = _require8.distinctWith;
 
-var _require9 = __webpack_require__(54),
-    distinct = _require9.distinct,
-    distinctBy = _require9.distinctBy,
-    distinctWith = _require9.distinctWith;
+var _require9 = __webpack_require__(55),
+    drop = _require9.drop,
+    dropWhile = _require9.dropWhile;
 
-var _require10 = __webpack_require__(55),
-    drop = _require10.drop,
-    dropWhile = _require10.dropWhile;
+var _require10 = __webpack_require__(56),
+    filter = _require10.filter,
+    reject = _require10.reject,
+    compact = _require10.compact;
 
-var _require11 = __webpack_require__(56),
-    filter = _require11.filter,
-    reject = _require11.reject,
-    compact = _require11.compact;
+var _require11 = __webpack_require__(57),
+    map = _require11.map,
+    flatMap = _require11.flatMap;
 
-var _require12 = __webpack_require__(57),
-    map = _require12.map,
-    flatMap = _require12.flatMap;
+var _require12 = __webpack_require__(58),
+    take = _require12.take,
+    takeWhile = _require12.takeWhile,
+    takeNth = _require12.takeNth;
 
-var _require13 = __webpack_require__(58),
-    take = _require13.take,
-    takeWhile = _require13.takeWhile,
-    takeNth = _require13.takeNth;
-
-var _require14 = __webpack_require__(59),
-    unique = _require14.unique,
-    uniqueBy = _require14.uniqueBy,
-    uniqueWith = _require14.uniqueWith;
+var _require13 = __webpack_require__(59),
+    unique = _require13.unique,
+    uniqueBy = _require13.uniqueBy,
+    uniqueWith = _require13.uniqueWith;
 
 module.exports = {
   /**
@@ -3606,28 +3628,33 @@ module.exports = {
     isString: isString,
 
     /**
-     * Helper functions for writing transducers. All of these relate to reducing values. Marking values as reduced
-     * should happen to tell the library's reduction engine to stop reducing, that the current collection is finished
-     * and can be returned as the final collection.
+     * Helper functions for writing transducers. These are markers for telling the transducer engine that operatio on
+     * a value should be complete, even if there are still input elements left
      *
-     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as reduced
+     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as complete
      * when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
      * input collection are processed.
      *
-     * Values can be reduced multiple times. This nests a reduced value inside a reduced value, and so on. To unreduce
-     * values like this, {@link module:xduce.util.reduction.unreduced|unreduced} would have to be called multiple times.
+     * Without being able to be marked as completed, the only other option for the
+     * {@link module:xduce.transducers.take|take} transducer would be to process the collection to its end and simply
+     * not add any of the elements after a certain number to the output collection. This would be inefficient and would
+     * also make it impossible for {@link module:xduce.transducers.take|take} to handle infinite iterators.
+     *
+     * Values can be completed multiple times. This nests a complete value inside a complete value, and so on. To
+     * un-complete values like this, {@link module:xduce.util.status.uncomplete|uncomplete} would have to be called
+     * multiple times. This is used in the library in the `{@link module:xduce.transducers.flatten|flatten}` transducer.
      *
      * @memberof module:xduce.util
      * @static
-     * @namespace reduction
+     * @namespace status
      * @type {object}
      */
-    reduction: {
-      reduced: reduced,
-      unreduced: unreduced,
-      isReduced: isReduced,
-      ensureReduced: ensureReduced,
-      ensureUnreduced: ensureUnreduced
+    status: {
+      complete: complete,
+      uncomplete: uncomplete,
+      isComplete: isComplete,
+      ensureCompleted: ensureCompleted,
+      ensureUncompleted: ensureUncompleted
     }
   },
   protocols: protocols,
@@ -3778,8 +3805,8 @@ var _require = __webpack_require__(1),
 var _require2 = __webpack_require__(4),
     sequence = _require2.sequence;
 
-var _require3 = __webpack_require__(12),
-    ensureUnreduced = _require3.ensureUnreduced;
+var _require3 = __webpack_require__(13),
+    ensureUncompleted = _require3.ensureUncompleted;
 
 var _require4 = __webpack_require__(0),
     isFunction = _require4.isFunction,
@@ -3826,7 +3853,7 @@ function chunkTransducer(n, xform) {
     return acc;
   }), (0, _defineProperty3.default)(_ref, p.result, function (value) {
     if (count > 0) {
-      return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+      return ensureUncompleted(xform[p.step](value, part.slice(0, count)));
     }
     return xform[p.result](value);
   }), _ref;
@@ -3917,7 +3944,7 @@ function chunkByTransducer(fn, xform) {
   }), (0, _defineProperty3.default)(_ref4, p.result, function (value) {
     var count = part.length;
     if (count > 0) {
-      return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+      return ensureUncompleted(xform[p.step](value, part.slice(0, count)));
     }
     return xform[p.result](value);
   }), _ref4;
@@ -4831,8 +4858,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var _require = __webpack_require__(1),
     protocols = _require.protocols;
 
-var _require2 = __webpack_require__(12),
-    ensureReduced = _require2.ensureReduced;
+var _require2 = __webpack_require__(13),
+    ensureCompleted = _require2.ensureCompleted;
 
 var _require3 = __webpack_require__(4),
     sequence = _require3.sequence;
@@ -4865,7 +4892,7 @@ function takeTransducer(n, xform) {
     if (i < n) {
       result = xform[p.step](acc, input);
       if (i === n - 1) {
-        result = ensureReduced(result);
+        result = ensureCompleted(result);
       }
     }
     i++;
@@ -4939,7 +4966,7 @@ function takeWhileTransducer(fn, xform) {
   return _ref4 = {}, (0, _defineProperty3.default)(_ref4, p.init, function () {
     return xform[p.init]();
   }), (0, _defineProperty3.default)(_ref4, p.step, function (acc, input) {
-    return fn(input) ? xform[p.step](acc, input) : ensureReduced(acc);
+    return fn(input) ? xform[p.step](acc, input) : ensureCompleted(acc);
   }), (0, _defineProperty3.default)(_ref4, p.result, function (value) {
     return xform[p.result](value);
   }), _ref4;
@@ -5533,7 +5560,7 @@ var create         = __webpack_require__(44)
   , IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(13)(IteratorPrototype, __webpack_require__(6)('iterator'), function(){ return this; });
+__webpack_require__(12)(IteratorPrototype, __webpack_require__(6)('iterator'), function(){ return this; });
 
 module.exports = function(Constructor, NAME, next){
   Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});

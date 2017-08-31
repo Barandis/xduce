@@ -520,7 +520,7 @@ module.exports = {
 
 const { protocols, isImplemented } = __webpack_require__(1);
 const { isKvFormObject, iterator } = __webpack_require__(5);
-const { isReduced, reduce, arrayReducer, objectReducer, stringReducer } = __webpack_require__(3);
+const { isComplete, reduce, arrayReducer, objectReducer, stringReducer } = __webpack_require__(3);
 const { isArray, isObject, isString } = __webpack_require__(0);
 const p = protocols;
 
@@ -601,8 +601,8 @@ function transducingIterator(collection, xform) {
     // items array); otherwise the while loop continues to the next element of the input collection. This ensures that
     // there's something for the `next` function to return each time it's called.
     //
-    // If the collection has completed or if the step function returns a reduced object (which take will do after its
-    // limit of elements has been reached, for instance), the iteration is completed by calling the result function.
+    // If the collection has finished or if the step function returns a completed object (which take will do after its
+    // limit of elements has been reached, for instance), the iteration is finished by calling the result function.
     step() {
       const count = this.items.length;
       while (this.items.length === count) {
@@ -611,7 +611,7 @@ function transducingIterator(collection, xform) {
           xf[p.result](this);
           break;
         }
-        reduced = isReduced(xf[p.step](this, step.value));
+        reduced = isComplete(xf[p.step](this, step.value));
       }
     }
   };
@@ -1198,6 +1198,30 @@ function result(collection) {
  * exactly the same kind of function that is passed to reduction functions like JavaScript's `Array.prototype.reduce`
  * and Lodash's `_.reduce`.
  *
+ * Note in particular that the output of this reducer does not need to be a collection. It can be anything. While
+ * transducing normally involves transforming one collection into another, it need not be so. For example, here is a
+ * reducer that will result in summing of the collection values.
+ *
+ * ```
+ * const { toReducer, reduce } = xduce;
+ *
+ * const sumReducer = toReducer((acc, input) => acc + input);
+ * const sum = reduce([1, 2, 3, 4, 5], sumReducer, 0);
+ * // sum = 15
+ * ```
+ *
+ * This can be combined with transducers as well, as in this calculation of the sum of the *squares* of the collection
+ * values.
+ *
+ * ```
+ * const { toReducer, transduce } = xduce;
+ * const { map } = xduce.transducers;
+ *
+ * const sumReducer = toReducer((acc, input) => acc + input);
+ * const sum = transduce([1, 2, 3, 4, 5], map(x => x * x), sumReducer, 0);
+ * // sum = 55
+ * ```
+ *
  * @memberof module:xduce
  *
  * @param {*} collection An iterable collection or a reducer function.
@@ -1246,19 +1270,19 @@ function toFunction(xform, reducer) {
 }
 
 /**
- * **Marks a value as reduced.**
+ * **Marks a value as complete.**
  *
- * This is done by wrapping the value. This means three things: first, a reduced obejct may be marked as reduced again;
- * second, a reduced value isn't usable without being unreduced first; and third any type of value (including
- * `undefined`) may be marked as reduced.
+ * This is done by wrapping the value. This means three things: first, a complete object may be marked as complete
+ * again; second, a complete value isn't usable without being uncompleted first; and third any type of value (including
+ * `undefined`) may be marked as complete.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be reduced.
- * @return {*} A reduced version of the provided value. This reduction is achieved by wrapping the value in a marker
+ * @param {*} value The value to be completed.
+ * @return {*} A completed version of the provided value. This reduction is achieved by wrapping the value in a marker
  *     object.
  */
-function reduced(value) {
+function complete(value) {
   return {
     [p.reduced]: true,
     [p.value]: value
@@ -1266,18 +1290,18 @@ function reduced(value) {
 }
 
 /**
- * **Removes the reduced status from a reduced value.**
+ * **Removes the complete status from a completed value.**
  *
- * This function is intended to be used when it's certain that a value is already marked as reduced. If it is not,
+ * This function is intended to be used when it's certain that a value is already marked as complete. If it is not,
  * `undefined` will be returned instead of the value.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be unreduced.
- * @return {*} An unreduced version of the provided value. If the value was not reduced in the first place, `undefined`
- *     will be returned instead.
+ * @param {*} value The value to be uncompleted.
+ * @return {*} An uncompleted version of the provided value. If the value was not complete in the first place,
+ *     `undefined` will be returned instead.
  */
-function unreduced(value) {
+function uncomplete(value) {
   if (value == null) {
     return;
   }
@@ -1285,14 +1309,14 @@ function unreduced(value) {
 }
 
 /**
- * **Determines whether a value is marked as reduced.**
+ * **Determines whether a value is marked as complete.**
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to test for its reduced status.
- * @return {boolean} Eitheehr `true` if the value is reduced, or `false` if it is not.
+ * @param {*} value The value to test for its complete status.
+ * @return {boolean} Either `true` if the value is complete, or `false` if it is not.
  */
-function isReduced(value) {
+function isComplete(value) {
   if (value == null) {
     return false;
   }
@@ -1300,35 +1324,35 @@ function isReduced(value) {
 }
 
 /**
- * **Makes sure that a value is marked as reduced; if it is not, it will be marked as reduced.**
+ * **Makes sure that a value is marked as complete; if it is not, it will be marked as complete.**
  *
- * This differs from {@link module:xduce.util.reduced|reduced} in that if the value is already reduced, this function
- * won't reduce it again. Therefore thus function can't be used to make a value reduced multiple times.
+ * This differs from {@link module:xduce.util.status.complete|complete} in that if the value is already complete, this
+ * function won't complete it again. Therefore thus function can't be used to make a value complete multiple times.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The value to be reduced.
- * @return {*} If the value is already reduced, then the value is simply returned. Otherwise, a reduced version of the
- *     value is returned.
+ * @param {*} value The value to be completed.
+ * @return {*} If the value is already complete, then the value is simply returned. Otherwise, a completed version of
+ *     the value is returned.
  */
-function ensureReduced(value) {
-  return isReduced(value) ? value : reduced(value);
+function ensureCompleted(value) {
+  return isComplete(value) ? value : complete(value);
 }
 
 /**
- * **Removes the reduced status from a value, as long as it actually is reduced.**
+ * **Removes the complete status from a value, as long as it actually is complete.**
  *
- * This does a check to make sure the value passed in actually is reduced. If it isn't, the value itself is returned.
- * It's meant to be used when the reduced status is uncertain.
+ * This does a check to make sure the value passed in actually is complete. If it isn't, the value itself is returned.
+ * It's meant to be used when the completed status is uncertain.
  *
- * @memberof module:xduce.util.reduction
+ * @memberof module:xduce.util.status
  *
- * @param {*} value The reduced value to be unreduced.
- * @return {*} If the value is already unreduced, the value is simply returned. Otherwise an unreduced version of the
- *     value is returned.
+ * @param {*} value The complete value to be uncompleted.
+ * @return {*} If the value is already uncompleted, the value is simply returned. Otherwise an uncompleted version of
+ *     the value is returned.
  */
-function ensureUnreduced(value) {
-  return isReduced(value) ? unreduced(value) : value;
+function ensureUncompleted(value) {
+  return isComplete(value) ? uncomplete(value) : value;
 }
 
 /**
@@ -1376,8 +1400,8 @@ function reduce(collection, reducer, init) {
 
   while (!step.done) {
     acc = reducer[p.step](acc, step.value);
-    if (isReduced(acc)) {
-      acc = unreduced(acc);
+    if (isComplete(acc)) {
+      acc = uncomplete(acc);
       break;
     }
     step = iter.next();
@@ -1395,11 +1419,11 @@ module.exports = {
   objectReducer,
   stringReducer,
   toFunction,
-  reduced,
-  unreduced,
-  isReduced,
-  ensureReduced,
-  ensureUnreduced,
+  complete,
+  uncomplete,
+  isComplete,
+  ensureCompleted,
+  ensureUncompleted,
   reduce
 };
 
@@ -1441,7 +1465,7 @@ const { protocols } = __webpack_require__(1);
 const { sequence } = __webpack_require__(2);
 const { isIterable } = __webpack_require__(5);
 const { isNumber } = __webpack_require__(0);
-const { isReduced, reduced, reduce } = __webpack_require__(3);
+const { isComplete, complete, reduce } = __webpack_require__(3);
 const p = protocols;
 
 /**
@@ -1532,7 +1556,7 @@ function flattenTransducer(xform) {
 
         [p.step](acc, input) {
           const v = xform[p.step](acc, input);
-          return isReduced(v) ? reduced(v) : v;
+          return isComplete(v) ? complete(v) : v;
         },
 
         [p.result](value) {
@@ -1597,7 +1621,7 @@ function repeatTransducer(n, xform) {
       let result = acc;
       for (let i = 0; i < n; ++i) {
         result = xform[p.step](result, input);
-        if (isReduced(result)) {
+        if (isComplete(result)) {
           break;
         }
       }
@@ -2390,11 +2414,20 @@ const {
   isObject,
   isString
 } = __webpack_require__(0);
-const { reduced, unreduced, isReduced, ensureReduced, ensureUnreduced } = __webpack_require__(3);
+
+const {
+  complete,
+  uncomplete,
+  isComplete,
+  ensureCompleted,
+  ensureUncompleted,
+  toReducer,
+  toFunction,
+  reduce
+} = __webpack_require__(3);
 
 const { protocols } = __webpack_require__(1);
 const { iterator } = __webpack_require__(5);
-const { toReducer, toFunction, reduce } = __webpack_require__(3);
 const {
   transduce,
   into,
@@ -2455,29 +2488,34 @@ module.exports = {
     isString,
 
     /**
-     * Helper functions for writing transducers. All of these relate to reducing values. Marking values as reduced
-     * should happen to tell the library's reduction engine to stop reducing, that the current collection is finished
-     * and can be returned as the final collection.
+     * Helper functions for writing transducers. These are markers for telling the transducer engine that operatio on
+     * a value should be complete, even if there are still input elements left
      *
-     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as reduced
+     * For example, the {@link module:xduce.transducers.take|take} transducer marks its output collection as complete
      * when it takes a certain number of items. This allows reduction to be shut off before all of the elements of the
      * input collection are processed.
      *
-     * Values can be reduced multiple times. This nests a reduced value inside a reduced value, and so on. To unreduce
-     * values like this, {@link module:xduce.util.reduction.unreduced|unreduced} would have to be called multiple times.
+     * Without being able to be marked as completed, the only other option for the
+     * {@link module:xduce.transducers.take|take} transducer would be to process the collection to its end and simply
+     * not add any of the elements after a certain number to the output collection. This would be inefficient and would
+     * also make it impossible for {@link module:xduce.transducers.take|take} to handle infinite iterators.
+     *
+     * Values can be completed multiple times. This nests a complete value inside a complete value, and so on. To
+     * un-complete values like this, {@link module:xduce.util.status.uncomplete|uncomplete} would have to be called
+     * multiple times. This is used in the library in the `{@link module:xduce.transducers.flatten|flatten}` transducer.
      *
      * @memberof module:xduce.util
      * @static
-     * @namespace reduction
+     * @namespace status
      * @type {object}
      */
-    reduction: {
-      reduced,
-      unreduced,
-      isReduced,
-      ensureReduced,
-      ensureUnreduced
-    },
+    status: {
+      complete,
+      uncomplete,
+      isComplete,
+      ensureCompleted,
+      ensureUncompleted
+    }
   },
   protocols,
   iterator,
@@ -2607,7 +2645,7 @@ module.exports = {
 
 const { protocols } = __webpack_require__(1);
 const { sequence } = __webpack_require__(2);
-const { ensureUnreduced } = __webpack_require__(3);
+const { ensureUncompleted } = __webpack_require__(3);
 const { isFunction, isNumber } = __webpack_require__(0);
 const { sameValueZero } = __webpack_require__(4);
 const p = protocols;
@@ -2651,7 +2689,7 @@ function chunkTransducer(n, xform) {
 
     [p.result](value) {
       if (count > 0) {
-        return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+        return ensureUncompleted(xform[p.step](value, part.slice(0, count)));
       }
       return xform[p.result](value);
     }
@@ -2740,7 +2778,7 @@ function chunkByTransducer(fn, xform) {
     [p.result](value) {
       const count = part.length;
       if (count > 0) {
-        return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+        return ensureUncompleted(xform[p.step](value, part.slice(0, count)));
       }
       return xform[p.result](value);
     }
@@ -3526,7 +3564,7 @@ module.exports = {
  */
 
 const { protocols } = __webpack_require__(1);
-const { ensureReduced } = __webpack_require__(3);
+const { ensureCompleted } = __webpack_require__(3);
 const { sequence } = __webpack_require__(2);
 const { isNumber, isFunction } = __webpack_require__(0);
 const p = protocols;
@@ -3554,7 +3592,7 @@ function takeTransducer(n, xform) {
       if (i < n) {
         result = xform[p.step](acc, input);
         if (i === n - 1) {
-          result = ensureReduced(result);
+          result = ensureCompleted(result);
         }
       }
       i++;
@@ -3626,7 +3664,7 @@ function takeWhileTransducer(fn, xform) {
     },
 
     [p.step](acc, input) {
-      return fn(input) ? xform[p.step](acc, input) : ensureReduced(acc);
+      return fn(input) ? xform[p.step](acc, input) : ensureCompleted(acc);
     },
 
     [p.result](value) {

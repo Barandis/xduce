@@ -28,7 +28,7 @@
 
 const { protocols } = require('../modules/protocol');
 const { sequence } = require('../modules/transformation');
-const { ensureUnreduced } = require('../modules/reduction');
+const { ensureUncompleted } = require('../modules/reduction');
 const { isFunction, isNumber } = require('../modules/util');
 const { sameValueZero } = require('./core');
 const p = protocols;
@@ -72,7 +72,7 @@ function chunkTransducer(n, xform) {
 
     [p.result](value) {
       if (count > 0) {
-        return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+        return ensureUncompleted(xform[p.step](value, part.slice(0, count)));
       }
       return xform[p.result](value);
     }
@@ -161,7 +161,7 @@ function chunkByTransducer(fn, xform) {
     [p.result](value) {
       const count = part.length;
       if (count > 0) {
-        return ensureUnreduced(xform[p.step](value, part.slice(0, count)));
+        return ensureUncompleted(xform[p.step](value, part.slice(0, count)));
       }
       return xform[p.result](value);
     }

@@ -27,7 +27,7 @@
  */
 
 const { protocols } = require('../modules/protocol');
-const { ensureReduced } = require('../modules/reduction');
+const { ensureCompleted } = require('../modules/reduction');
 const { sequence } = require('../modules/transformation');
 const { isNumber, isFunction } = require('../modules/util');
 const p = protocols;
@@ -55,7 +55,7 @@ function takeTransducer(n, xform) {
       if (i < n) {
         result = xform[p.step](acc, input);
         if (i === n - 1) {
-          result = ensureReduced(result);
+          result = ensureCompleted(result);
         }
       }
       i++;
@@ -127,7 +127,7 @@ function takeWhileTransducer(fn, xform) {
     },
 
     [p.step](acc, input) {
-      return fn(input) ? xform[p.step](acc, input) : ensureReduced(acc);
+      return fn(input) ? xform[p.step](acc, input) : ensureCompleted(acc);
     },
 
     [p.result](value) {

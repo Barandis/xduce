@@ -31,7 +31,7 @@ const { protocols } = require('../modules/protocol');
 const { sequence } = require('../modules/transformation');
 const { isIterable } = require('../modules/iteration');
 const { isNumber } = require('../modules/util');
-const { isReduced, reduced, reduce } = require('../modules/reduction');
+const { isCompleted, complete, reduce } = require('../modules/reduction');
 const p = protocols;
 
 /**
@@ -122,7 +122,7 @@ function flattenTransducer(xform) {
 
         [p.step](acc, input) {
           const v = xform[p.step](acc, input);
-          return isReduced(v) ? reduced(v) : v;
+          return isCompleted(v) ? complete(v) : v;
         },
 
         [p.result](value) {
@@ -187,7 +187,7 @@ function repeatTransducer(n, xform) {
       let result = acc;
       for (let i = 0; i < n; ++i) {
         result = xform[p.step](result, input);
-        if (isReduced(result)) {
+        if (isCompleted(result)) {
           break;
         }
       }

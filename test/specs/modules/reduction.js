@@ -8,11 +8,11 @@ const { map } = require('../../../src/xform/map');
 const { filter } = require('../../../src/xform/filter');
 
 const {
-  isReduced,
-  reduced,
-  unreduced,
-  ensureReduced,
-  ensureUnreduced,
+  isCompleted,
+  complete,
+  uncomplete,
+  ensureCompleted,
+  ensureUncompleted,
   toReducer,
   toFunction,
   arrayReducer
@@ -20,116 +20,116 @@ const {
 
 const p = protocols;
 
-describe('Reduction marking functions', () => {
-  context('isReduced', () => {
+describe('Status marking functions', () => {
+  context('isCompleted', () => {
     it('works on unreduced values', () => {
-      expect(isReduced(1729)).to.be.false;
-      expect(isReduced({})).to.be.false;
-      expect(isReduced([])).to.be.false;
-      expect(isReduced(0)).to.be.false;
-      expect(isReduced('')).to.be.false;
-      expect(isReduced(null)).to.be.false;
-      expect(isReduced(undefined)).to.be.false;
+      expect(isCompleted(1729)).to.be.false;
+      expect(isCompleted({})).to.be.false;
+      expect(isCompleted([])).to.be.false;
+      expect(isCompleted(0)).to.be.false;
+      expect(isCompleted('')).to.be.false;
+      expect(isCompleted(null)).to.be.false;
+      expect(isCompleted(undefined)).to.be.false;
     });
 
     it('works on values wrapped with marker class', () => {
-      expect(isReduced(reduced(1729))).to.be.true;
-      expect(isReduced(reduced({}))).to.be.true;
-      expect(isReduced(reduced([]))).to.be.true;
-      expect(isReduced(reduced(0))).to.be.true;
-      expect(isReduced(reduced(''))).to.be.true;
-      expect(isReduced(reduced(null))).to.be.true;
-      expect(isReduced(reduced(undefined))).to.be.true;
+      expect(isCompleted(complete(1729))).to.be.true;
+      expect(isCompleted(complete({}))).to.be.true;
+      expect(isCompleted(complete([]))).to.be.true;
+      expect(isCompleted(complete(0))).to.be.true;
+      expect(isCompleted(complete(''))).to.be.true;
+      expect(isCompleted(complete(null))).to.be.true;
+      expect(isCompleted(complete(undefined))).to.be.true;
     });
 
     it('works on values with the reduced protocol', () => {
       const obj = { [p.reduced]: true };
-      expect(isReduced(obj)).to.be.true;
+      expect(isCompleted(obj)).to.be.true;
 
       const array = [];
       array[p.reduced] = true;
-      expect(isReduced(array)).to.be.true;
+      expect(isCompleted(array)).to.be.true;
     });
   });
 
-  context('reduced', () => {
-    it('turns a value into a reduced value', () => {
+  context('complete', () => {
+    it('turns a value into a completed value', () => {
       const value = 1729;
-      expect(isReduced(value)).to.be.false;
+      expect(isCompleted(value)).to.be.false;
 
-      const red = reduced(value);
-      expect(isReduced(red)).to.be.true;
-      expect(red[p.value]).to.equal(1729);
+      const cpl = complete(value);
+      expect(isCompleted(cpl)).to.be.true;
+      expect(cpl[p.value]).to.equal(1729);
+    });complete
+
+    it('can make any value a completed value', () => {
+      expect(isCompleted('')).to.be.false;
+      expect(isCompleted(complete(''))).to.be.true;
+
+      expect(isCompleted(0)).to.be.false;
+      expect(isCompleted(complete(0))).to.be.true;
+
+      expect(isCompleted(null)).to.be.false;
+      expect(isCompleted(complete(null))).to.be.true;
+
+      expect(isCompleted(undefined)).to.be.false;
+      expect(isCompleted(complete(undefined))).to.be.true;
     });
 
-    it('can make any value a reduced value', () => {
-      expect(isReduced('')).to.be.false;
-      expect(isReduced(reduced(''))).to.be.true;
-
-      expect(isReduced(0)).to.be.false;
-      expect(isReduced(reduced(0))).to.be.true;
-
-      expect(isReduced(null)).to.be.false;
-      expect(isReduced(reduced(null))).to.be.true;
-
-      expect(isReduced(undefined)).to.be.false;
-      expect(isReduced(reduced(undefined))).to.be.true;
-    });
-
-    it('can make a reduced value doubly reduced', () => {
-      const value = reduced(reduced(1729));
-      expect(isReduced(value)).to.be.true;
-      expect(isReduced(value[p.value])).to.be.true;
-      expect(isReduced(value[p.value][p.value])).to.be.false;
+    it('can make a completed value doubly completed', () => {
+      const value = complete(complete(1729));
+      expect(isCompleted(value)).to.be.true;
+      expect(isCompleted(value[p.value])).to.be.true;
+      expect(isCompleted(value[p.value][p.value])).to.be.false;
     });
   });
 
-  context('unreduced', () => {
-    it('turns a reduced value into its unreduced equivalent', () => {
-      const red = reduced(1729);
-      const value = unreduced(red);
-      expect(isReduced(value)).to.be.false;
+  context('uncomplete', () => {
+    it('turns a completed value into its uncompleted equivalent', () => {
+      const cpl = complete(1729);
+      const value = uncomplete(cpl);
+      expect(isCompleted(value)).to.be.false;
       expect(value).to.equal(1729);
     });
 
-    it('returns undefined for unreduced inputs', () => {
-      expect(unreduced(1729)).to.be.undefined;
-      expect(unreduced({})).to.be.undefined;
-      expect(unreduced(null)).to.be.undefined;
-      expect(unreduced(undefined)).to.be.undefined;
+    it('returns undefined for uncompleted inputs', () => {
+      expect(uncomplete(1729)).to.be.undefined;
+      expect(uncomplete({})).to.be.undefined;
+      expect(uncomplete(null)).to.be.undefined;
+      expect(uncomplete(undefined)).to.be.undefined;
     });
 
-    it('can unreduce nested reduces', () => {
-      const value = reduced(reduced(1729));
-      expect(isReduced(unreduced(value))).to.be.true;
-      expect(isReduced(unreduced(unreduced(value)))).to.be.false;
-      expect(unreduced(unreduced(value))).to.equal(1729);
+    it('can uncomplete nested completes', () => {
+      const value = complete(complete(1729));
+      expect(isCompleted(uncomplete(value))).to.be.true;
+      expect(isCompleted(uncomplete(uncomplete(value)))).to.be.false;
+      expect(uncomplete(uncomplete(value))).to.equal(1729);
     });
   });
 
-  context('ensureReduced', () => {
-    it('reduced an unreduced input', () => {
-      const value = ensureReduced(1729);
-      expect(isReduced(value)).to.be.true;
+  context('ensureCompleted', () => {
+    it('completes an uncompleted input', () => {
+      const value = ensureCompleted(1729);
+      expect(isCompleted(value)).to.be.true;
       expect(value[p.value]).to.equal(1729);
     });
 
-    it('will not further reduce an already reduced input', () => {
-      const value = reduced(1729);
-      expect(ensureReduced(value)).to.equal(value);
+    it('will not further reduce an already completed input', () => {
+      const value = complete(1729);
+      expect(ensureCompleted(value)).to.equal(value);
     });
   });
 
-  context('ensureUnreduced', () => {
-    it('unreduced a reduced input', () => {
-      const value = ensureUnreduced(reduced(1729));
-      expect(isReduced(value)).to.be.false;
+  context('ensureUncompleted', () => {
+    it('uncompletes a completed input', () => {
+      const value = ensureUncompleted(complete(1729));
+      expect(isCompleted(value)).to.be.false;
       expect(value).to.equal(1729);
     });
 
-    it('will return the value if it is already unreduced', () => {
+    it('will return the value if it is already uncompleted', () => {
       const value = 1729;
-      expect(ensureUnreduced(value)).to.equal(value);
+      expect(ensureUncompleted(value)).to.equal(value);
     });
   });
 });
