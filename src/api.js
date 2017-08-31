@@ -451,7 +451,7 @@ const { drop, dropWhile } = require('./xform/drop');
 const { filter, reject, compact } = require('./xform/filter');
 const { map, flatMap } = require('./xform/map');
 const { take, takeWhile, takeNth } = require('./xform/take');
-const { uniq, uniqBy, uniqWith } = require('./xform/uniq');
+const { unique, uniqueBy, uniqueWith } = require('./xform/unique');
 
 module.exports = {
   /**
@@ -604,8 +604,8 @@ module.exports = {
     take,
     takeWhile,
     takeNth,
-    uniq,
-    uniqBy,
-    uniqWith
+    unique,
+    uniqueBy,
+    uniqueWith
   }
 };

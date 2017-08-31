@@ -2413,7 +2413,7 @@ const { drop, dropWhile } = __webpack_require__(9);
 const { filter, reject, compact } = __webpack_require__(10);
 const { map, flatMap } = __webpack_require__(11);
 const { take, takeWhile, takeNth } = __webpack_require__(12);
-const { uniq, uniqBy, uniqWith } = __webpack_require__(13);
+const { unique, uniqueBy, uniqueWith } = __webpack_require__(13);
 
 module.exports = {
   /**
@@ -2566,9 +2566,9 @@ module.exports = {
     take,
     takeWhile,
     takeNth,
-    uniq,
-    uniqBy,
-    uniqWith
+    unique,
+    uniqueBy,
+    uniqueWith
   }
 };
 
@@ -2872,8 +2872,8 @@ function distinctTransducer(fn, xform) {
  * with a {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero} function serving as the
  * comparator.
  *
- * This is different from `{@link module:xduce.transducers.uniqWith|uniqWith}` in that this transform only eliminates
- * consecutive duplicate elements, not all duplicate elements.
+ * This is different from `{@link module:xduce.transducers.uniqueWith|uniqueWith}` in that this transform only
+ * eliminates consecutive duplicate elements, not all duplicate elements.
  *
  * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
  * et al.
@@ -2890,8 +2890,8 @@ function distinctTransducer(fn, xform) {
  * let result = distinctWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
  * // result = [1, 10, 100, 42, 893, 1111]
  *
- * // Compare to uniqWith with the same parameters
- * result = uniqWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * // Compare to uniueqWith with the same parameters
+ * result = uniqueWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
  * // result = [1, 10, 100, 1111]
  * ```
  *
@@ -2928,7 +2928,7 @@ function distinctWith(collection, fn, ctx) {
  * case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
  * can be used in any number of different ways, depending on the function used.
  *
- * This is different from `{@link module:xduce.transducers.uniqBy|uniqBy}` in that this transform only eliminates
+ * This is different from `{@link module:xduce.transducers.uniqueBy|uniqueBy}` in that this transform only eliminates
  * consecutive duplicate elements, not all duplicate elements.
  *
  * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
@@ -2941,8 +2941,8 @@ function distinctWith(collection, fn, ctx) {
  * let result = distinctBy(array, obj => obj.x);
  * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}]
  *
- * // Compare to uniqBy for the same parameters
- * result = uniqBy(array, obj => obj.x);
+ * // Compare to uniqueBy for the same parameters
+ * result = uniqueBy(array, obj => obj.x);
  * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]
  * ```
  *
@@ -2966,8 +2966,8 @@ function distinctBy(collection, fn, ctx) {
 /**
  * **Removes consecutive duplicate elements from a collection.**
  *
- * This differs from `{@link module:xduce.transducers.uniq|uniq}` in that an element is removed only if it equals the
- * element *immediately preceeding* it. Comparisons between elements are done with
+ * This differs from `{@link module:xduce.transducers.unique|unique}` in that an element is removed only if it equals
+ * the element *immediately preceeding* it. Comparisons between elements are done with
  * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero}.
  *
  * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
@@ -2977,8 +2977,8 @@ function distinctBy(collection, fn, ctx) {
  * let result = distinct([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
  * // result = [1, 2, 3, 4, 5, 3, 1, 5];
  *
- * // Compare to uniq with the same input
- * result = uniq([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * // Compare to unique with the same input
+ * result = unique([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
  * // result = [1, 2, 3, 4, 5];
  * ```
  *
@@ -3783,9 +3783,9 @@ const { sameValueZero } = __webpack_require__(4);
 const p = protocols;
 
 /**
- * A transducer function that is returned by the `{@link module:xduce.transducers.uniq|uniq}`,
- * `{@link module:xduce.transducers.uniqBy|uniqBy}`, and
- * `{@link module:xduce.transducers.uniqWith|uniqWith}` transducers.
+ * A transducer function that is returned by the `{@link module:xduce.transducers.unique|unique}`,
+ * `{@link module:xduce.transducers.uniqueBy|uniqueBy}`, and
+ * `{@link module:xduce.transducers.uniqueWith|uniqueWith}` transducers.
  *
  * @private
  *
@@ -3793,7 +3793,7 @@ const p = protocols;
  * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
  * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
  */
-function uniqTransducer(fn, xform) {
+function uniqueTransducer(fn, xform) {
   const uniques = [];
 
   return {
@@ -3820,7 +3820,7 @@ function uniqTransducer(fn, xform) {
  *
  * Comparisons are made by passing each pair of elements to the function, which must take two parameters and return a
  * boolean indicating whether or not the values are equal. As an example, the
- * `{@link module:xduce.transducers.uniq|uniq}` transducer could be regarded as the same as this transducer, with a
+ * `{@link module:xduce.transducers.unique|unique}` transducer could be regarded as the same as this transducer, with a
  * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero} function serving as the
  * comparator.
  *
@@ -3839,7 +3839,7 @@ function uniqTransducer(fn, xform) {
  * }
  *
  * // Returns only the first value of each magnitude
- * const result = uniqWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * const result = uniqueWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
  * // result = [1, 10, 100, 1111]
  * ```
  *
@@ -3855,9 +3855,9 @@ function uniqTransducer(fn, xform) {
  *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
  *     `{@link module:xduce.into|into}`, etc. is returned.
  */
-function uniqWith(collection, fn, ctx) {
+function uniqueWith(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return col ? sequence(col, uniqWith(func)) : xform => uniqTransducer(func, xform);
+  return col ? sequence(col, uniqueWith(func)) : xform => uniqueTransducer(func, xform);
 }
 
 /**
@@ -3871,7 +3871,7 @@ function uniqWith(collection, fn, ctx) {
  * Also note that even though the function can cause a completely different value to be compared, the *element* (not
  * the return value of the function) is what is added to the output collection.
  *
- * A very common use for `uniqBy` is to refer to a particular property in an array of objects. Another is to do a
+ * A very common use for `uniqueBy` is to refer to a particular property in an array of objects. Another is to do a
  * case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
  * can be used in any number of different ways, depending on the function used.
  *
@@ -3882,12 +3882,12 @@ function uniqWith(collection, fn, ctx) {
  * var array = [{x: 1}, {x: 1}, {x: 2}, {x: 3}, {x: 3}, {x: 3},
  *              {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}];
  *
- * var result = uniqBy(array, obj => obj.x);
+ * var result = uniqueBy(array, obj => obj.x);
  * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]
  *
  * // Comparison is case-insensitive, the duplicate letter retained is the first one that appears
  * // This is why 'N' is present in the output, not 'n', for example
- * result = uniqBy('aNtidiseSTablIshmENtaRianiSM', x => x.toLowerCase());
+ * result = uniqueBy('aNtidiseSTablIshmENtaRianiSM', x => x.toLowerCase());
  * // result = 'aNtidseblhmR'
  * ```
  *
@@ -3903,9 +3903,9 @@ function uniqWith(collection, fn, ctx) {
  *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
  *     `{@link module:xduce.into|into}`, etc. is returned.
  */
-function uniqBy(collection, fn, ctx) {
+function uniqueBy(collection, fn, ctx) {
   const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
-  return uniqWith(col, (a, b) => sameValueZero(func(a), func(b)));
+  return uniqueWith(col, (a, b) => sameValueZero(func(a), func(b)));
 }
 
 /**
@@ -3919,7 +3919,7 @@ function uniqBy(collection, fn, ctx) {
  * et al.
  *
  * ```
- * var result = uniq([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * var result = unique([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
  * // result = [1, 2, 3, 4, 5];
  * ```
  *
@@ -3931,14 +3931,14 @@ function uniqBy(collection, fn, ctx) {
  *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
  *     `{@link module:xduce.into|into}`, etc. is returned.
  */
-function uniq(collection) {
-  return uniqWith(collection, sameValueZero);
+function unique(collection) {
+  return uniqueWith(collection, sameValueZero);
 }
 
 module.exports = {
-  uniq,
-  uniqBy,
-  uniqWith
+  unique,
+  uniqueBy,
+  uniqueWith
 };
 
 

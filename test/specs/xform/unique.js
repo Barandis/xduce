@@ -1,5 +1,5 @@
 const { expect, expectIterator, naturals } = require('../../helper');
-const { uniq, uniqBy, uniqWith } = require('../../../src/xform/uniq');
+const { unique, uniqueBy, uniqueWith } = require('../../../src/xform/unique');
 const { fromJS, List } = require('immutable');
 const { sequence, transduce } = require('../../../src/modules/transformation');
 const { arrayReducer } = require('../../../src/modules/reduction');
@@ -41,72 +41,72 @@ const valueMagComp = (a, b) => magnitude(a.v) === magnitude(b.v);
 const groupComp = (a, b) => Math.floor(a.charCodeAt(0) / 5) === Math.floor(b.charCodeAt(0) / 5);
 
 describe('Uniqueness transformations', () => {
-  context('uniq', () => {
+  context('unique', () => {
     it('works with arrays', () => {
-      expect(uniq(arrayEx)).to.deep.equal([1, 5, 2, 4, 3]);
+      expect(unique(arrayEx)).to.deep.equal([1, 5, 2, 4, 3]);
     });
 
     it('works with strings', () => {
-      expect(uniq(stringEx)).to.equal('15243');
+      expect(unique(stringEx)).to.equal('15243');
     });
 
     it('works with generators', () => {
-      expectIterator(uniq(genEx()), [1, 5, 2, 4, 3]);
+      expectIterator(unique(genEx()), [1, 5, 2, 4, 3]);
     });
 
     it('works lazily with generators', () => {
-      const iter = uniq(naturals());
+      const iter = unique(naturals());
       expect(iter.next().value).to.equal(1);
       expect(iter.next().value).to.equal(2);
       expect(iter.next().value).to.equal(3);
     });
 
     it('works with reducibles', () => {
-      expect(uniq(listEx).toArray()).to.deep.equal([1, 5, 2, 4, 3]);
+      expect(unique(listEx).toArray()).to.deep.equal([1, 5, 2, 4, 3]);
     });
 
     it('can create a transformer function', () => {
-      const result = sequence(arrayEx, uniq());
+      const result = sequence(arrayEx, unique());
       expect(result).to.deep.equal([1, 5, 2, 4, 3]);
     });
 
     it('passes init calls to the next transformer', () => {
-      const reducer = uniq()(arrayReducer);
+      const reducer = unique()(arrayReducer);
       const result = transduce(arrayEx, null, reducer);
       expect(result).to.deep.equal([1, 5, 2, 4, 3]);
     });
   });
 
-  context('uniqBy', () => {
+  context('uniqueBy', () => {
     it('works with arrays', () => {
-      expect(uniqBy(aoEx, byX)).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
+      expect(uniqueBy(aoEx, byX)).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
     });
 
     it('works with objects', () => {
-      expect(uniqBy(objectEx, byValue)).to.deep.equal({ a: 1, b: 5, c: 2, e: 4, h: 3 });
+      expect(uniqueBy(objectEx, byValue)).to.deep.equal({ a: 1, b: 5, c: 2, e: 4, h: 3 });
     });
 
     it('works with strings', () => {
-      expect(uniqBy(stringEx, byMod3)).to.equal('153');
+      expect(uniqueBy(stringEx, byMod3)).to.equal('153');
     });
 
     it('works with generators', () => {
-      expect(uniqBy(goEx(), byX), [{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
+      expect(uniqueBy(goEx(), byX), [{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
     });
 
     it('works lazily with generators', () => {
-      const iter = uniqBy(naturals(), byMod3);
+      const iter = uniqueBy(naturals(), byMod3);
       expect(iter.next().value).to.equal(1);
       expect(iter.next().value).to.equal(2);
       expect(iter.next().value).to.equal(3);
     });
 
     it('works with reducibles', () => {
-      expect(uniqBy(loEx, byX).toArray()).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
+      expect(uniqueBy(loEx, byX).toArray()).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
     });
 
     it('can create a transformer function', () => {
-      const result = sequence(aoEx, uniqBy(byX));
+      const result = sequence(aoEx, uniqueBy(byX));
       expect(result).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
     });
 
@@ -115,39 +115,39 @@ describe('Uniqueness transformations', () => {
       const fn = function(x) {
         return this.fn(x);
       };
-      expect(uniqBy(aoEx, fn, ctx)).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
+      expect(uniqueBy(aoEx, fn, ctx)).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
     });
 
     it('passes init calls to the next transformer', () => {
-      const reducer = uniqBy(byX)(arrayReducer);
+      const reducer = uniqueBy(byX)(arrayReducer);
       const result = transduce(aoEx, null, reducer);
       expect(result).to.deep.equal([{ x: 1 }, { x: 5 }, { x: 2 }, { x: 4 }, { x: 3 }]);
     });
   });
 
-  context('uniqWith', () => {
+  context('uniqueWith', () => {
     it('works with arrays', () => {
-      const result = uniqWith(arrayLog, magComp);
+      const result = uniqueWith(arrayLog, magComp);
       expect(result).to.deep.equal([17504, 2, 274, 15, 2058]);
     });
 
     it('works with objects', () => {
-      const result = uniqWith(objectLog, valueMagComp);
+      const result = uniqueWith(objectLog, valueMagComp);
       expect(result).to.deep.equal({ a: 17504, b: 2, c: 274, e: 15, i: 2058 });
     });
 
     it('works with strings', () => {
-      const result = uniqWith(stringLog, groupComp);
+      const result = uniqueWith(stringLog, groupComp);
       expect(result).to.equal('Antida');
     });
 
     it('works with generators', () => {
-      const result = uniqWith(genLog(), magComp);
+      const result = uniqueWith(genLog(), magComp);
       expectIterator(result, [17504, 2, 274, 15, 2058]);
     });
 
     it('works lazily with generators', () => {
-      const iter = uniqWith(naturals(), magComp);
+      const iter = uniqueWith(naturals(), magComp);
       expect(iter.next().value).to.equal(1);
       expect(iter.next().value).to.equal(10);
       expect(iter.next().value).to.equal(100);
@@ -155,12 +155,12 @@ describe('Uniqueness transformations', () => {
     });
 
     it('works with reducibles', () => {
-      const result = uniqWith(listLog, magComp);
+      const result = uniqueWith(listLog, magComp);
       expect(result.toArray()).to.deep.equal([17504, 2, 274, 15, 2058]);
     });
 
     it('can create a transformer function', () => {
-      const result = sequence(arrayLog, uniqWith(magComp));
+      const result = sequence(arrayLog, uniqueWith(magComp));
       expect(result).to.deep.equal([17504, 2, 274, 15, 2058]);
     });
 
@@ -169,12 +169,12 @@ describe('Uniqueness transformations', () => {
       const fn = function(a, b) {
         return this.fn(a, b);
       };
-      const result = uniqWith(arrayLog, fn, ctx);
+      const result = uniqueWith(arrayLog, fn, ctx);
       expect(result).to.deep.equal([17504, 2, 274, 15, 2058]);
     });
 
     it('passes init calls to the next transformer', () => {
-      const reducer = uniqWith(magComp)(arrayReducer);
+      const reducer = uniqueWith(magComp)(arrayReducer);
       const result = transduce(arrayLog, null, reducer);
       expect(result).to.deep.equal([17504, 2, 274, 15, 2058]);
     });

@@ -77,8 +77,8 @@ function distinctTransducer(fn, xform) {
  * with a {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero} function serving as the
  * comparator.
  *
- * This is different from `{@link module:xduce.transducers.uniqWith|uniqWith}` in that this transform only eliminates
- * consecutive duplicate elements, not all duplicate elements.
+ * This is different from `{@link module:xduce.transducers.uniqueWith|uniqueWith}` in that this transform only
+ * eliminates consecutive duplicate elements, not all duplicate elements.
  *
  * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
  * et al.
@@ -95,8 +95,8 @@ function distinctTransducer(fn, xform) {
  * let result = distinctWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
  * // result = [1, 10, 100, 42, 893, 1111]
  *
- * // Compare to uniqWith with the same parameters
- * result = uniqWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * // Compare to uniueqWith with the same parameters
+ * result = uniqueWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
  * // result = [1, 10, 100, 1111]
  * ```
  *
@@ -133,7 +133,7 @@ function distinctWith(collection, fn, ctx) {
  * case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
  * can be used in any number of different ways, depending on the function used.
  *
- * This is different from `{@link module:xduce.transducers.uniqBy|uniqBy}` in that this transform only eliminates
+ * This is different from `{@link module:xduce.transducers.uniqueBy|uniqueBy}` in that this transform only eliminates
  * consecutive duplicate elements, not all duplicate elements.
  *
  * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
@@ -146,8 +146,8 @@ function distinctWith(collection, fn, ctx) {
  * let result = distinctBy(array, obj => obj.x);
  * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}]
  *
- * // Compare to uniqBy for the same parameters
- * result = uniqBy(array, obj => obj.x);
+ * // Compare to uniqueBy for the same parameters
+ * result = uniqueBy(array, obj => obj.x);
  * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]
  * ```
  *
@@ -171,8 +171,8 @@ function distinctBy(collection, fn, ctx) {
 /**
  * **Removes consecutive duplicate elements from a collection.**
  *
- * This differs from `{@link module:xduce.transducers.uniq|uniq}` in that an element is removed only if it equals the
- * element *immediately preceeding* it. Comparisons between elements are done with
+ * This differs from `{@link module:xduce.transducers.unique|unique}` in that an element is removed only if it equals
+ * the element *immediately preceeding* it. Comparisons between elements are done with
  * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero}.
  *
  * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
@@ -182,8 +182,8 @@ function distinctBy(collection, fn, ctx) {
  * let result = distinct([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
  * // result = [1, 2, 3, 4, 5, 3, 1, 5];
  *
- * // Compare to uniq with the same input
- * result = uniq([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * // Compare to unique with the same input
+ * result = unique([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
  * // result = [1, 2, 3, 4, 5];
  * ```
  *

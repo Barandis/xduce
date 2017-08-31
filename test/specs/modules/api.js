@@ -271,18 +271,18 @@ describe('xduce.transducers object', () => {
     expect(isFunction(transducers.takeNth)).to.be.true;
   });
 
-  it('contains uniq', () => {
-    expect(transducers).to.have.property('uniq');
-    expect(isFunction(transducers.uniq)).to.be.true;
+  it('contains unique', () => {
+    expect(transducers).to.have.property('unique');
+    expect(isFunction(transducers.unique)).to.be.true;
   });
 
-  it('contains uniqBy', () => {
-    expect(transducers).to.have.property('uniqBy');
-    expect(isFunction(transducers.uniqBy)).to.be.true;
+  it('contains uniqueBy', () => {
+    expect(transducers).to.have.property('uniqueBy');
+    expect(isFunction(transducers.uniqueBy)).to.be.true;
   });
 
-  it('contains uniqWith', () => {
-    expect(transducers).to.have.property('uniqWith');
-    expect(isFunction(transducers.uniqWith)).to.be.true;
+  it('contains uniqueWith', () => {
+    expect(transducers).to.have.property('uniqueWith');
+    expect(isFunction(transducers.uniqueWith)).to.be.true;
   });
 });
