@@ -40,7 +40,7 @@ const magComp = (a, b) => magnitude(a) === magnitude(b);
 const valueMagComp = (a, b) => magnitude(a.v) === magnitude(b.v);
 const groupComp = (a, b) => Math.floor(a.charCodeAt(0) / 5) === Math.floor(b.charCodeAt(0) / 5);
 
-describe('Distinctness transformations', () => {
+describe('Distinctness transducers', () => {
   context('distinct', () => {
     it('works with arrays', () => {
       expect(distinct(arrayEx)).to.deep.equal([1, 5, 2, 4, 5, 3, 2]);

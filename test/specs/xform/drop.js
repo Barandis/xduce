@@ -8,7 +8,7 @@ const lt4 = x => x < 4;
 const lt4Value = ({ v }) => v < 4;
 const isVowel = x => !!~'aeoiu'.indexOf(x);
 
-describe('Dropping transformers', () => {
+describe('Dropping transducers', () => {
   context('drop', () => {
     it('works with arrays', () => {
       expect(drop(ARRAY_5, 3)).to.deep.equal([4, 5]);

@@ -5,7 +5,7 @@ const { List } = require('immutable');
 const { sequence, into, transduce, compose } = require('../../../src/modules/transformation');
 const { arrayReducer } = require('../../../src/modules/reduction');
 
-describe('Core transformers', () => {
+describe('Core transducers', () => {
   context('identity', () => {
     it('works with arrays', () => {
       expect(identity(ARRAY_5)).to.deep.equal(ARRAY_5);

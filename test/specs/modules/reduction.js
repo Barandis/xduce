@@ -3,6 +3,7 @@ const { expect } = require('../../helper');
 const _ = require('lodash');
 const { protocols, isImplemented } = require('../../../src/modules/protocol');
 const { compose } = require('../../../src/modules/transformation');
+const { reduce } = require('../../../src/modules/reduction');
 const { map } = require('../../../src/xform/map');
 const { filter } = require('../../../src/xform/filter');
 
@@ -143,6 +144,12 @@ describe('Reducer creation function', () => {
       const obj = toReducer((acc, input) => acc + input);
       const fn = () => obj[p.init]();
       expect(fn).to.throw('init not available');
+    });
+
+    it('can create reducers that reduce to non-collections', () => {
+      const sumReducer = toReducer((acc, input) => acc + input);
+      const sum = reduce([1, 2, 3, 4, 5], sumReducer, 0);
+      expect(sum).to.equal(15);
     });
   });
 });

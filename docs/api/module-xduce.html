@@ -1995,7 +1995,7 @@ the object itself is returned. It is assumed that a function called <code>next</
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line337">line 337</a>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line361">line 361</a>
     </li></ul></dd>
     
 
@@ -2413,7 +2413,7 @@ possible with <code>sequence</code> because they have different input and output
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line215">line 215</a>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line239">line 239</a>
     </li></ul></dd>
     
 
@@ -2604,7 +2604,7 @@ plain function that takes two parameters and returns the result of reducing the 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line181">line 181</a>
+        <a href="modules_reduction.js.html">modules/reduction.js</a>, <a href="modules_reduction.js.html#line205">line 205</a>
     </li></ul></dd>
     
 
@@ -2651,6 +2651,21 @@ plain function that takes two parameters and returns the result of reducing the 
 function oftwo parameters, an accumulator and a value, and returns the accumulator with the value in it. This is
 exactly the same kind of function that is passed to reduction functions like JavaScript's <code>Array.prototype.reduce</code>
 and Lodash's <code>_.reduce</code>.</p>
+<p>Note in particular that the output of this reducer does not need to be a collection. It can be anything. While
+transducing normally involves transforming one collection into another, it need not be so. For example, here is a
+reducer that will result in summing of the collection values.</p>
+<pre class="prettyprint source"><code>const { toReducer, reduce } = xduce;
+
+const sumReducer = toReducer((acc, input) => acc + input);
+const sum = reduce([1, 2, 3, 4, 5], sumReducer, 0);
+// sum = 15</code></pre><p>This can be combined with transducers as well, as in this calculation of the sum of the <em>squares</em> of the collection
+values.</p>
+<pre class="prettyprint source"><code>const { toReducer, transduce } = xduce;
+const { map } = xduce.transducers;
+
+const sumReducer = toReducer((acc, input) => acc + input);
+const sum = transduce([1, 2, 3, 4, 5], map(x => x * x), sumReducer, 0);
+// sum = 55</code></pre>
 </div>
 
 

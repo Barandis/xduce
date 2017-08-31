@@ -8,7 +8,7 @@ const even = x => x % 2 === 0;
 const evenValue = ({ v }) => v % 2 === 0;
 const lcase = x => x === x.toLowerCase();
 
-describe('Filtering transformers', () => {
+describe('Filtering transducers', () => {
   context('filter', () => {
     it('works with arrays', () => {
       expect(filter(ARRAY_5, even)).to.deep.equal([2, 4]);
