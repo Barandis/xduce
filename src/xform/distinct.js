@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2017 Thomas Otterson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -19,70 +19,188 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// uniq.js
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Transducers for rejecting repeated consecutive elements in a collection.
+ *
+ * @module distinct
+ * @private
+ */
 
-import { protocols as p } from '../modules/protocol';
-import { sequence } from '../modules/transformation';
-import { isFunction } from '../modules/util';
-import { sameValueZero } from './core';
+const { protocols } = require('../modules/protocol');
+const { sequence } = require('../modules/transformation');
+const { isFunction } = require('../modules/util');
+const { sameValueZero } = require('./core');
+const p = protocols;
 
-const NO_VALUE = {};
+const NO_VALUE = Symbol('NO_VALUE');
 
-const distinctTransformer = (fn, xform) => ({
-  fn,
-  xform,
-  last: NO_VALUE,
+/**
+ * A transducer function that is returned by the `{@link module:xduce.transducers.distinct|distinct}`,
+ * `{@link module:xduce.transducers.distinctBy|distinctBy}`, and
+ * `{@link module:xduce.transducers.distinctWith|distinctWith}` transducers.
+ *
+ * @private
+ *
+ * @param {function} fn The two-argument comparator function that defines when two values are equal.
+ * @param {module:xduce~transducerObject} xform The transducer object that the new one should be chained to.
+ * @return {module:xduce~transducerObject} A new transducer object chained to the provided transducer object.
+ */
+function distinctTransducer(fn, xform) {
+  let last = NO_VALUE;
 
-  [p.init]() {
-    return this.xform[p.init]();
-  },
+  return {
+    [p.init]() {
+      return xform[p.init]();
+    },
 
-  [p.step](acc, input) {
-    if (this.last !== NO_VALUE && this.fn(input, this.last)) {
-      return acc;
+    [p.step](acc, input) {
+      if (last !== NO_VALUE && fn(input, last)) {
+        return acc;
+      }
+      last = input;
+      return xform[p.step](acc, input);
+    },
+
+    [p.result](value) {
+      return xform[p.result](value);
     }
-    this.last = input;
-    return this.xform[p.step](acc, input);
-  },
-
-  [p.result](value) {
-    return this.xform[p.result](value);
-  }
-});
-
-// Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
-// the provided function; if two consecutive elements produce the same result from the function, then the second of
-// them is suppressed.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function distinctWith(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
-  return col ? sequence(col, distinctWith(func)) : (xform) => distinctTransformer(func, xform); 
+  };
 }
 
-// Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
-// comparing the return values of the provided function (with SameValueZero) when pairs of input elements are passed
-// into it. If the return values are equal for two elements, then the second is suppressed.
-//
-// By default, the function is run without context. If a context object is provided, it will become `this` within the
-// function.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function distinctBy(collection, fn, ctx) {
-  const [col, func] = isFunction(collection) ? [null, fn::collection] : [collection, ctx::fn];
+/**
+ * **Applies a comparator function to consecutive elements of a collection and removes the second if the comparator
+ * indicates they're equal.**
+ *
+ * Comparisons are made by passing each pair of elements to the function, which must take two parameters and return a
+ * boolean indicating whether or not the values are equal. As an example, the
+ * `{@link module:xduce.transducers.distinct|distinct}` transducer could be regarded as the same as this transformer,
+ * with a {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero} function serving as the
+ * comparator.
+ *
+ * This is different from `{@link module:xduce.transducers.uniqueWith|uniqueWith}` in that this transform only
+ * eliminates consecutive duplicate elements, not all duplicate elements.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * // magnitude returns the number of digits in a number
+ * function magnitude(x) {
+ *   return Math.floor(Math.log(x) / Math.LN10 + 0.000000001);
+ * }
+ * function comparator(a, b) {
+ *   return magnitude(a) === magnitude(b);
+ * }
+ *
+ * let result = distinctWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * // result = [1, 10, 100, 42, 893, 1111]
+ *
+ * // Compare to uniueqWith with the same parameters
+ * result = uniqueWith([1, 10, 100, 42, 56, 893, 1111, 1000], comparator);
+ * // result = [1, 10, 100, 1111]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A comparator function. This takes two arguments and returns `true` if they're to be regarded as
+ *     equal.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
+function distinctWith(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
+  return col ? sequence(col, distinctWith(func)) : xform => distinctTransducer(func, xform);
+}
+
+/**
+ * **Applies a function each element of a collection and removes consecutive elements that create duplicate return
+ * values.**
+ *
+ * Once the function is applied to the collection elements, a comparison is made using
+ * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero}. If a comparison indicates that
+ * the return value from the function for one element is the same as the return value for the element that comes right
+ * before it, only the first element is retained in the output collection.
+ *
+ * Also note that even though the function can cause a completely different value to be compared, the *element* (not the
+ * return value of the function) is what is added to the output collection.
+ *
+ * A very common use for `distinctBy` is to refer to a particular property in an array of objects. Another is to do a
+ * case-insensitive comparison by passing a function that turns every letter in a string to the same case. However, it
+ * can be used in any number of different ways, depending on the function used.
+ *
+ * This is different from `{@link module:xduce.transducers.uniqueBy|uniqueBy}` in that this transform only eliminates
+ * consecutive duplicate elements, not all duplicate elements.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * const array = [{x: 1}, {x: 1}, {x: 2}, {x: 3}, {x: 3}, {x: 3},
+ *                {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}];
+ *
+ * let result = distinctBy(array, obj => obj.x);
+ * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}, {x: 3}, {x: 1}, {x: 5}]
+ *
+ * // Compare to uniqueBy for the same parameters
+ * result = uniqueBy(array, obj => obj.x);
+ * // result = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}]
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @param {function} fn A function of one parameter applied to each element in the input collection before testing the
+ *     results for uniqueness.
+ * @param {object} [ctx] An optional context object which is set to `this` for the function `fn`. This does not work if
+ *     `fn` is an arrow function, as they cannot be bound to contexts.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
+function distinctBy(collection, fn, ctx) {
+  const [col, func] = isFunction(collection) ? [null, collection.bind(fn)] : [collection, fn.bind(ctx)];
   return distinctWith(col, (a, b) => sameValueZero(func(a), func(b)));
 }
 
-// Returns a collection that removes any consecutive equal values from the input collection. Equality is determined by
-// comparing consecutive elements using SameValueZero. If two consecutive elements are the same, then the second will 
-// be suppressed.
-//
-// If no collection is provided, a function is returned that can be passed to a transducer function (sequence, etc.).
-export function distinct(collection) {
+/**
+ * **Removes consecutive duplicate elements from a collection.**
+ *
+ * This differs from `{@link module:xduce.transducers.unique|unique}` in that an element is removed only if it equals
+ * the element *immediately preceeding* it. Comparisons between elements are done with
+ * {@link http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero|SameValueZero}.
+ *
+ * If no collection is provided, a function is returned that can be passed to `{@link module:xduce.sequence|sequence}`,
+ * et al.
+ *
+ * ```
+ * let result = distinct([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * // result = [1, 2, 3, 4, 5, 3, 1, 5];
+ *
+ * // Compare to unique with the same input
+ * result = unique([1, 1, 2, 3, 3, 3, 4, 5, 3, 1, 5]);
+ * // result = [1, 2, 3, 4, 5];
+ * ```
+ *
+ * @memberof module:xduce.transducers
+ *
+ * @param {*} [collection] An optional input collection that is to be transduced.
+ * @return {(*|module:xduce~transducerFunction)} If a collection is supplied, then the function returns a new
+ *     collection of the same type with all of the elements of the input collection transformed. If no collection is
+ *     supplied, a transducer function, suitable for passing to `{@link module:xduce.sequence|sequence}`,
+ *     `{@link module:xduce.into|into}`, etc. is returned.
+ */
+function distinct(collection) {
   return distinctWith(collection, sameValueZero);
 }
+
+module.exports = {
+  distinct,
+  distinctBy,
+  distinctWith
+};

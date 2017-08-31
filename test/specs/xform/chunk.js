@@ -1,27 +1,12 @@
-import {
-  expect,
-  expectIterator,
-  ARRAY_5,
-  OBJECT_AB,
-  LIST_5,
-  five,
-  naturals
-} from '../../helper';
+const { expect, ARRAY_5, LIST_5, naturals } = require('../../helper');
+const { chunk, chunkBy } = require('../../../src/xform/chunk');
+const { map } = require('../../../src/xform/map');
+const { take } = require('../../../src/xform/take');
+const { fromJS } = require('immutable');
+const { sequence, compose, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
-import {
-  chunk,
-  chunkBy
-} from '../../../src/xform/chunk';
-
-import { map } from '../../../src/xform/map';
-import { take } from '../../../src/xform/take';
-
-import { fromJS } from 'immutable';
-
-import { sequence, compose, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
-
-describe('Chunking transformers', () => {
+describe('Chunking transducers', () => {
   context('chunk', () => {
     it('works with arrays', () => {
       expect(chunk(ARRAY_5, 3)).to.deep.equal([[1, 2, 3], [4, 5]]);
@@ -73,9 +58,9 @@ describe('Chunking transformers', () => {
 
   context('chunkBy', () => {
     const arrayFib = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34];
-    const listFib  = fromJS(arrayFib);
+    const listFib = fromJS(arrayFib);
 
-    const even = (x) => x % 2 === 0;
+    const even = x => x % 2 === 0;
 
     it('works with arrays', () => {
       expect(chunkBy(arrayFib, even)).to.deep.equal([[0], [1, 1], [2], [3, 5], [8], [13, 21], [34]]);
@@ -116,7 +101,9 @@ describe('Chunking transformers', () => {
 
     it('can accept a context object', () => {
       const ctx = { fn: even };
-      const fn = function (x) { return this.fn(x); };
+      const fn = function(x) {
+        return this.fn(x);
+      };
       expect(chunkBy(arrayFib, fn, ctx)).to.deep.equal([[0], [1, 1], [2], [3, 5], [8], [13, 21], [34]]);
     });
 

@@ -1,36 +1,21 @@
-import {
-  expect,
-  expectIterator,
-  ARRAY_5,
-  OBJECT_AB,
-  LIST_5,
-  five,
-  naturals
-} from '../../helper';
+const { expect, expectIterator, ARRAY_5, OBJECT_AB, LIST_5, five, naturals } = require('../../helper');
+const { filter, reject, compact } = require('../../../src/xform/filter');
+const { fromJS } = require('immutable');
+const { sequence, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
-import {
-  filter,
-  reject,
-  compact
-} from '../../../src/xform/filter';
+const even = x => x % 2 === 0;
+const evenValue = ({ v }) => v % 2 === 0;
+const lcase = x => x === x.toLowerCase();
 
-import { fromJS } from 'immutable';
-
-import { sequence, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
-
-const even = (x) => x % 2 === 0;
-const evenValue = ({k, v}) => v % 2 === 0;
-const lcase = (x) => x === x.toLowerCase();
-
-describe('Filtering transformers', () => {
+describe('Filtering transducers', () => {
   context('filter', () => {
     it('works with arrays', () => {
       expect(filter(ARRAY_5, even)).to.deep.equal([2, 4]);
     });
 
     it('works with objects', () => {
-      expect(filter(OBJECT_AB, evenValue)).to.deep.equal({b: 2});
+      expect(filter(OBJECT_AB, evenValue)).to.deep.equal({ b: 2 });
     });
 
     it('works with strings', () => {
@@ -59,7 +44,9 @@ describe('Filtering transformers', () => {
 
     it('can accept a context object', () => {
       const ctx = { fn: even };
-      const fn = function (x) { return this.fn(x); };
+      const fn = function(x) {
+        return this.fn(x);
+      };
       expect(filter(ARRAY_5, fn, ctx)).to.deep.equal([2, 4]);
     });
 
@@ -76,7 +63,7 @@ describe('Filtering transformers', () => {
     });
 
     it('works with objects', () => {
-      expect(reject(OBJECT_AB, evenValue)).to.deep.equal({a: 1});
+      expect(reject(OBJECT_AB, evenValue)).to.deep.equal({ a: 1 });
     });
 
     it('works with strings', () => {
@@ -105,7 +92,9 @@ describe('Filtering transformers', () => {
 
     it('can accept a context object', () => {
       const ctx = { fn: even };
-      const fn = function (x) { return this.fn(x); };
+      const fn = function(x) {
+        return this.fn(x);
+      };
       expect(reject(ARRAY_5, fn, ctx)).to.deep.equal([1, 3, 5]);
     });
 
@@ -125,7 +114,7 @@ describe('Filtering transformers', () => {
 
     it('works with generators', () => {
       function* gen() {
-        for (let item of array) {
+        for (const item of array) {
           yield item;
         }
       }

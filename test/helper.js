@@ -1,41 +1,43 @@
-import chai from 'chai';
+const chai = require('chai');
+const p = require('../src/modules/protocol').protocols;
+const Immutable = require('immutable');
 
-import { protocols as p } from '../src/modules/protocol';
+Immutable.List.prototype[p.init] = () => Immutable.List().asMutable();
+Immutable.List.prototype[p.step] = (acc, input) => acc.push(input);
+Immutable.List.prototype[p.result] = value => value.asImmutable();
 
-import Immutable from 'immutable';
-  
-Immutable.List.prototype[p.init] = function () {
-  return Immutable.List().asMutable();
-};
-Immutable.List.prototype[p.step] = function (acc, input) {
-  return acc.push(input);
-};
-Immutable.List.prototype[p.result] = function (value) {
-  return value.asImmutable();
-};
+const expect = chai.expect;
 
-export const expect = chai.expect;
+const ARRAY_5 = [1, 2, 3, 4, 5];
+const OBJECT_AB = { a: 1, b: 2 };
+const LIST_5 = Immutable.List.of(1, 2, 3, 4, 5);
 
-export const ARRAY_5   = [1, 2, 3, 4, 5];
-export const OBJECT_AB = {a: 1, b: 2};
-export const LIST_5    = Immutable.List.of(1, 2, 3, 4, 5);
-
-export function* five() {
-  for (let i of [1, 2, 3, 4, 5]) {
+function* five() {
+  for (const i of [1, 2, 3, 4, 5]) {
     yield i;
   }
 }
 
-export function* naturals() {
+function* naturals() {
   let i = 1;
-  while (true) {
+  for (;;) {
     yield i++;
   }
 }
 
-export function expectIterator(iter, expected) {
-  for (let item of expected) {
+function expectIterator(iter, expected) {
+  for (const item of expected) {
     expect(iter.next().value).to.deep.equal(item);
   }
   expect(iter.next().done).to.be.true;
 }
+
+module.exports = {
+  expect,
+  ARRAY_5,
+  OBJECT_AB,
+  LIST_5,
+  five,
+  naturals,
+  expectIterator
+};

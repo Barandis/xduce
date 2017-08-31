@@ -1,34 +1,21 @@
-import {
-  expect,
-  expectIterator,
-  ARRAY_5,
-  OBJECT_AB,
-  LIST_5,
-  five,
-  naturals
-} from '../../helper';
+const { expect, expectIterator, ARRAY_5, OBJECT_AB, LIST_5, five, naturals } = require('../../helper');
+const { drop, dropWhile } = require('../../../src/xform/drop');
+const { sequence, transduce } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
+const { complement } = require('../../../src/modules/util');
 
-import {
-  drop,
-  dropWhile
-} from '../../../src/xform/drop';
+const lt4 = x => x < 4;
+const lt4Value = ({ v }) => v < 4;
+const isVowel = x => !!~'aeoiu'.indexOf(x);
 
-import { sequence, transduce } from '../../../src/modules/transformation';
-import { arrayReducer } from '../../../src/modules/reduction';
-import { complement } from '../../../src/modules/util';
-
-const lt4 = (x) => x < 4;
-const lt4Value = ({v}) => v < 4;
-const isVowel = (x) => !!~'aeoiu'.indexOf(x);
-
-describe('Dropping transformers', () => {
+describe('Dropping transducers', () => {
   context('drop', () => {
     it('works with arrays', () => {
       expect(drop(ARRAY_5, 3)).to.deep.equal([4, 5]);
     });
 
     it('works with objects', () => {
-      expect(drop(OBJECT_AB, 1)).to.deep.equal({b: 2});
+      expect(drop(OBJECT_AB, 1)).to.deep.equal({ b: 2 });
     });
 
     it('works with strings', () => {
@@ -68,7 +55,7 @@ describe('Dropping transformers', () => {
     });
 
     it('works with objects', () => {
-      expect(dropWhile({a: 1, b: 2, c: 6}, lt4Value)).to.deep.equal({c: 6});
+      expect(dropWhile({ a: 1, b: 2, c: 6 }, lt4Value)).to.deep.equal({ c: 6 });
     });
 
     it('works with strings', () => {
@@ -97,7 +84,9 @@ describe('Dropping transformers', () => {
 
     it('can accept a context object', () => {
       const ctx = { fn: lt4 };
-      const fn= function (x) { return this.fn(x); };
+      const fn = function(x) {
+        return this.fn(x);
+      };
       expect(dropWhile(ARRAY_5, fn, ctx)).to.deep.equal([4, 5]);
     });
 

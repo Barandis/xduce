@@ -1,25 +1,27 @@
-const fs = require('fs');
 const path = require('path');
-const webpack = require('webpack');
 
 module.exports = {
-  entry: [
-    './src/api.js'
-  ],
+  entry: ['./src/api.js'],
   output: {
     filename: 'xduce.js',
     library: 'xduce',
     libraryTarget: 'umd',
-    path: path.resolve(__dirname, 'lib')
+    path: path.resolve(__dirname, 'dist')
   },
   plugins: [],
   module: {
-    loaders: [{
-      loader: 'babel-loader',
-      include: [
-        path.resolve(__dirname, 'src')
-      ],
-      test: /\.js$/
-    }]
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            plugins: ['transform-runtime'],
+            presets: ['es2015', 'stage-3']
+          }
+        },
+        include: [path.resolve(__dirname, 'src')]
+      }
+    ]
   }
 };

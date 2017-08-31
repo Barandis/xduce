@@ -1,27 +1,11 @@
-import {
-  expect,
-  ARRAY_5, 
-  OBJECT_AB,
-  LIST_5,
-  five,
-  naturals,
-  expectIterator
-} from '../../helper';
+const { expect, ARRAY_5, OBJECT_AB, LIST_5, five, naturals, expectIterator } = require('../../helper');
+const { identity, flatten, repeat } = require('../../../src/xform/core');
+const { take } = require('../../../src/xform/take');
+const { List } = require('immutable');
+const { sequence, into, transduce, compose } = require('../../../src/modules/transformation');
+const { arrayReducer } = require('../../../src/modules/reduction');
 
-import {
-  identity,
-  flatten,
-  repeat
-} from '../../../src/xform/core';
-
-import { take } from '../../../src/xform/take';
-
-import { List } from 'immutable';
-
-import { sequence, into, transduce, compose } from '../../../src/modules/transformation';
-import { toReducer, arrayReducer } from '../../../src/modules/reduction';
-
-describe('Core transformers', () => {
+describe('Core transducers', () => {
   context('identity', () => {
     it('works with arrays', () => {
       expect(identity(ARRAY_5)).to.deep.equal(ARRAY_5);

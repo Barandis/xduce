@@ -1,8 +1,6 @@
-import {
-  expect
-} from '../../helper';
+const { expect } = require('../../helper');
 
-import {
+const {
   isArray,
   isFunction,
   isObject,
@@ -12,10 +10,9 @@ import {
   bmpLength,
   range,
   complement
-} from '../../../src/modules/util';
+} = require('../../../src/modules/util');
 
 describe('Type-checking functions', () => {
-
   context('for arrays', () => {
     it('works for literal arrays', () => {
       expect(isArray([1, 2, 3])).to.be.true;
@@ -39,7 +36,7 @@ describe('Type-checking functions', () => {
     it('works for null/undefined', () => {
       expect(isArray(null)).to.be.false;
       expect(isArray(undefined)).to.be.false;
-    })
+    });
   });
 
   context('for functions', () => {
@@ -49,17 +46,21 @@ describe('Type-checking functions', () => {
     });
 
     it('works for ES5 funciton literals', () => {
-      expect(isFunction(function (it) { return it; })).to.be.true;
-      expect(isFunction(function (it) { it++; })).to.be.true;
-      expect(isFunction(function () {})).to.be.true;
+      expect(isFunction(it => it)).to.be.true;
+      expect(isFunction(it => it + 1)).to.be.true;
+      expect(isFunction(() => {})).to.be.true;
     });
 
     it('works for function objects', () => {
+      /* eslint-disable no-new-func */
       expect(isFunction(new Function('a', 'b', 'return a + b'))).to.be.true;
+      /* eslint-enable no-new-func */
     });
 
     it('works for function variables', () => {
-      function add1(x, y) { return x + y; }
+      function add1(x, y) {
+        return x + y;
+      }
       const add2 = (x, y) => x + y;
       expect(isFunction(add1)).to.be.true;
       expect(isFunction(add2)).to.be.true;
@@ -80,16 +81,16 @@ describe('Type-checking functions', () => {
 
   context('for objects', () => {
     it('works for object literals', () => {
-      expect(isObject({a: 1, b: 2})).to.be.true;
+      expect(isObject({ a: 1, b: 2 })).to.be.true;
       expect(isObject({})).to.be.true;
     });
 
     it('works for Object objects', () => {
-      const obj = new Object();
+      const obj = {};
       obj.a = 1;
       obj.b = 2;
       expect(isObject(obj)).to.be.true;
-      expect(isObject(new Object())).to.be.true;
+      expect(isObject({})).to.be.true;
     });
 
     it('works for things that are not objects', () => {
@@ -101,13 +102,19 @@ describe('Type-checking functions', () => {
 
     it('works for objects that are assigned another type', () => {
       expect(isObject(new Array())).to.be.false;
+      /* eslint-disable no-new-func */
       expect(isObject(new Function('a', 'b', 'return a + b'))).to.be.false;
+      /* eslint-enable no-new-func */
+      /* eslint-disable no-new-wrappers */
       expect(isObject(new Number(0))).to.be.false;
       expect(isObject(new String())).to.be.false;
+      /* eslint-enable no-new-wrappers */
     });
 
     it('works for objects that derive from Object', () => {
+      /* eslint-disable no-class/no-class */
       class Test {}
+      /* eslint-enable no-class/no-class */
       expect(isObject(new Test())).to.be.false;
     });
 
@@ -135,11 +142,13 @@ describe('Type-checking functions', () => {
     });
 
     it('works for number objects', () => {
+      /* eslint-disable no-new-wrappers */
       expect(isNumber(new Number(1729))).to.be.true;
       expect(isNumber(Number('27.42'))).to.be.true;
       expect(isNumber(new Number('6.022e23'))).to.be.true;
       expect(isNumber(Number(0xff))).to.be.true;
       expect(isNumber(new Number())).to.be.true;
+      /* eslint-enable no-new-wrappers */
     });
 
     it('works for numeric strings', () => {
@@ -174,8 +183,10 @@ describe('Type-checking functions', () => {
     });
 
     it('works for string objects', () => {
+      /* eslint-disable no-new-wrappers */
       expect(isString(new String('hello'))).to.be.true;
       expect(isString(new String())).to.be.true;
+      /* eslint-enable no-new-wrappers */
     });
 
     it('works for things that are not strings', () => {
