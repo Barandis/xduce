@@ -204,8 +204,11 @@ const stringReducer = toReducer('');
  *
  * @memberof module:xduce
  *
- * @param {module:xduce~transducer} xform A transducer whose step function will become the returned reduction function.
- * @param {module:xduce~step} reducer A function that reduces values into the target collection.
+ * @param {module:xduce~transducerObject} xform A transducer object whose step function will become the returned
+ *     reduction function.
+ * @param {(module:xduce~step|module:xduce~transducerObject)} reducer A reducer that knows how to reduce values into an
+ *     output collection. This can either be a reducing function or a transducer object whose `step` function knows how
+ *     to perform this reduction.
  * @return {module:xduce~step} A function that handles both the transformation and the reduction of a value onto a
  *     target function.
  */
