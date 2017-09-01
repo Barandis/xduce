@@ -7,9 +7,71 @@ body {
   padding: 0;
   line-height: 1.5em;
 }
-h1, h2 {
-  border-bottom: 1px solid lightgray;
+
+header {
+  height: 6em;
+  background: linear-gradient(to right, #151b54, #151b54 50%, black);
+  color: #f6f6f6;
+  margin 0;
+  padding: 1em;
 }
+footer {
+  height: 3em;
+  background: linear-gradient(to right, #151b54, #151b54 50%, black);
+  color: #f6f6f6;
+  margin 0;
+  padding: 0.5em 1em;
+}
+#content {
+  min-height: 650px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+}
+#content > article {
+  position: relative;
+  background-color: #f6f6f6;
+  flex-grow: 3;
+  flex-shrink: 1;
+  flex-basis: 60%;
+  order: 2;
+  padding: 2em 1em 1em 1em;
+}
+#content > nav {
+  background: repeating-linear-gradient(to bottom, #f6f6f6, #f6f6f6 2px, #f3f3f3 2px, #f3f3f3 4px);
+  padding: 1em;
+  flex-grow: 1;
+  flex-shrink: 6;
+  flex-basis: 20%;
+  order: 1;
+  box-shadow: 0 0 15px 0 inset;
+}
+#content > aside {
+  background: repeating-linear-gradient(to bottom, #f6f6f6, #f6f6f6 2px, #f3f3f3 2px, #f3f3f3 4px);
+  padding: 1em;
+  flex-grow: 1;
+  flex-shrink: 6;
+  flex-basis: 20%;
+  order: 3;
+  box-shadow: 0 0 15px 0 inset;
+}
+
+@media all and (max-width: 960px) {
+  #content {
+    flex-direction: column;
+  }
+  #content > article, #content > nav, #content > aside {
+    order: 0;
+  }
+  header, footer, #content > nav, #content > aside {
+    min-height: 50px;
+  }
+  #content > nav, #content > aside {
+    box-shadow: 0 15px 15px -15px inset;
+  }
+}
+
 code, pre {
   font-family: 'Source Code Pro', Monaco, Consolas, 'Courier New', Courier, monospace;
   font-size: 1.0rem;
@@ -21,67 +83,48 @@ code:not(.javascript):not(.html) {
   background-color: rgba(27, 31, 35, 0.05);
   border-radius: 3px;
 }
-pre > code {
+
+.hljs {
+  padding: 1em;
   line-height: 1.2rem;
 }
-
-body > header:first-child {
-  height: 8em;
-  background: linear-gradient(to right, #151b54, #151b54 50%, black);
-  color: white;
-  margin 0;
-  padding: 1em;
-}
-body > header:first-child h1 {
-  margin: 0;
-  border-bottom: none;
-  font-size: 4em;
-  font-weight: normal;
-}
-body > header:first-child h1 a {
-  text-decoration: none;
-  color: white;
-}
-img#fork-me {
-  position: absolute;
-  top: 0;
-  right: 0;
-  border: 0;
-}
-
-section#content {
-  width: 960px;
-  margin: 0 auto;
-  padding: 2em 0;
-}
-
-section#badges a {
-  text-decoration: none;
-}
-section#badges a img {
-  border: none;
-  outline: none;
-}
-
-section#requirements table {
-  border-collapse: collapse;
-  border: 1px solid lightgray;
-}
-section#requirements th,
-section#requirements td {
-  text-align: left;
-  border: 1px solid lightgray;
-  padding: 0.5em;
-}
-
 .hljs-ln td.hljs-ln-numbers {
   user-select: none;
   text-align: right;
   vertical-align: top;
   color: #666;
   border-right: 1px solid #666;
-  padding-right: 5px;
+  padding-right: 0.25em;
 }
 .hljs-ln td.hljs-ln-code {
-  padding-left: 10px;
+  padding-left: 0.5em;
+}
+
+h2 {
+  border-bottom: 1px solid lightgray;
+}
+
+header h1 {
+  margin: 0;
+  margin-top: 0.35em;
+  border-bottom: none;
+  font-size: 4em;
+  font-weight: normal;
+}
+header h1 a {
+  text-decoration: none;
+  color: #f6f6f6;
+}
+header img#fork-me {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+
+#badges {
+  text-align: center;
+}
+#badges a {
+  text-decoration: none;
 }
