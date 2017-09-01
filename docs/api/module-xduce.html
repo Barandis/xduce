@@ -1733,7 +1733,7 @@ using <code>into</code> instead.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="modules_iteration.js.html">modules/iteration.js</a>, <a href="modules_iteration.js.html#line267">line 267</a>
+        <a href="modules_iteration.js.html">modules/iteration.js</a>, <a href="modules_iteration.js.html#line362">line 362</a>
     </li></ul></dd>
     
 
@@ -1776,16 +1776,62 @@ using <code>into</code> instead.</p>
     <p><strong>Creates an iterator over the provided collection.</strong></p>
 <p>For collections that are not objects, it's as simple as that. Pass in the collection, get an iterator over that
 collection.</p>
-<p>Objects get special support though, as noted in the section above on iterating over objects. Objects are iterated in
+<pre class="prettyprint source"><code>const iter = iterator([1, 2, 3]);
+iter.next().value === 1;     // true
+iter.next().value === 2;     // true
+iter.next().value === 3;     // true
+iter.next().done === true;   // true</code></pre><p>Objects get special support though, as noted in the section above on iterating over objects. Objects are iterated in
 alphabetical order by key, unless a second parameter is passed to <code>iterator</code>. This must be a function that takes two
 parameters (which will be object keys) and returns <code>-1</code> if the first is less than the second, <code>1</code> if the second is
 less than the first, and <code>0</code> if they're equal.</p>
-<p>Also, <code>iterator</code> by default iterates objects into kv-form. This is the form used internally by the xduce library. If
-this is not appropriate for a particular use case, then a third parameter of <code>false</code> can be passed, which will result
-in the iteration being into single-property form instead.</p>
+<p>Also, <code>iterator</code> by default iterates objects into key/value form. However, if a third parameter of <code>true</code> is passed,
+it will instead render the object in kv-form. This is the form used internally when a transducer is invoked.</p>
 <p>The second and third parameters are ignored if the input collection is not an object.</p>
-<p>Note that if this function is passed an object that looks like an iterator (an object that has a <code>next</code> function),
+<pre class="prettyprint source"><code>const iter = iterator({ b: 2, a: 4 });
+iter.next().value.a === 4;     // true
+iter.next().value.b === 2;     // true
+iter.next().done === true;     // true
+
+const kvIter = iterator({ b: 2, a: 4 }, null, true);
+const { k: k1, v: v1 } = kvIter.next().value;
+k1 === 'a' && v1 === 4;        // true
+const { k: k2, v: v2 } = kvIter.next().value;
+k2 === 'b' && v2 === 2;        // true
+iter.next().done === true;     // true</code></pre><p>Note that if this function is passed an object that looks like an iterator (an object that has a <code>next</code> function),
 the object itself is returned. It is assumed that a function called <code>next</code> conforms to the iteration protocol.</p>
+<p>If this function is provided a <em>function</em> as its first argument, an iterator is returned which runs that function
+one time for each call to <code>next</code>. That function is provided two arguments: the index of the call (starting at <code>0</code>
+for the first time it's called and increasing by 1 per invocation after that) and the return value of the previous
+call to the function (starting at <code>undefined</code> for the first run before the function is ever called). If the function
+ever returns <code>undefined</code>, the iterator will terminate and set the <code>done</code> property of its return value to <code>true</code> at
+that point.</p>
+<p>Note that since the initial value of the second argument is <code>undefined</code>, using default arguments is an excellent way
+of providing the function an initial value.</p>
+<pre class="prettyprint source"><code>const constIter = iterator(() => 6);  // Bert's favorite number
+constIter.next().value === 6;   // true
+constIter.next().value === 6;   // true;
+// This will go on forever, as long as `next` keeps getting called
+
+const indexIter = iterator(x => x * x);
+indexIter.next().value === 0;   // true
+indexIter.next().value === 1;   // true
+indexIter.next().value === 4;   // true
+indexIter.next().value === 9;   // true
+// Again, this will go on forever, or until the numbers get to big JS to handle
+
+// Using default value on `last` parameter for initial value
+const lastIter = iterator((index, last = 1) => last * (index + 1));  // Factorial
+lastIter.next().value === 1;    // true
+lastIter.next().value === 2;    // true
+lastIter.next().value === 6;    // true
+lastIter.next().value === 24;   // true
+// Again, forever, though factorials get big quickly
+
+// This iterator will terminate when the function returns `undefined`
+const stopIter = iterator(x => x &lt; 2 ? x : undefined);
+stopIter.next().value === 0;    // true
+stopIter.next().value === 1;    // true
+stopIter.next().done === true;  // true</code></pre>
 </div>
 
 
