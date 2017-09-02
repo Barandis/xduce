@@ -27,7 +27,7 @@ footer {
   font-style: italic;
 }
 #content {
-  min-height: 650px;
+  min-height: calc(100vh - 11.6em);
   padding: 0;
   margin: 0;
   display: flex;
@@ -118,6 +118,7 @@ header img#fork-me {
 
 #content > nav ul {
   list-style-type: none;
+  padding-left: 0;
   text-align: right;
 }
 #content > aside ul {
@@ -149,7 +150,7 @@ header img#fork-me {
 
 /* IE error message */
 .ie-message {
-  display: table-cell;
+  display: none;
   margin: 2em;
   border: 2px solid red;
   text-align: center;

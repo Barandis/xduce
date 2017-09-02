@@ -1,3 +1,8 @@
+document.querySelector('header').innerHTML =
+  '<div class="ie-message"><p>Your browser does not support modern browser features and will not have ' +
+  'access to the full functionality of this site. Please view this site in the latest version of Chrome, Firefox, ' +
+  'Opera, Safari, or Edge.</p></div>';
+
 async function getHtml(url) {
   const options = {
     method: 'get',
