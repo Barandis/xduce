@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Xduce: Transducers for JavaScript</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link rel="stylesheet" href="../css/tomorrow-night-eighties.css">
+  <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+  <header></header>
+  <section id="content">
+
+    <article>
+      <section id="intro">
+        <h2>Xduce: The Manual</h2>
+        <p><em>
+          Here it is: the answers to all of your questions about Xduce and transducers in general. Or at least it should
+          be. If you have a question to which you can't find the answer in here, then please
+          <a href="https://github.com/Barandis/xduce/issues">enter an issue</a> to let me know how I can change this for
+          the better.
+        </em></p>
+        <p>
+          Xduce is a JavaScript implementation of a transducer library. Transducers were all the rage a couple of years
+          ago when they found a use with the much-hyped (deservedly so) addition of
+          <abbr title="Communicating Sequential Processes">CSP</abbr> to Clojure's core.async library. JavaScript lends
+          itself to nearly any sort of library, and unsurprisingly, a few transducer libraries popped up in the next few
+          months, normally accompanied by a CSP library of their own.
+        </p>
+        <p>
+          Xduce isn't necessarily late to the party. CSP and transducers piqued my interest right from the beginning,
+          and while I remained interested, the libraries that were around started to age and stopped being maintained.
+          Eventually I decided to write libraries of each of my own in an attempt to improve upon them and to have an
+          actively maintained one.
+        </p>
+      </section>
+
+      <section id="motivation">
+        <h3>So...what is it good for?</h3>
+        <p>
+          Alright, so Xduce is a transducer library. Why do you need a transducer library? Why was it cool enough to
+          spend all this time working on it? For in-depth answers, you might want to go to the
+          <a href="theory.html">Theory</a> page, but here's a nice high-level answer that's much shorter.
+        </p>
+        <p>
+          Transducers let you do all of the things that you would normally do with <code>map</code>,
+          <code>filter</code>, and all those other mainstays of functional programming <em>without caring about what
+          kind of collection you have</em>.
+        </p>
+        <p>
+          In normal JavaScript up until now, you've had to use a different <code>filter</code> function (for instance)
+          for each different collection type. <code>Array.prototype.filter</code> will not work on strings, and if you
+          wrote a function to filter characters from strings, it would not work on plain objects. That's because, while
+          you can customize the rule for determining whether an array element is filtered out or not, you
+          <em>cannot</em> customize how <code>Array.prototype.filter</code> breaks an array into its parts before you
+          run each of those parts through a filtering function, nor can you customize how the new array is put back
+          together.
+        </p>
+        <p>
+          Xduce lets you do both of those things. The upshot is that the very same <code>filter</code> that Xduce
+          provides can be used on arrays, strings, objects, or generators. It can also be used on any other collection
+          type, or any collection type that doens't yet exist but will in the future, just by providing about three
+          lines of code to instruct Xduce on how to work with that collection type.
+        </p>
+        <pre><code class="javascript">
+          const { compose, protocols, sequence } = xduce;
+          const { filter, map, take } = xduce.transducers;
+          const { List } = Immutable;
+
+          // Works with arrays out of the box!
+          filter([1, 2, 3, 4, 5], x => x > 2);         // [3, 4, 5]
+          // Works with strings out of the box!
+          filter('Hello', x => x === x.toLowerCase()); // 'ello'
+          // Works with objects out of the box!
+          filter({ a: 1, b: 2 }, { k, v } => v > 1);   // { b: 2 }
+          // Works with generators out of the box!
+          function* five() {
+            for (let i = 1; i <= 5; ++i) {
+              yield i;
+            }
+          }
+          filter(five(), x => x > 2);   // iterator containing 3, 4, 5
+
+          // Works with immutable-js lists, with a little setup
+          List.prototype[protocols.init] = () => List().asMutable();
+          List.prototype[protocols.step] = (acc, x) => acc.push(x);
+          List.prototype[protocols.result] = x => x.asImmutable();
+
+          filter(List.of(1, 2, 3, 4, 5), x => x > 2);  // List(3, 4, 5)
+          // Better yet, setting up once means any transducer will work now
+          map(List.of(1, 2, 3, 4, 5), x => x + 1);     // List(2, 3, 4, 5, 6)
+          take(List.of(1, 2, 3, 4, 5), 3);             // List(1, 2, 3)
+
+          const fn = compose(map(x => x + 1), take(3));
+          sequence(List.of(1, 2, 3, 4, 5), fn);        // List(2, 3, 4)
+        </code></pre>
+        <p>
+          As you can see from the examples at the bottom, once a type has support for transducers, it has support for
+          <em>all</em> transducers. There are currently 21 available in Xduce, and they can all be composed in any
+          number and order you like, and all will work with any type of collection.
+        </p>
+      </section>
+
+      <section id="csp">
+        <h3>Special mention: channels</h3>
+        <p>
+          The very reason I originally started Xduce was as a companion to the JavaScript implementation of
+          Communicating Sequencial Processes (CSP) that I was creating, which eventually became
+          <a href="https://barandis.github.io/cispy">Cispy</a>. This was not an accident. Clojure famously added CSP to
+          its core.async library, and shortly thereafter, they released transducers to help with transforming values on
+          CSP channels. Since I had the benefit of seeing that all happen, I knew when I began with CSP that I would
+          want transducers from the start.
+        </p>
+        <p>
+          CSP channels are not like other collections. You can't create a new channel with transformed elements from
+          the old channel...the elements appear on the input channel over time, like a stream, and anyone who is
+          interested in taking values off the channel will be listening to the original channel, not to some new one
+          that transducers create.
+        </p>
+        <p>
+          So there is specific support in Cispy channels to have a transducer attached to them when they're created.
+          The values are transformed by the transducer as they're taken off, one at a time.
+        </p>
+        <pre><code class="javascript">
+          const { chan, go, put, take } = cispy;
+          const { map } = xduce.transducers;
+
+          const ch = chan(1, map(x => x + 1));
+
+          go(function*() {
+            yield put(ch, 1);
+            yield put(ch, 5);
+          });
+
+          go(function*() {
+            const first  = yield take(ch);   // first = 2
+            const second = yield take(ch);   // second = 6
+          });
+        </code></pre>
+        <p>
+          The different nature of channels means the setup is different, but the <em>exact same</em> transducers are
+          used with channels as are with arrays, strings, and anything else.
+        </p>
+        <p>
+          You can use transducers without ever caring about CSP channels, but if you're using CSP, you're definitely
+          going to want transducers.
+        </p>
+      </section>
+
+      <section id="conclusion">
+        <h3>Go try it out</h3>
+        <p>
+          To learn more, check out anything in the rest of the manual. <a href="theory.html">Theory</a> will tell you
+          how they work and why they're good, <a href="install.html">Install</a> will get you started using transducers
+          for yourself, and the rest of the manual will tell you all you need to know.
+        </p>
+      </section>
+    </article>
+
+    <nav></nav>
+    <aside></aside>
+  </section>
+  <footer></footer>
+
+  <script src="../js/highlight.pack.js"></script>
+  <script src="../js/highlightjs-line-numbers.min.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

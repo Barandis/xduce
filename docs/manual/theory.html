@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Xduce: Transducers for JavaScript</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link rel="stylesheet" href="../css/tomorrow-night-eighties.css">
+  <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+  <header></header>
+  <section id="content">
+
+    <article>
+      <section id="intro">
+        <p>
+          This page could easily be regarded as <em>optional</em>. There isn't anything in here that will tell you how
+          to use Xduce. But if you're interested in <em>why</em> you're using Xduce, or what's going on under the
+          covers, then you might find this page satisfying. I found it satisfying to write it.
+        </p>
+      </section>
+      <section id="transducer">
+        <h3>Transducer? What's that?</h3>
+        <p>
+          A <em>transducer</em> is a generalization of all of the collection transformation functions that you may have
+          seen in a functional programming language (including JavaScript). These are functions that take one
+          collection, change its elements in some way, and return a new collection with those changed elements.
+          Functions like <code>map</code>, <code>filter</code>, and <code>reduce</code> are good examples.
+        </p>
+        <p>
+          A <em>generalization</em>, in this case, means that we can re-use the same basic framework to do many
+          different kind of operations. To see what I'm talking about, let's look at the <code>map</code> function.
+          This just takes a function and a collection, applies the function to each element in that collection, and
+          spits out a new collection containing the return values of all of those function applications.
+        </p>
+        <p><em>
+          (Throughout these examples, I use <code>xs</code> as the name of the collection. It's read "exes", as in the
+          plural of <code>x</code>, and its a common convention in functional programming languages.)
+        </em></p>
+        <pre><code class="javascript">
+          const xs = [1, 2, 3, 4, 5];
+          const transformed = xs.map(x => x + 1);
+          // transformed = [2, 3, 4, 5, 6]
+        </code></pre>
+        <p>
+          If you think about it, you can see that the transformation that <code>map</code> does is generalized. This
+          example adds 1 to each element of the input array. If we wanted to instead multiply each element by 2, we
+          would <em>not</em> have to write a new <code>map</code> function, we'd just have to pass a different
+          transformation function to it.
+        </p>
+        <pre><code class="javascript">
+          const xs = [1, 2, 3, 4, 5];
+          const transformed = xs.map(x => x * 2);
+          // transformed = [2, 4, 6, 8, 10]
+        </code></pre>
+        <p>
+          Same <code>map</code> function, completely different result, because the transformation in <code>map</code>
+          is generalized.
+        </p>
+
+        <h3>Generalized reduction</h3>
+        <p>
+          One thing that you'll certainly notice after not too much time working with <code>map</code> is that it
+          <em>always</em> takes an array as input and <em>always</em> returns an array as output. We can change each of
+          the array's elements any way we want to, but we cannot change the actual data structure that those elements
+          are a part of.
+        </p>
+        <p>
+          To see why, let's write our own <code>map</code> function and see what's going on beneath the covers. You
+          can write this iteratively, with a <code>for...of</code> loop, but I'm going to take a slight leap ahead and
+          write it functionally, using <code>reduce</code> because it lends itself a little better to this discussion.
+          (<code>for...of</code> would work for the discussion too, just not as well.)
+        </p>
+        <pre><code class="javascript">
+          function map(xs, xform) {
+            return xs.reduce((acc, x) => {
+              acc.push(xform(x));
+              return acc;
+            }, []);
+          }
+          const transformed = map([1, 2, 3, 4, 5], x => x + 1);
+          // transformed = [2, 3, 4, 5, 6];
+        </code></pre>
+        <p>
+          The function that is passed to <code>reduce</code> is called a <em>reduction function</em>, and it's where
+          all of the magic is happening. And it's also part of what's tying this function to arrays.
+        </p>
+        <p>
+          <code>reduce</code> is responsible for taking all of those values that are being transformed and putting
+          them back together into a new array. It does this by calling its reduction function one time for every input
+          element that it's processing. It feeds the reduction function two things: 1) the part of the new array that
+          it's built up <em>so far</em>, and 2) the next element of the input array. The reduction function is then
+          charged with transforming this next element (which it does with our already familiar generalized
+          transformation function) and, somehow, combining it into the array that it has built so far.
+        </p>
+        <p>
+          With that in mind, let's take a little side-step to implement another, similar function. We'll do
+          <code>filter</code>, which <em>also</em> takes a function and a collection. This time though, it passes
+          each element of the collection to the function and only retains the ones that "pass" (that make the function
+          return `true`).
+        </p>
+        <pre><code class="javascript">
+          const xs = [1, 2, 3, 4, 5];
+          const filtered = xs.filter(x => x % 2 === 0); // returns true if x is even
+          // filtered = [2, 4]
+        </code></pre>
+        <p>
+          So let's work up a quick implementation of <code>filter</code>.
+        </p>
+        <pre><code class="javascript">
+          function filter(xs, fn) {
+            return xs.reduce((acc, x) => {
+              if (fn(x)) { acc.push(x); }
+              return acc;
+            }, []);
+          }
+          const filtered = filter([1, 2, 3, 4, 5], x => x % 2 === 0);
+          // filtered = [2, 4];
+        </code></pre>
+      </section>
+    </article>
+
+    <nav></nav>
+    <aside></aside>
+  </section>
+  <footer></footer>
+
+  <script src="../js/highlight.pack.js"></script>
+  <script src="../js/highlightjs-line-numbers.min.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="js/theory.js"></script>
+</body>
+</html>
