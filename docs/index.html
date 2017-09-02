@@ -7,162 +7,179 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
   <link rel="stylesheet" href="css/tomorrow-night-eighties.css">
   <link rel="stylesheet" href="css/site.css">
-  <script src="js/highlight.pack.js"></script>
-  <script src="js/highlightjs-line-numbers.min.js"></script>
-  <script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-  </script>
 </head>
 <body>
-  <header>
-    <h1><a href="index.html">Xduce</a></h1>
-    <p>Transducers for JavaScript</p>
-    <a href="https://github.com/Barandis/xduce">
-      <img id="fork-me" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
-    </a>
-  </header>
+  <header></header>
+
   <section id="content">
-    <section id="badges">
-      <a href="https://www.npmjs.com/package/xduce">
-        <img src="https://img.shields.io/npm/v/xduce.svg" alt="Version">
-      </a>
-      <a href="https://travis-ci.org/Barandis/xduce">
-        <img src="https://img.shields.io/travis/Barandis/xduce/master.svg" alt="Build Status">
-      </a>
-      <a href="https://coveralls.io/github/Barandis/xduce">
-        <img src="https://img.shields.io/coveralls/Barandis/xduce/master.svg" alt="Coverage Status">
-      </a>
-      <a href="http://npm-stats.com/~packages/xduce">
-        <img src="https://img.shields.io/npm/dm/xduce.svg" alt="Downloads">
-      </a>
-      <a href="http://commitizen.github.io/cz-cli/">
-        <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly">
-      </a>
-      <a href="https://github.com/semantic-release/semantic-release">
-        <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg" alt="semantic-release">
-      </a>
-      <a href="https://opensource.org/licenses/MIT">
-        <img src="https://img.shields.io/github/license/Barandis/xduce.svg" alt="License">
-      </a>
-    </section>
+    <article>
+      <section id="badges">
+        <a href="https://www.npmjs.com/package/xduce">
+          <img src="https://img.shields.io/npm/v/xduce.svg" alt="Version">
+        </a>
+        <a href="https://travis-ci.org/Barandis/xduce">
+          <img src="https://img.shields.io/travis/Barandis/xduce/master.svg" alt="Build Status">
+        </a>
+        <a href="https://coveralls.io/github/Barandis/xduce">
+          <img src="https://img.shields.io/coveralls/Barandis/xduce/master.svg" alt="Coverage Status">
+        </a>
+        <a href="http://npm-stats.com/~packages/xduce">
+          <img src="https://img.shields.io/npm/dm/xduce.svg" alt="Downloads">
+        </a>
+        <a href="http://commitizen.github.io/cz-cli/">
+          <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly">
+        </a>
+        <a href="https://github.com/semantic-release/semantic-release">
+          <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg" alt="semantic-release">
+        </a>
+        <a href="https://opensource.org/licenses/MIT">
+          <img src="https://img.shields.io/github/license/Barandis/xduce.svg" alt="License">
+        </a>
+      </section>
 
-    <section id="intro">
-      <p>
-        Xduce is a JavaScript library that implements transducers in the spirit of
-        <a href="https://clojure.org/reference/transducers" alt="Clojure transducers">Clojure transducers</a>.
-      </p>
-      <p>
-        A transducer is a generalization of all of the <code>map</code>, <code>filter</code>, and similar functions that
-        functional programming promotes. If there is a problem with these functions, it's that they can only be
-        instructed on how to <em>transform</em>em> values in a custom way, and that's only one part of a
-        collection-related function. They cannot be instructed on how to break a collection into its component parts for
-        transformation (<em>iteration</em>), and they cannot be instructed on how to take the transformed values and put
-        them back together into a new collection (<em>reduction</em>). So while you can use
-        <code>Array.prototype.map</code> to turn any type of array element into any other type of array element, they
-        have to be <em>array</em> elements. You can't use this function on anything but an array, and you can't have it
-        return anything other than an array.
-      </p>
-      <p>
-        Xduce seeks to improve this by providing an engine that allows customization of all three parts of the process:
-        iteration, transformation, and reduction. This means the same <code>map</code> function can be used on arrays,
-        strings, objects, iterators, streams, channels, immutable lists, or anything else.
-      </p>
-    </section>
+      <section id="intro">
+        <p>
+          Xduce is a JavaScript library that implements transducers in the spirit of
+          <a href="https://clojure.org/reference/transducers" alt="Clojure transducers">Clojure transducers</a>.
+        </p>
+        <p>
+          A transducer is a generalization of all of the <code>map</code>, <code>filter</code>, and similar functions
+          that functional programming promotes. If there is a problem with these functions, it's that they can only be
+          instructed on how to <em>transform</em> values in a custom way, and that's only one part of a
+          collection-related function. They cannot be instructed on how to break a collection into its component parts
+          for transformation (<em>iteration</em>), and they cannot be instructed on how to take the transformed values
+          and put them back together into a new collection (<em>reduction</em>). So while you can use
+          <code>Array.prototype.map</code> to turn any type of array element into any other type of array element, they
+          have to be <em>array</em> elements. You can't use this function on anything but an array, and you can't have
+          it return anything other than an array.
+        </p>
+        <p>
+          Xduce seeks to improve this by providing an engine that allows customization of all three parts of the
+          process: iteration, transformation, and reduction. This means the same <code>map</code> function can be used
+          on arrays, strings, objects, iterators, streams, channels, immutable lists, or anything else.
+        </p>
+      </section>
 
-    <section id="installation">
-      <h2>Installation</h2>
+      <section id="installation">
+        <h2>Installation</h2>
 
-      <p>In node.js, or for use with Browserify, Webpack, etc., you can install the npm package.</p>
+        <p>In node.js, or for use with Browserify, Webpack, etc., you can install the npm package.</p>
 
-      <pre><code class="javascript">npm install xduce</code></pre>
+        <pre><code class="javascript">
+          npm install xduce
+        </code></pre>
 
-      <p>or, if you use yarn</p>
+        <p>or, if you use yarn</p>
 
-      <pre><code class="javascript">yarn add xduce</code></pre>
+        <pre><code class="javascript">
+          yarn add xduce
+        </code></pre>
 
-      <p>
-        For the browser, you can <a href="https://github.com/Barandis/xduce/releases" alt="Releases">visit the releases
-        page</a> to download the latest archive. Inside there is a <code>dist</code> folder that contains
-        <code>xduce.js</code> and its minified version, <code>xduce.min.js</code>. These use transpiled ES5 code; if
-        you prefer ES2015, you can instead use either <code>xduce.es.js</code> or <code>xduce.es.min.js</code>. Drop the
-        file of your choice into your project and reference it as normal in your HTML file.
-      </p>
-    </section>
+        <p>
+          For the browser, you can <a href="https://github.com/Barandis/xduce/releases" alt="Releases">visit the
+          releases page</a> to download the latest archive. Inside there is a <code>dist</code> folder that contains
+          <code>xduce.js</code> and its minified version, <code>xduce.min.js</code>. These use transpiled ES5 code; if
+          you prefer ES2015, you can instead use either <code>xduce.es.js</code> or <code>xduce.es.min.js</code>. Drop
+          the file of your choice into your project and reference it as normal in your HTML file.
+        </p>
+      </section>
 
-    <section id="usage">
-      <h2>Usage</h2>
+      <section id="usage">
+        <h2>Usage</h2>
 
-      <p>Xduce provides all of its functionality on a single exported object.</p>
+        <p>Xduce provides all of its functionality on a single exported object.</p>
 
-      <p>
-        In node.js, Browserify, Webpack, etc., you can access this through <code>require</code> or ES2015
-        <code>import</code>.
-      </p>
+        <p>
+          In node.js, Browserify, Webpack, etc., you can access this through <code>require</code> or ES2015
+          <code>import</code>.
+        </p>
 
-      <pre><code class="javascript">import xduce from 'xduce';
-const { map } = xduce.transducers;
+        <pre><code class="javascript">
+          import xduce from 'xduce';
+          const { map } = xduce.transducers;
 
-const result = map([1, 2, 3, 4, 5], x => x + 1);
-// result = [2, 3, 4, 5, 6]</code></pre>
+          const array = map([1, 2, 3, 4, 5], x => x + 1);
+          // array = [2, 3, 4, 5, 6]
+          const string = map('hello', x => x + x);
+          // string = 'hheelllloo'
+        </code></pre>
 
-      <p>If you're using require.js, you can use <code>requirejs</code>.</p>
+        <p>If you're using require.js, you can use <code>requirejs</code>.</p>
 
-      <pre><code class="javascript">requirejs(['xduce'], xduce => {
-  const { map } = xduce.transducers;
+        <pre><code class="javascript">
+          requirejs(['xduce'], xduce => {
+            const { map } = xduce.transducers;
 
-  const result = map([1, 2, 3, 4, 5], x => x + 1);
-  // result = [2, 3, 4, 5, 6]
-});</code></pre>
+            const array = map([1, 2, 3, 4, 5], x => x + 1);
+            // array = [2, 3, 4, 5, 6]
+            const string = map('hello', x => x + x);
+            // string = 'hheelllloo'
+          });
+        </code></pre>
 
-      <p>Finally, if you're using directly in an HTML page, you can use the global <code>xduce</code> object.</p>
+        <p>Finally, if you're using directly in an HTML page, you can use the global <code>xduce</code> object.</p>
 
-      <pre><code class="html">&lt;script src="js/xduce.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  const { map } = xduce.transducers;
+        <pre><code class="html">
+          &lt;script src="js/xduce.js"&gt;&lt;/script&gt;
+          &lt;script&gt;
+            const { map } = xduce.transducers;
 
-  const result = map([1, 2, 3, 4, 5], x => x + 1);
-  // result = [2, 3, 4, 5, 6]
-&lt;/script&gt;</code></pre>
-    </section>
+            const array = map([1, 2, 3, 4, 5], x => x + 1);
+            // array = [2, 3, 4, 5, 6]
+            const string = map('hello', x => x + x);
+            // string = 'hheelllloo'
+          &lt;/script&gt;
+        </code></pre>
+      </section>
 
-    <section id="documentation">
-      <h2>API documentation</h2>
+      <section id="documentation">
+        <h2>API documentation</h2>
 
-      <p>
-        Every public API function is documented the <a href="api/index.html">API documentation</a>. Most of the
-        functions have examples of their usage. In the future I plan to have more documentation on further usage of
-        some of these functions, general concepts, and writing your own transducers.
-      </p>
-    </section>
+        <p>
+          Every public API function is documented the <a href="api/index.html">API documentation</a>. Most of the
+          functions have examples of their usage. In the future I plan to have more documentation on further usage of
+          some of these functions, general concepts, and writing your own transducers.
+        </p>
+      </section>
 
-    <section id="inspiration">
-      <h2>Inspiration</h2>
+      <section id="inspiration">
+        <h2>Inspiration</h2>
 
-      <p>
-        Transducers were introduced to me after they were brought into Clojure, particularly in conjunction with
-        <abbr title="Communicating Sequential Processes">CSP</abbr>, which I have also
-        <a href="https://github.com/Barandis/cispy" alt="Cispy">written a library for</a>. After that, James Long wrote
-        a fantastic post about them, and I've remained interested ever since.
-      </p>
-      <ul>
-        <li>
-          <a href="http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming">Transducers Are Coming</a>
-          by Rich Hickey
-        </li>
-        <li>
-          <a href="http://jlongster.com/Transducers.js--A-JavaScript-Library-for-Transformation-of-Data">
-            Transducers.js: A JavaScript Library for Transformation of Data
-          </a> by jlongster
-        </li>
-      </ul>
-    </section>
+        <p>
+          Transducers were introduced to me after they were brought into Clojure, particularly in conjunction with
+          <abbr title="Communicating Sequential Processes">CSP</abbr>, which I have also
+          <a href="https://github.com/Barandis/cispy" alt="Cispy">written a library for</a>. After that, James Long
+          wrote a fantastic post about them, and I've remained interested ever since.
+        </p>
+        <ul>
+          <li>
+            <a href="http://blog.cognitect.com/blog/2014/8/6/transducers-are-coming">Transducers Are Coming</a>
+            by Rich Hickey
+          </li>
+          <li>
+            <a href="http://jlongster.com/Transducers.js--A-JavaScript-Library-for-Transformation-of-Data">
+              Transducers.js: A JavaScript Library for Transformation of Data
+            </a> by jlongster
+          </li>
+        </ul>
+      </section>
 
-    <section id="license">
-      <h2>License</h2>
+      <section id="license">
+        <h2>License</h2>
 
-      <p><a href="https://opensource.org/licenses/MIT">MIT License</a></p>
-    </section>
+        <p><a href="https://opensource.org/licenses/MIT">MIT License</a></p>
+      </section>
+    </article>
+
+    <nav></nav>
+
+    <aside></aside>
   </section>
+  <footer></footer>
+
+  <script src="js/highlight.pack.js"></script>
+  <script src="js/highlightjs-line-numbers.min.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/index.js"></script>
 </body>
 </html>
