@@ -7,21 +7,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
   <link rel="stylesheet" href="css/tomorrow-night-eighties.css">
   <link rel="stylesheet" href="css/site.css">
-  <script src="js/highlight.pack.js"></script>
-  <script src="js/highlightjs-line-numbers.min.js"></script>
-  <script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
-  </script>
 </head>
 <body>
-  <header>
-    <h1><a href="index.html">Xduce</a></h1>
-    <p>Transducers for JavaScript</p>
-    <a href="https://github.com/Barandis/xduce">
-      <img id="fork-me" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
-    </a>
-  </header>
+  <header></header>
+
   <section id="content">
     <article>
       <section id="badges">
@@ -76,11 +65,15 @@
 
         <p>In node.js, or for use with Browserify, Webpack, etc., you can install the npm package.</p>
 
-        <pre><code class="javascript">npm install xduce</code></pre>
+        <pre><code class="javascript">
+          npm install xduce
+        </code></pre>
 
         <p>or, if you use yarn</p>
 
-        <pre><code class="javascript">yarn add xduce</code></pre>
+        <pre><code class="javascript">
+          yarn add xduce
+        </code></pre>
 
         <p>
           For the browser, you can <a href="https://github.com/Barandis/xduce/releases" alt="Releases">visit the
@@ -101,36 +94,42 @@
           <code>import</code>.
         </p>
 
-        <pre><code class="javascript">import xduce from 'xduce';
- const { map } = xduce.transducers;
+        <pre><code class="javascript">
+          import xduce from 'xduce';
+          const { map } = xduce.transducers;
 
- const array = map([1, 2, 3, 4, 5], x => x + 1);
- // array = [2, 3, 4, 5, 6]
- const string = map('hello', x => x + x);
- // string = 'hheelllloo'</code></pre>
+          const array = map([1, 2, 3, 4, 5], x => x + 1);
+          // array = [2, 3, 4, 5, 6]
+          const string = map('hello', x => x + x);
+          // string = 'hheelllloo'
+        </code></pre>
 
         <p>If you're using require.js, you can use <code>requirejs</code>.</p>
 
-        <pre><code class="javascript">requirejs(['xduce'], xduce => {
-  const { map } = xduce.transducers;
+        <pre><code class="javascript">
+          requirejs(['xduce'], xduce => {
+            const { map } = xduce.transducers;
 
-  const array = map([1, 2, 3, 4, 5], x => x + 1);
-  // array = [2, 3, 4, 5, 6]
-  const string = map('hello', x => x + x);
-  // string = 'hheelllloo'
-});</code></pre>
+            const array = map([1, 2, 3, 4, 5], x => x + 1);
+            // array = [2, 3, 4, 5, 6]
+            const string = map('hello', x => x + x);
+            // string = 'hheelllloo'
+          });
+        </code></pre>
 
         <p>Finally, if you're using directly in an HTML page, you can use the global <code>xduce</code> object.</p>
 
-        <pre><code class="html">&lt;script src="js/xduce.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  const { map } = xduce.transducers;
+        <pre><code class="html">
+          &lt;script src="js/xduce.js"&gt;&lt;/script&gt;
+          &lt;script&gt;
+            const { map } = xduce.transducers;
 
-  const array = map([1, 2, 3, 4, 5], x => x + 1);
-  // array = [2, 3, 4, 5, 6]
-  const string = map('hello', x => x + x);
-  // string = 'hheelllloo'
-&lt;/script&gt;</code></pre>
+            const array = map([1, 2, 3, 4, 5], x => x + 1);
+            // array = [2, 3, 4, 5, 6]
+            const string = map('hello', x => x + x);
+            // string = 'hheelllloo'
+          &lt;/script&gt;
+        </code></pre>
       </section>
 
       <section id="documentation">
@@ -171,9 +170,16 @@
         <p><a href="https://opensource.org/licenses/MIT">MIT License</a></p>
       </section>
     </article>
+
     <nav></nav>
+
     <aside></aside>
   </section>
   <footer></footer>
+
+  <script src="js/highlight.pack.js"></script>
+  <script src="js/highlightjs-line-numbers.min.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/index.js"></script>
 </body>
 </html>
