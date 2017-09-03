@@ -49,24 +49,20 @@
           kind of collection you have</em>.
         </p>
         <p>
-          In normal JavaScript up until now, you've had to use a different <code>filter</code> function (for instance)
+          With normal JavaScript functions, you have to use a different <code>filter</code> function (for instance)
           for each different collection type. <code>Array.prototype.filter</code> will not work on strings, and if you
           wrote a function to filter characters from strings, it would not work on plain objects. That's because, while
           you can customize the rule for determining whether an array element is filtered out or not, you
           <em>cannot</em> customize how <code>Array.prototype.filter</code> breaks an array into its parts before you
           run each of those parts through a filtering function, nor can you customize how the new array is put back
-          together.
+          together from the filtered parts.
         </p>
         <p>
           Xduce lets you do both of those things. The upshot is that the very same <code>filter</code> that Xduce
-          provides can be used on arrays, strings, objects, or generators. It can also be used on any other collection
-          type, or any collection type that doens't yet exist but will in the future, just by providing about three
-          lines of code to instruct Xduce on how to work with that collection type.
+          provides can be used on arrays, strings, objects, or generators without any modification or setup.
         </p>
         <pre><code class="javascript">
-          const { compose, protocols, sequence } = xduce;
-          const { filter, map, take } = xduce.transducers;
-          const { List } = Immutable;
+          const { filter } = xduce.transducers;
 
           // Works with arrays out of the box!
           filter([1, 2, 3, 4, 5], x => x > 2);         // [3, 4, 5]
@@ -81,6 +77,17 @@
             }
           }
           filter(five(), x => x > 2);   // iterator containing 3, 4, 5
+        </code></pre>
+        <p>
+          It can also be used on any other collection type, or any collection type that doens't yet exist but will in
+          the future, just by providing 3-4 properties (a line of code or two each) to instruct Xduce on how to work
+          with that collection type.
+        </p>
+
+        <pre><code class="javascript">
+          const { compose, protocols, sequence } = xduce;
+          const { filter, map, take } = xduce.transducers;
+          const { List } = Immutable;
 
           // Works with immutable-js lists, with a little setup
           List.prototype[protocols.init] = () => List().asMutable();
