@@ -115,11 +115,13 @@
           JavaScript arrays, strings, and generators. They can also be defined by programmers, and several third-party
           collection libraries implement them. Let's take a look at some examples.
         </p>
-        <p><em>
-          (In the following examples, I will be using the variable name <code>xs</code> to refer to a collection. This
-          is pronounced "exes" and is literally meant to be the plural of <code>x</code>, which is a single element in
-          the collection. This is a common convention in functional programming.)
-        </em></p>
+        <aside>
+          <p>
+            In all of the examples on this page, I will be using the variable name <code>xs</code> to refer to a
+            collection. This is pronounced "exes" and is literally meant to be the plural of <code>x</code>, which is
+            a single element in the collection. This is a common convention in functional programming.
+          </p>
+        </aside>
         <pre><code class="javascript">
           const xs = [1, 2, 3, 4, 5];
           const result = [];
@@ -150,10 +152,13 @@
           }
           // result = [2, 3, 4, 5, 6];
         </code></pre>
-        <p>
-          (This last one uses a <code>List</code> from <a href="https://facebook.github.io/immutable-js/">Immutable</a>,
-          a third-party collection of immutable data structures that does, in fact, implement the iterator protocols.)
-        </p>
+        <aside>
+          <p>
+            This last one uses a <code>List</code> from
+            <a href="https://facebook.github.io/immutable-js/">Immutable</a>, a third-party library of immutable
+            data structures that does, in fact, implement the iterator protocols.
+          </p>
+        </aside>
         <p>
           So the same construct is used to break down any collection (at least, any collection that implements the
           iteration protocols, which we'll assume from now on even without saying it) into its pieces. In fact, it's so
@@ -267,12 +272,12 @@
             return acc.push(x);
           }
 
-          map3([1, 2, 3, 4, 5], x => x + 1, arrayReducer, []);
+          map3([1, 2, 3, 4, 5], x => x + 1, [], arrayReducer);
           // -> [2, 3, 4, 5, 6]
-          map3('hello', x => x + x, stringReducer, '');
+          map3('hello', x => x + x, '', stringReducer);
           // -> 'hheelllloo'
           const List = Immutable.List;
-          map3(List.of(1, 2, 3, 4, 5), x => x + 1, listReducer, List().asMutable());
+          map3(List.of(1, 2, 3, 4, 5), x => x + 1, List().asMutable(), listReducer);
           // -> List(2, 3, 4, 5, 6)
         </code></pre>
         <p>
@@ -289,23 +294,53 @@
         </p>
       </section>
 
-      <section id="conclusion">
-        <h2>Some final thoughts</h2>
+      <section id="result">
+        <h2>But...but...but...</h2>
         <p>
-          If you look closely, you might notice a couple of things about our <code>map3</code> function and its use.
-          And if you didn't notice, that's okay, because I'm going to point them out.
+          So we have a transducer! Well, yes, we do in theory, but there are still a couple problems with it. In fact,
+          I'm not sure I would consider the benefits of using a transducer worth the downsides of the implementation
+          that we've spent all this time developing.
         </p>
         <p>
-          First thing: the <code>Immutable.List</code> example. We're passing in an initial value of a <em>mutable</em>
-          list, which is what allows the <code>listReducer</code> function to add things to it - it couldn't do this if
-          it was an immutable list because an immutable list is, well, immutable. You can't add things to it. But that
-          means the output is also a mutable list, and if we wanted a mutable list, we wouldn't be using a library of
-          immutable collections. What to do about this?
+          We've covered what transducers are pretty well, but now we're going to go beyond the theory a bit to discuss
+          how to make them nicer to use. After all, it wouldn't do much good to take you all the way through this just
+          to get to something that you turn your nose up at.
         </p>
         <p>
-          Xduce handles this by passing <em>just one more function</em> to the transducer (sort of, see below for what
-          really happens). This is a <code>result</code> function, and its only purpose is to take the final
-          accumulator and have one last chance to change it. Let's have a look.
+          Alright then. The first problem that I can see is that Immutable list example. The initial value is
+          `List().asMutable()`. Maybe you aren't familiar with Immutable, but it should be pretty clear to anyone that
+          what we have here is <em>not</em> an immutable list.
+        </p>
+        <p>
+          Which is fine. After all, immutable lists are...well, immutable. You can't add anything to them. So if you're
+          starting with an empty immutable list, you're <em>always</em> going to have an empty immutable list, no
+          matter how many times you feed it to the step function. We use a mutable list here because we are going to
+          need to add things to it.
+        </p>
+        <aside>
+          <p>
+            It <em>is</em> true that we could supply an empty immutable list and then have the step function make a new
+            immutable list each time. Something like this:
+          </p>
+          <pre><code class="javascript">
+            function listReducer(acc, x) {
+              return Immutable.List.fromJS(acc.toArray().concat([x]));
+            }
+            map3(List.of(1, 2, 3, 4, 5), x => x + 1, Immutable.List(), listReducer);
+            // -> List(2, 3, 4, 5, 6)
+          </code></pre>
+          <p>
+            But this is far from ideal. Not only is the implementation of the list reducer function much more complex,
+            it's going to be hopelessly inefficient, creating a new list and throwing it away for every single element
+            in the input collection. List-based languages where immutable lists are common often allow programming
+            like this because of optimizations that take away the need for new lists to be created, but JavaScript is
+            not one of those languages.
+          </p>
+        </aside>
+        <p>
+          But if we're using a mutable list as an initial value, we're going to get an immutable list back as a final
+          value. How can we solve this problem, allowing us to start with a mutable list but end with an immutable one?
+          The answer is: we pass our transducer just one. More. Function.
         </p>
         <pre><code class="javascript">
           function map4(xs, fn, init, step, result) {
@@ -316,78 +351,162 @@
             return result(acc);
           }
 
-          const xs     = Immutable.List.of(1, 2, 3, 4, 5);
-          const fn     = x => x + 1;
-          const init   = Immutable.List().asMutable();
-          const step   = (acc, x) => acc.push(x);
-          const result = acc => acc.asImmutable();
+          const xs = Immutable.List.of(1, 2, 3, 4, 5);
+          const fn = x => x + 1;
+          const init = Immutable.List().asMutable();
+          const step = (acc, x) => acc.push(x);
+          const result = (acc) => acc.asImmutable();
 
           map4(xs, fn, init, step, result);
           // -> List(2, 3, 4, 5, 6), but this time immutable
         </code></pre>
         <p>
-          The only difference here is the <code>result</code> function that takes the final output from the
-          <code>step</code> function and allows it to be changed once more, in this case by making the list immutable.
-          For most type, like arrays and strings and things like that, the <code>result</code> function doesn't need to
-          do anything, and it just returns its argument.
+          The only change that has been made here is the addition of the <code>result</code> function. This is called
+          on the final value of the accumulator, allowing one last chance to change that final collection before it's
+          released into the wild. We pass it a function that turns a mutable list into an immutable one (provided, of
+          course, by Immutable itself), and voila, our transducer can take a mutable initial value and return an
+          immutable result.
         </p>
         <p>
-          The other thing that you may notice is...well, that's a lot of parameters to that transducer function. Is it
-          really worth it to have to pass five arguments every time? Honestly, it probably isn't. But that's okay,
-          because there's something that we've already talked about that we can bring into play...protocols.
+          Most collections won't actually want to change that final accumulator before it's returned. For them, we
+          should pass the transducer a <code>result</code> of <code>x => x</code>, a function that just returns its
+          argument. In fact, that could be the default value for the <code>result</code> parameter, which I didn't
+          actually do just because it made it a little harder to understand what we were doing.
         </p>
         <p>
-          There is a built-in set of protocols in JavaScript, but you can also define your own. And Xduce has defined
-          protocols called <code>init</code>, <code>step</code>, and <code>result</code>. Can you see where this is
-          going already? If you have a collection and you give it these three protocols, then your collection can
-          automatically be used as an output collection type from any transducer, without ever having to pass that
-          information to the transducer. So - I promise - one more change to make a final map transducer.
+          Okay! But really, <em>five</em> parameters for every transducer call? That's a lot worse than the two
+          parameters that we have to send to a normal <code>map</code> function (collection and function). Worse yet,
+          if you keep using the same kind of collection, three of them  are always going to be the same, no matter
+          what. That seems bad. let's call that problem number 2, and let's solve it now.
+        </p>
+      </section>
+
+      <section id="protocols">
+        <h2>Remember protocols?</h2>
+        <p>
+          You might remember that back in the section about generalized iteration, I mentioned that ES2015 added
+          protocols and made built-in protocols for iteration so that any kind of object could call itself iterable.
+          You may have also noticed that once we took care of that, we never really had to think about <em>how</em>
+          to iterate over a collection again. We didn't have to pass in a function as a parameter to instruct our
+          various <code>map#</code> transducers on how to iterate. We just used a <code>for...of</code> loop and knew
+          that the iteration protocols would handle it.
+        </p>
+        <p>
+          So how about reduction protocols? Well, there aren't any built-in reduction protocols. But that doesn't mean
+          that we can't make our own to use with transducers.
+        </p>
+        <p>
+          Now, a protocol is really just an agreement that everyone is going to use a property of some agreed-upon
+          name to do something. It's very much akin to an interface in class-based OO languages. So all that we're
+          going to do is say that in order to satisfy our reduction protocols, a collection needs to implement three
+          functions: one that provides an initial value of the collection, one that says how to add a value to the
+          collection one step at a time, and one that says what to do with that collection once it's all built up. For
+          the sake of ease, let's name these functions <code>init</code>, <code>step</code>, and <code>result</code>.
+          If that seems familiar...well, it should be.
+        </p>
+        <p>
+          If our <code>map</code> transducer knows that it's going to look on the collection object for these functions
+          rather than having them passed in, it's pretty easy for it to call them.
         </p>
         <pre><code class="javascript">
-          const { init, step, result } = xduce.protocols;
-          const { List } = Immutable;
-
           function map5(xs, fn) {
-            let acc = xs[init]();
+            let acc = xs.init();
             for (const x of xs) {
-              acc = xs[step](acc, fn(x));
+              acc = xs.step(acc, fn(x));
             }
-            return xs[result](acc);
+            return xs.result(acc);
           }
-
-          List.prototype[init]   = () => List().asMutable();
-          List.prototype[step]   = (acc, x) => acc.push(x);
-          List.prototype[result] = acc => acc.asImmutable();
+        </code></pre>
+        <p>
+          The <em>only change</em> from our last transducer is that instead of calling functions that were passed to
+          it, like in <code>map4</code>, <code>map5</code> finds those functions <em>on the input collection</em> and
+          calls them from there. Now all anyone has to do to make their collection usable with each and every
+          transducer that we write is to add those functions to their collection objects.
+        </p>
+        <pre><code class="javascript">
+          const List = Immutable.List;
+          List.prototype.init = () => List().asMutable();
+          List.prototype.step = (acc, x) => acc.push(x);
+          List.prototype.result = (acc) => acc.asImmutable();
 
           map5(List.of(1, 2, 3, 4, 5), x => x + 1);
           // -> List(2, 3, 4, 5, 6)
         </code></pre>
         <p>
-          Two parameters. Much nicer. Instead of passing the initial value, step function, and result function, those
-          are instead added to the collection object istelf, which <code>map5</code> then reads right off the
-          collection. In fact, after they're defined on the collection object, that collection can be used in
-          <em>any</em> transducer without having to redefine them. It's a one-time deal to make any collection
-          completely compatible with Xduce transducers. (Incidentally, Xduce already defines all of these protocols for
-          arrays, strings, objects, and generators, so you don't have to.)
+          We can call any other transducer the same way, without having to re-define those three protocols. Once
+          they're set, that's all you need. It's a one-shot deal.
+        </p>
+        <aside>
+          <p>
+            If you cringed a little inside at that last example, then good for you! Yes, it's a really bad idea to
+            just go adding properties to other objects willy-nilly like that. What if <code>Immutable.List</code>
+            already <em>had</em> a property named <code>init</code>? What if it doesn't right now, but adds one in the
+            future?
+          </p>
+          <p>
+            The best way to fix that is to use <em>symbols</em> for the protocol property names. Symbols are guaranteed
+            to be unique, so there's no way you can use one to accidentally overwrite another property. To pull off
+            transducers as we're doing here, you have to make sure that the exact same symbol is being used by the
+            <code>map5</code> function as is being used to add the protocol properties.
+          </p>
+          <pre><code class="javascript">
+            const init = Symbol();
+            const step = Symbol();
+            const result = Symbol();
+
+            function map6(xs, fn) {
+              const acc = xs[init]();
+              for (const x of xs) {
+                acc = xs[step](acc, fn(x));
+              }
+              return xs[result](acc);
+            }
+
+            const List = Immutable.List();
+            List.prototype[init] = () => List().asMutable();
+            List.prototype[step] = (acc, x) => acc.push(x);
+            List.prototype[result] = (acc) => acc.asImmutable();
+
+            map6(List.of(1, 2, 3, 4, 5), x => x + 1);
+            // -> List(2, 3, 4, 5, 6)
+          </code></pre>
+          <p>
+            Problem solved. We are guaranteed to not have overwritten anything on <code>Immutable.List</code>, and
+            there's no way that someone could come along later and accidentally overwrite our protocols because there's
+            no way for them to <em>accidentally</em> use the same property name.
+          </p>
+        </aside>
+      </section>
+
+      <section id="conclusion">
+        <h3>Some final thoughts</h3>
+        <p>
+          We came a long way, considering that we started with a regular map function. We removed its responsibility
+          for iteration and reduction, we gave it a way to transform the final output, and we made it so that it could
+          read the instructions for both iterating <em>and</em> reducing from the collection object rather than having
+          to be told explicitly by passing functions. By the time we were done, we had a pretty solid little map
+          transducer, along with the knowledge necessary to make other transducers (filter, take, flatten, etc.).
         </p>
         <p>
-          Of course, that's not the actual implementation of an Xduce map transducer. Xduce transducers can produce
-          generators, which isn't possible with this implementation. They can produce an output collection of a
-          different type than the input collection, which this implementation can't do (because it reads all of the
-          information necessary to make an <em>output</em> collection from the <em>input</em> collection). Xduce
-          transducers are also composable, because they handle chaining one transducer into another, which isn't
-          accounted for here. They also use iterators directly, rather than using <code>for...of</code> loops, which
-          lets us do cool things like make an iterator out of a function (which doesn't normally work in
-          <code>for...of</code>-land).
+          Of course, there's more that we could do to improve our map transducer.
         </p>
+        <ul>
+          <li>It isn't composable</li>
+          <li>It can't have different input and output collection types</li>
+          <li>It can't make a generator as output</li>
+          <li>It still calls the iterator and reducer, and one could argue that it shouldn't even have <em>that</em>
+          responsibility</li>
+        </ul>
         <p>
-          Nevertheless, even if the implementation details differ, the concept is exactly the same. And now you know.
+          But those are details, and all we were trying to do here is understand transducers in general. Besides,
+          Xduce does all of these things and plenty more, so you really don't have to try to do them unless you're
+          into that kind of thing.
         </p>
       </section>
     </article>
 
-    <nav></nav>
-    <aside></aside>
+    <nav class="main"></nav>
+    <nav class="aux"></nav>
   </section>
   <footer></footer>
 

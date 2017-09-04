@@ -42,7 +42,7 @@ footer {
   order: 2;
   padding: 2em 1em 1em 1em;
 }
-#content > nav {
+#content > nav.main {
   background: repeating-linear-gradient(to bottom, #f6f6f6, #f6f6f6 2px, #f3f3f3 2px, #f3f3f3 4px);
   padding: 1em;
   flex-grow: 1;
@@ -51,7 +51,7 @@ footer {
   order: 1;
   box-shadow: 0 0 15px 0 inset;
 }
-#content > aside {
+#content > nav.aux {
   background: repeating-linear-gradient(to bottom, #f6f6f6, #f6f6f6 2px, #f3f3f3 2px, #f3f3f3 4px);
   padding: 1em;
   flex-grow: 1;
@@ -116,14 +116,20 @@ header img#fork-me {
   border: 0;
 }
 
-#content > nav ul {
+#content > nav.main ul {
   list-style-type: none;
   padding-left: 0;
   text-align: right;
 }
-#content > aside ul {
+#content > nav.aux ul {
   list-style-type: none;
   padding-left: 0;
+}
+
+#content > article aside {
+  padding: 0 1em;
+  background-color: lavender;
+  border: 1px solid black;
 }
 
 #badges {
@@ -137,10 +143,10 @@ header img#fork-me {
   #content {
     flex-direction: column;
   }
-  #content > article, #content > nav, #content > aside {
+  #content > article, #content > nav {
     order: 0;
   }
-  #content > nav, #content > aside {
+  #content > nav {
     box-shadow: 0 15px 15px -15px inset;
   }
   #content > nav ul {
