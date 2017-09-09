@@ -1,16 +1,22 @@
+/* Font importing */
 @import url('https://fonts.googleapis.com/css?family=Amaranth');
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
 @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro');
 
+/* Base colors */
 :root {
   --color-primary-0: #d5cfd7;
   --color-primary-1: #a090a4;
   --color-primary-2: #7c6283;
   --color-primary-3: #60406a;
   --color-primary-4: #482751;
+
+  --color-background: #f6f6f6;
+  --color-off-background: #f3f3f3;
 }
 
-* {
+/* Full-page styles */
+*, *:before, *:after {
   box-sizing: border-box;
 }
 html, body {
@@ -21,9 +27,10 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.5em;
-  background-color: #f6f6f6;
+  background-color: var(--color-background);
 }
 
+/* Page header layout */
 header {
   height: 10em;
   background-color: #000;
@@ -80,7 +87,7 @@ header nav ul li a:after {
   height: 0.75em;
   width: 0.75em;
   position: absolute;
-  top: 0.5em;
+  top: 0.6em;
   left: 0.5em;
   background-color: var(--color-primary-2);
   border: 1px inset var(--color-primary-2);
@@ -173,6 +180,7 @@ header nav ul li#icon {
   }
 }
 
+/* Content section layout */
 section.content {
   height: calc(100vh - 10em);
   overflow-y: auto;
@@ -193,7 +201,11 @@ section.content > article {
 section.content > aside {
   height: calc(100vh - 10em);
   overflow-y: auto;
-  background: repeating-linear-gradient(to bottom, #f6f6f6, #f6f6f6 2px, #f3f3f3 2px, #f3f3f3 4px);
+  background: repeating-linear-gradient(to bottom,
+                                        var(--color-background),
+                                        var(--color-background) 2px,
+                                        var(--color-off-background) 2px,
+                                        var(--color-off-background) 4px);
   padding: 1em;
   flex-grow: 1;
   flex-shrink: 3;
@@ -201,7 +213,55 @@ section.content > aside {
   order: 2;
   box-shadow: 0 0 15px 0 inset;
 }
+section.content > article aside {
+  padding: 0 1em;
+  background-color: var(--color-primary-0);
+  border: 1px solid var(--color-primary-4);
+}
+section.content > article nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+section.content > article nav ul li {
+  display: inline-block;
+  width: 4em;
+  padding: 0 0.25em;
+}
+section.content > article nav ul li a {
+  display: block;
+  padding: 0.25em;
+  border: 1px solid var(--color-primary-2);
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #f6f6f6, var(--color-primary-1));
+  color: var(--color-primary-4);
+  text-align: center;
+}
+section.content > article nav ul li a:hover {
+  background: linear-gradient(to bottom, white, var(--color-primary-0));
+  color: black;
+}
+section.content > article nav ul li a:active {
+  background: linear-gradient(to top, white, var(--color-primary-0));
+  color: black;
+}
+@media screen and (max-width: 1024px) {
+  section.content {
+    flex-direction: column;
+  }
+  section.content > article {
+    height: auto;
+    overflow-y: initial;
+  }
+  section.content > aside {
+    box-shadow: 0 15px 15px -15px inset;
+    height: auto;
+    overflow-y: initial;
+  }
+}
 
+/* Code, both highlighted and not */
 code, pre {
   font-family: 'Source Code Pro', Monaco, Consolas, 'Courier New', Courier, monospace;
   font-size: 1.0rem;
@@ -213,9 +273,8 @@ code:not(.hljs) {
   background-color: var(--color-primary-0);
   border-radius: 4px;
 }
-
 code.hljs {
-  line-height: 1.3rem;
+  line-height: 1.3em;
   background-color: var(--color-primary-4);
 }
 table.hljs-ln td.hljs-ln-numbers {
@@ -227,9 +286,10 @@ table.hljs-ln td.hljs-ln-numbers {
   padding-right: 0.25em;
 }
 table.hljs-ln td.hljs-ln-code {
-  padding-left: 0.5em;
+  padding-left: 0.75em;
 }
 
+/* General content styles */
 article h1, article h2, article h3 {
   font-family: Amaranth, Arial, Helvetica, sans-serif;
   color: var(--color-primary-4);
@@ -237,6 +297,7 @@ article h1, article h2, article h3 {
   border-bottom: 1px solid var(--color-primary-1);
 }
 article h1 {
+  /* Chrome wants to make h1's inside articles really small */
   font-size: 1.8em;
   margin: 1em 0;
 }
@@ -297,58 +358,10 @@ table:not(.hljs-ln) tbody tr:nth-child(2n) {
   background-color: #fefefe;
 }
 
-section.content > article aside {
-  padding: 0 1em;
-  background-color: var(--color-primary-0);
-  border: 1px solid var(--color-primary-4);
-}
-section.content > article nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-section.content > article nav ul li {
-  display: inline-block;
-  width: 4em;
-  padding: 0 0.25em;
-}
-section.content > article nav ul li a {
-  display: block;
-  padding: 0.25em;
-  border: 1px solid var(--color-primary-2);
-  border-radius: 4px;
-  background: linear-gradient(to bottom, var(--color-primary-2), var(--color-primary-4));
-  color: var(--color-primary-0);
-  text-align: center;
-}
-section.content > article nav ul li a:hover {
-  background: linear-gradient(to bottom, var(--color-primary-1), var(--color-primary-3));
-  color: white;
-}
-section.content > article nav ul li a:active {
-  background: linear-gradient(to top, var(--color-primary-1), var(--color-primary-3));
-  color: white;
-}
-
+/* Styles for specific elements */
 .badges {
   text-align: center;
 }
 .badges a {
   border-bottom: none;
-}
-
-@media screen and (max-width: 1024px) {
-  section.content {
-    flex-direction: column;
-  }
-  section.content > article {
-    height: auto;
-    overflow-y: initial;
-  }
-  section.content > aside {
-    box-shadow: 0 15px 15px -15px inset;
-    height: auto;
-    overflow-y: initial;
-  }
 }
