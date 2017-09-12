@@ -1,0 +1,72 @@
+<nav>
+  <ul>
+    <li><a href="#manual/setup/commonjs" title="CommonJS setup"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/setup/global" title="Global object setup"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
+
+<section id="intro">
+  <h1>AMD setup</h1>
+  <p>
+    <abbr title="Asynchronous Module Definition">AMD</abbr> is the module system used by
+    <a href="http://requirejs.org/">RequireJS</a> and has been a popular way to use server-side modules in the browser
+    for many years. If you intend to use xduce along with RequireJS, then this how you do it.
+  </p>
+</section>
+
+<section id="installation">
+  <h2>Installation</h2>
+  <p>
+    Download the latest package from the <a href="https://github.com/Barandis/xduce/releases">GitHub releases</a> page.
+    The file you want is in the <code>dist</code> directory; you can use either <code>xduce.js</code> (unminified) or
+    <code>xduce.min.js</code> (minified). The other files in that directory are ES2015 and should only be used if
+    you're abandoning Internet Explorer users.
+  </p>
+  <p>
+    It is suggested that you use the unminified version of the library in development environments (for easier
+    debugging) and the minified version in production environments (for smaller size and faster loading).
+  </p>
+  <p>
+    You can use the file of your choice as an AMD module as-is; just put it a place that matches the location
+    indicated by your <code>requirejs</code> or <code>define</code> call.
+  </p>
+</section>
+
+<section id="usage">
+  <h2>Usage</h2>
+  <p>
+    All of xduce's functionality is available from the base object that is required from the module. Just require the
+    object and use it the way you would use any other object. (As shown below, the transducers are actually available
+    from the <code>transducers</code> object that is a property of the main object; see the
+    <a href="api/index.html">API documentation</a> for details about where to find what.)
+  </p>
+  <pre><code class="javascript">
+    // use the path to your xduce.js file here
+    requirejs(['./xduce'], function(xduce) {
+      var map = xduce.transducers.map;
+
+      map([1, 2, 3, 4, 5], function(x) { return x + 1; });
+      // -> [2, 3, 4, 5, 6]
+    });
+  </code></pre>
+  <p>
+    If you're using a transpiler (like <a href="https://babeljs.io/">Babel</a>) to turn ES2015 modules into AMD modules,
+    you can instead use <code>import</code> statements.
+  </p>
+  <pre><code class="javascript">
+    import xduce from './xduce';
+    const map = xduce.transducers.map;
+
+    map([1, 2, 3, 4, 5], x => x + 1);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/setup/commonjs" title="CommonJS setup"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/setup/global" title="Global object setup"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>

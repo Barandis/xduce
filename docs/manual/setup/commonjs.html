@@ -1,0 +1,107 @@
+<nav>
+  <ul>
+    <li><a href="#manual/about/theory" title="Transducer theory"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/setup/amd" title="AMD setup"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
+
+<section id="intro">
+  <h1>CommonJS setup</h1>
+  <p>
+    CommonJS is the module system most notably used by <a href="https://nodejs.org/en/">Node.js</a>. Therefore it is
+    the way you will want to go if you're developing server-side JavaScript applications with Node.js. It's also the
+    module system used by <a href="http://browserify.org/">Browserify</a> and
+    <a href="https://webpack.github.io/">Webpack</a>, which in many ways emulate a Node.js or ES2015 environment within
+    the browser.
+  </p>
+  <p>
+    If you're planning on using xduce with any of these technologies, this is the setup page for you.
+  </p>
+</section>
+
+<section id="installation">
+  <h2>Installation</h2>
+  <p>
+    Installation is a snap. If you're using <abbr title="Node Package Manager">npm</abbr>, open a terminal window in
+    your project's main directory (the one with <code>package.json</code> in it) and type
+  </p>
+  <pre><code class="bash">
+    npm install --save xduce
+  </code></pre>
+  <p>
+    If you're using <a href="https://yarnpkg.com/en/">Yarn</a>, the process is similar. Open a terminal window in your
+    project's main directory and type
+  </p>
+  <pre><code class="bash">
+    yarn add xduce
+  </code></pre>
+  <p>
+    Give it a few seconds to finish, and you're ready.
+  </p>
+</section>
+
+<section id="usage">
+  <h2>Usage</h2>
+  <p>
+    All of xduce's functionality is available from the base object that is imported/required from the module. To use it
+    with plain CommonJS, just require the object and use it the way you would use any other object. (As shown below,
+    the transducers are actually available from the <code>transducers</code> object that is a property of the main
+    object; see the <a href="api/index.html">API documentation</a> for details about where to find what.)
+  </p>
+  <pre><code class="javascript">
+    const xduce = require('xduce');
+    const map = xduce.transducers.map;
+
+    map([1, 2, 3, 4, 5], x => x + 1);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    If you're using a transpiler (like <a href="https://babeljs.io/">Babel</a>) to turn ES2015 modules into CommonJS
+    modules, you can do a very similar thing except with <code>import</code> statements.
+  </p>
+  <pre><code class="javascript">
+    import xduce from 'xduce';
+    const map = xduce.transducers.map;
+
+    map([1, 2, 3, 4, 5], x => x + 1);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+</section>
+
+<section id="es2015">
+  <h2>Untranspiled ES2015</h2>
+  <p>
+    Xduce is written in ES2015 (almost; see below), but the default package that you get from the above
+    <code>require</code>/<code>import</code> statements gives you transpiled ES5. This is going to be fine in almost
+    all cases; if you're not sure, then this is the way you want to do it.
+  </p>
+  <p>
+    If you <em>know</em> you would prefer to work with an ES2015 library &mdash; perhaps you want to do all of your
+    own transpiling/minifying or something like that &mdash; then you can work with a Node-compatible ES2015 version.
+    Just replace the above <code>require</code>/<code>import</code> statements with the following.
+  </p>
+  <pre><code class="javascript">
+    const xduce = require('xduce/dist/xduce.es');
+    // OR
+    import xduce from 'xduce/dist/xduce.es';
+  </code></pre>
+  <p>
+    One notable caveat: despite near-universal adoption of ES2015, the implementation of <em>modules</em> is way behind
+    the curve. Support is currently spotty, with Opera, Firefox, and Edge requiring the user to set flags to allow them,
+    and Node.js plans to do something a little off-spec to deal with some technical issues that they're having.
+  </p>
+  <p>
+    For these reasons, I'm not using ES2015 modules at all. The rest of xduce is completely ES2015, but the modules are
+    written as CommonJS modules. You cannot use <code>import</code> to import xduce <em>unless you're transpiling
+    later.</em> The code runs natively in Node.js 8; earlier versions may require the <code>--harmony</code> flag.
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/about/theory" title="Transducer theory"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/setup/amd" title="AMD setup"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
