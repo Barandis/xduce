@@ -1,0 +1,169 @@
+<nav>
+  <ul>
+    <li><a href="#manual/setup/global" title="Global object setup"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/transducers" title="A brief tour of the transducers"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>The very basics</h1>
+  <p>
+    As you've seen from a lot of examples, including the ones on the setup pages, getting started with xduce is really
+    very easy, no harder than the functions you've been using so far for collection manipulation. There's more though,
+    and it follows a pretty easy and natural progression, adding more features along the way.
+  </p>
+  <p>
+    We'll start, this time officially, at the beginning.
+  </p>
+  <aside>
+    <p>
+      All of the examples in the rest of the manual will assume a CommonJS environment, like you'd get using Node.js,
+      Browserify, or Webpack. The only part of the code that this actually impacts is in getting access to
+      <code>xduce</code> in the first place, which is the <code>require</code> statements in the example code. If you're
+      using AMD (RequireJS), you will have to translate these into <code>define</code> statements, and for use directly
+      in the browser, you won't need these statements at all (<code>xduce</code> is automatically available in the
+      browser).
+    </p>
+    <p>
+      The examples all also use ES2015 code. If you are using RequireJS or the browser, you may want to instead use
+      ES5 because Internet Explorer does not understand ES2015. (Edge is only available for Windows 10, so we will have
+      to worry about IE until everyone stops using Windows 7 and 8.)
+    </p>
+  </aside>
+</section>
+
+<section>
+  <h2>The basic <code>transduce</code></h2>
+  <p>
+    If you read the <a href="#manual/about/theory">Transducer theory</a> page, you would have noticed that at the end,
+    we developed a <code>transduce</code> function that actually did the work of transduction for us. Xduce has that
+    function, and it is the first and most basic of several transduction functions that we'll look at.
+  </p>
+  <pre><code class="javascript">
+    const xduce = require('xduce');
+    const { transduce } = xduce;
+    const { map } = xduce.transducers;
+
+    const arrayReducer = (acc, x) => {
+      acc.push(x);
+      return x;
+    };
+    transduce([1, 2, 3, 4, 5], map(x => x + 1), arrayReducer, []);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    <code>transduce</code> takes four parameters: a collection, a transducer, a reducer, and an initial value. The
+    collection is, as you might expect, the input collection. <code>transduce</code> has only one requirement of this
+    collection: that it implement the <em>iteration protocols</em>, a set of properties that lets JavaScript know how
+    to pull it apart. Fortunately, these protocols are well-known, and most collections you will use already implement
+    them (including built-in arrays, strings, and generators).
+  </p>
+  <p>
+    The second argument is a transducer. Xduce comes with 21 different functions that can produce transducers;
+    <code>map</code> in this example is one of them. This one takes a function &mdash; the function that will be used
+    to transform the elements of the input collection &mdash; and returns a transducer that will perform that
+    transformation. This gets passed directly into <code>transduce</code>, which knows what to do with it.
+  </p>
+  <p>
+    The final two arguments are a reducer function and an initial collection, respectively. These two arguments are
+    necessary to create the output collection, and they are important to understand.
+  </p>
+</section>
+
+<section>
+  <h2>Reducer function and initial value</h2>
+  <p>
+    In any colleciton manipulation function, whether it's a transducer or just a traditional function, there are three
+    phases to the operation. The input collection has to be taken apart, which is called <em>iteration</em>. The
+    individual elements have to be manipulated in some way, which is called <em>transformation</em>. And the
+    transformed elements have to be put together into a new collection, whcih is called <em>reduction</em>.
+  </p>
+  <p>
+    One of the big differences between <code>transduce</code> and doing collection manipulation the old fashioned way
+    is that <code>transduce</code> assigns the responsibility for doing those phases to the best code for the job,
+    rather than just having the one function do everything. The input collection, through the iteration protocols, is
+    responsible for the iteration. The transducer itself is responsible for the transformation (and nothing else).
+    These are the first and second arguments to <code>transduce</code>, respectively.
+  </p>
+  <p>
+    The third and fourth arguments are a reducer function and an initial collection, and they are responsible for
+    reduction. The reducer function is run one time for every transformed element that is being put into the output
+    collection. It is given two arguments. The first one is the new collection as it's been built so far. The second is
+    the next item that needs to be added to that collection. It should append the item onto the collection and return
+    the new, updated collection.
+  </p>
+  <p>
+    An example makes it easier to understand. In the code above, the reducer function (called
+    <code>arrayReducer</code>) is called five times, like this.
+  </p>
+  <pre><code class="javascript">
+    arrayReducer([], 2);           // -> [2]
+    arrayReducer([2], 3);          // -> [2, 3]
+    arrayReducer([2, 3], 4);       // -> [2, 3, 4]
+    arrayReducer([2, 3, 4], 5);    // -> [2, 3, 4, 5]
+    arrayReducer([2, 3, 4, 5], 6); // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    After that last pass, there are no more elements to add, so <code>arrayReducer</code> isn't called again, and the
+    result of the last pass becomes the result of the <code>transduce</code> call.
+  </p>
+  <p>
+    You can see that the result of the prior pass is fed as the first argument to the next pass. But what about the
+    very first pass, when <code>arrayReducer</code> hasn't been called yet? That's where the initial collection comes
+    in. On that first call to the reducer function, the initial collection becomes the first argument.
+  </p>
+  <aside>
+    <p>
+      The reducer function and initial collection might look familiar to you. They are the same as the arguments that
+      <code>Array.prototype.reduce</code> expects. It isn't a coincidence that the operation is called reduction, and
+      it's the same operation done by <code>Array</code>'s build-in <code>reduce</code> function.
+    </p>
+  </aside>
+  <p>
+    You can see that we are providing a reducer function that builds an array: it takes the current array, pushes the
+    newest element onto it, and returns the newly expanded array. The initial value, as you might expect, is just an
+    empty array. We can do a similar operation to build a string instead of an array.
+  </p>
+  <pre><code class="javascript">
+    const stringReducer = (acc, x) => acc + x;
+    transduce([1, 2, 3, 4, 5], map(x => x + 1), stringReducer, '');
+    // -> '23456'
+  </code></pre>
+</section>
+
+<section>
+  <h2>Stop for a moment</h2>
+  <p>
+    That last example is actually pretty profound if you stop and take a look at it for a moment. We used the same
+    function (<code>transduce</code>), passed to it the same collection and the same transducer (<code>map</code>), and
+    were easily able to get an entirely different kind of collection out (a string). In fact, it goes even further than
+    that.
+  </p>
+  <pre><code class="javascript">
+    transduce('hello', map(x => x + x), stringReducer, '');
+    // -> "hheelllloo"
+    transduce('hello', map(x => x.toUpperCase()), arrayReducer, []);
+    // -> ["H", "E", "L", "L", "O"]
+  </code></pre>
+  <p>
+    In each case, we're using the same <code>transduce</code> function and the same <code>map</code> transducer. Yet we
+    have had every possible combination of array and string for input and output, and it's all worked. This is part
+    of the power of transducers: since the three phases are separated, and since the transducer itself is responsible
+    only for the transformation phase, you can mix and match iteration and reduction however you need, depending on the
+    kind of input and output collections.
+  </p>
+  <p>
+    In fact, it doesn't stop with arrays and strings: <code>transduce</code> can also handle iterators and plain
+    objects, and you can make it so that it can handle any collection type at all with a little setup. That's the
+    subject for another chapter, though.
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/setup/global" title="Global object setup"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/transducers" title="A brief tour of the transducers"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>

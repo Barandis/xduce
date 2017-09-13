@@ -196,7 +196,7 @@ function transducingIterator(collection, xform) {
  * @param {object} reducer An object that implements the transducer protocols (`init` is only required if the `init`
  *     parameter is not present). This object must know how to produce an output collection through its `step` and
  *     `result` protocol functions.
- * @param {*} [init] aAcollection of the same type as the output collection. If this is not present, then the reducer's
+ * @param {*} [init] A collection of the same type as the output collection. If this is not present, then the reducer's
  *     `init` protocol function is called instead to get the initial collection. If it is present and not empty, then
  *     the existing elements remain and the transformed input collection elements are added to it.
  * @return {*} A collection of a type determined by the passed reducer. The elements of this collection are the results

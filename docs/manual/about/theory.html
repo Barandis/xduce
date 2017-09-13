@@ -301,7 +301,7 @@
     aspects that are playing a part in reduction, let's see if we can abstract them out.
   </p>
   <pre><code class="javascript">
-    function map2(xs, fn, init, step) {
+    function map2(xs, fn, step, init) {
       let acc = init;
       for (const x of xs) {
         acc = step(acc, fn(x));
@@ -332,15 +332,15 @@
       return acc + x;
     }
 
-    map2([1, 2, 3, 4, 5], x => x + 1, [], arrayReducer);
+    map2([1, 2, 3, 4, 5], x => x + 1, arrayReducer, []);
     // -> [2, 3, 4, 5, 6]
-    map2('hello', x => x + x, '', stringReducer);
+    map2('hello', x => x + x, stringReducer, '');
     // -> "hheelllloo"
 
     // Interesting side effect of separating iteration and
     // reduction: we can iterate differently than we reduce,
     // meaning different input and output collection types
-    map2([1, 2, 3, 4, 5], x => x + 1, '', stringReducer);
+    map2([1, 2, 3, 4, 5], x => x + 1, stringReducer, '');
     // -> "23456"
   </code></pre>
   <p>
