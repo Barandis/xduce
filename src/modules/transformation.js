@@ -190,7 +190,7 @@ function transducingIterator(collection, xform) {
  * @param {*} collection The input collection. The only requirement of this collection is that it implement the
  *     `iterator` protocol. Special support is provided by the library for objects and pre-ES2015 arrays and strings
  *     (ES2015 arrays and strings already implement `iterator`), so any of those can also be used.
- * @param {module:xduce~transducerFunction} xform A function that creates a transducer object that defines the
+ * @param {module:xduce~transducerFunction} [xform] A function that creates a transducer object that defines the
  *     transformation being done to the input collection's elements. Any of the
  *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function.
  * @param {object} reducer An object that implements the transducer protocols (`init` is only required if the `init`
