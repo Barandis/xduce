@@ -57,9 +57,11 @@ async function loadPage() {
 
   const element = query('section.content > article');
   const html = await getHtml(`${file}.html`);
+
+  element.scrollTop = 0;
+  element.scrollLeft = 0;
   element.innerHTML = html;
 
-  window.scrollTo(0, 0);
   highlightCode();
 }
 

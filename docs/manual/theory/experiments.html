@@ -1,0 +1,239 @@
+<nav>
+  <ul>
+    <li><a href="#manual/theory/generalizing" title="Generalizing iteration and reduction"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/theory/conclusion" title="Putting it all together"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>Transducer theory: Experiments in composition</h1>
+  <p><em>
+    In the first part of this series, <a href="#manual/theory/generalizing">Generalizing iteration and reduction</a>,
+    we worked out how to remove two of the three steps in transforming collections from the transformer functions
+    themselves. This leaves us with transformer functions that do transformations and nothing else.
+  </em></p>
+  <p><em>
+    In this part, we are going to look in to how to accomplish the third improvement over normal list functions:
+    composition.
+  </em></p>
+  <ol>
+    <li><a href="#manual/theory/generalizing">Generalizing iteration and reduction</a></li>
+    <li><strong>Experiments in composition</strong></li>
+    <li><a href="#manual/theory/conclusion">Putting it all together</a></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Decomposing composition</h2>
+  <p>
+    I mentioned earlier that composition is really important for list functions. You wouldn't know it from
+    looking at the JavaScript spec &mdash; you won't find a <code>compose</code> function or anything like it in
+    there anywhere &mdash; but that doesn't mean we can't work with it ourselves.
+  </p>
+  <p>
+    Let's give an example. This takes <code>Array</code>'s functions <code>map</code> and <code>filter</code>
+    and turns them inside out, which makes it more convenient to do composition.
+  </p>
+  <pre><code class="javascript">
+    function arrayMap(fn, xs) {
+      return xs => xs.map(fn);
+    }
+    function arrayFilter(fn, xs) {
+      return xs => xs.filter(fn);
+    }
+
+    function compose(...fns) {
+      return fns.reduce((f, g) => value => f(g(value)));
+    }
+
+    let mapAndFilter = compose(arrayMap(x => x + 1), arrayFilter(x => x > 3));
+    mapAndFilter([1, 2, 3, 4, 5]);
+    // -> [5, 6]
+  </code></pre>
+  <p>
+    This demonstrates a couple of things. First of all, it's convoluted to turn a JavaScript list function into
+    an easily composable function, but it can be done. If you had to compose these functions, you'd probaly do it
+    with chaining like <a href="https://lodash.com/">Lodash</a> does, but that isn't quite the same and doesn't
+    really help us as much with our understanding.
+  </p>
+  <aside>
+    <p>
+      If you're really interested in why <code>arrayMap</code> and <code>arrayFilter</code> are coded like they
+      are: they're done like this to enable partial function application. If you wanted to actually call
+      <code>arrayMap</code>, you would do it like this:
+    </p>
+    <pre><code class="javascript">
+      arrayMap(x => x + 1)([1, 2, 3, 4, 5]);
+    </code></pre>
+    <p>
+      Yes, that's two sets of function parameters. That means that if I choose to only provide the first set of
+      arguments, like this:
+    </p>
+    <pre><code class="javascript">
+      arrayMap(x => x + 1);
+    </code></pre>
+    <p>
+      ...then I get back a function that takes a collection and maps it over <code>x => x + 1</code>. This is
+      called <strong>partial application</strong>, meaning we provide a function <em>some</em> of the arguments
+      it expects, but not <em>all</em> of them. In response, the function returns another function that takes
+      the rest of the arguments that we <em>didn't</em> provide. The reason for the unwieldy syntax is that
+      JavaScript doesn't actually have partial application, but we can fake it with multiple parameter lists.
+    </p>
+    <p>
+      You can see partial application used in the call to <code>compose</code>. That's because
+      <code>compose</code> only wants functions that accept one argument, the collection that they're going to
+      work on.
+    </p>
+    <p>
+      Other languages support partial application and make this a lot more natural. We do what we can. You need
+      never worry about it again, at least for the rest of this discussion.
+    </p>
+  </aside>
+  <p>
+    More importantly, it shows that when you call <code>compose</code>, you get back another function that does
+    all of the things that the functions inside the <code>compose</code> call do. This function here is called
+    <code>mapAndFilter</code>. You'll notice from the result that <code>arrayFilter</code> must have been called
+    first; this right-to-left flow is typical of function composition (and there are good reasons for it).
+  </p>
+  <p>
+    But here's the thing. This is composing list functions. List functions, like we complained about earlier, do
+    <em>all</em> the work, including iterating over the input collection and reducing to the output collection.
+    This means that when you call <code>mapAndFilter</code>, this is what's happening, in order:
+  </p>
+  <ol>
+    <li><code>arrayFilter</code> breaks the input array into its parts</li>
+    <li><code>arrayFilter</code> filters out the parts that aren't greater than 3</li>
+    <li><code>arrayFilter</code> puts what's left into a new array</li>
+    <li><code>arrayMap</code> breaks the new array into its parts</li>
+    <li><code>arrayMap</code> adds 1 to each of these parts</li>
+    <li><code>arrayMap</code> puts what's left into another new array</li>
+  </ol>
+  <p>
+    <em>Steps 3 and 4 are completely unnecessary.</em> All they do is put together a new array and immediately
+    break it apart again. That's a lot of extra work if those arrays are large, and it multiplies by the number
+    of functions that you compose. This is what I meant earlier when I said that composition was inefficient and
+    that this was a problem.
+  </p>
+  <p>
+    If we were to compose our current <code>map2</code> function with another similar function, we would suffer
+    the same consequences. We will want to do something about this, but we have to think about how to do it.
+  </p>
+  <p>
+    The reason why this isn't easy is because each function needs to know what it's supposed to do depending on
+    its context. If <code>map2</code> is called by itself, it needs to iterate over its input and reduce its
+    output. But if it's called in a composition pipeline, it only needs to iterate if it's the <em>first</em>
+    function in the pipeline, and it only needs to reduce if it's the <em>last</em> function in the pipeline. To
+    compose properly, <code>map2</code> needs to know the context in which its called.
+  </p>
+  <p>
+    And this is anathema. We've spent a lot of words already trying to coax a map function into not caring
+    about the details of its invocation, into focusing on one thing and one thing alone: transforming values. Now
+    we want to ask it to care about the details of its invocation and to care about whether or not to iterate or
+    reduce.
+  </p>
+</section>
+
+<section>
+  <h2>Not abstract enough</h2>
+  <p>
+    The answer, maybe somewhat surprisingly, is that we haven't abstracted iteration and reduction away quite
+    enough yet. Sure, the iteration and reduction happens elsewhere, but our <code>map2</code> function is still
+    <em>calling</em> that code. The iteration protocol functions are being called by <code>for...of</code>, and
+    the <code>reducer</code> function is being called explicitly. And as long as <code>map2</code> is responsible
+    for making those calls, it has to be the one to decide whether to make them at all.
+  </p>
+  <p>
+    We don't want to make <code>map2</code> have to understand the context in which it's called so it can figure
+    out whether to iterate and whether to reduce. We want it only to accept an input, transform it, and pass it
+    along to the next function in the chain. We're going to leave the iteration and reduction to a different
+    function, a helper function.
+  </p>
+  <p>
+    So let's give it a try. We're going to write a helper function that will handle when to call the iterator, the
+    transformer, and the reducer. To support composition, it will take multiple transformers and call them in order,
+    passing the result of one to the input of the next, and then pass the final transformed value to the reducer.
+  </p>
+  <pre><code class="javascript">
+    function map3(fn) {
+      return x => fn(x);
+    }
+
+    function transform3(xs, xforms, reducer, init) {
+      let acc = init;
+      for (const x of xs) {
+        let value = x;
+        for (const xform of xforms) {
+          value = xform(value);
+        }
+        acc = reducer(acc, value);
+      }
+      return acc;
+    }
+
+    // TOLD you we'd use arrayReducer again
+    transform3([1, 2, 3, 4, 5], [map(x => x + 1)], arrayReducer, []);
+    // -> [2, 3, 4, 5, 6]
+
+    // Works for multiple transformers too
+    transform3([1, 2, 3, 4, 5], [map(x => x + 1), map(x => x * 2)], arrayReducer, []);
+    // -> [4, 6, 8, 10, 12]
+  </code></pre>
+  <p>
+    Great! Now our transformer is the kind of thing we're looking for &mdash; it takes an input, transforms it, and
+    returns the transformed value. It doesn't call the iterator, it doesn't call the reducer &mdash; it doesn't even
+    care whether an iterator or reducer exists. It maps. That's all it does.
+  </p>
+  <p>
+    Notice the form of the <code>map3</code> function. It's basically a function that configures and returns
+    <em>another</em> function. By doing this pre-loading of the mapping function (<code>fn</code>), we can make sure
+    that the helper function can treat every transformer the same: it passes a value to it and expects a value back.
+  </p>
+  <p>
+    Speaking of that helper function &mdash; well, it's not so good, when we look at it closely. In fact it suffers
+    from two fatal flaws.
+  </p>
+  <p>
+    One is that this is an ugly way to do composition. The idea is that a composition of more than one function should
+    look exactly like another function, just one that does all of the things that all of the functions that it's made
+    of does. This doesn't look like a function. It looks like an array of functions.
+  </p>
+  <p>
+    The second problem is that it doesn't really work. Sure, it works fine with this <code>map3</code> function, but
+    truth be told, a <code>map</code> function is about the best-behaved transformer function you can have. By its very
+    nature, it returns one value for every value that is passed to it. But what if we use a different transformer
+    function, one that does <em>not</em> return a value for every value it receives? These are not exotic;
+    <code>filter</code> is a function that doesn't always return a value. Let's see how that works.
+  </p>
+  <pre><code class="javascript">
+    function filter3(fn) {
+      return x => {
+        if (fn(x)) {
+          return x;
+        }
+      };
+    }
+
+    transform3([1, 2, 3, 4, 5], [filter(x => x > 3)], arrayReducer, []);
+    // -> [undefined, undefined, undefined, 4, 5]
+    transform3([1, 2, 3, 4, 5], [map(x => x + 1), filter(x => x > 3)], arrayReducer, []);
+    // -> [undefined, undefined, 4, 5, 6]
+  </code></pre>
+  <p>
+    Uh oh! The problem here is prety obvious. The way we've set up <code>transform3</code>, it expects there to be an
+    output from the transformer array for each iteration through the input collection. But <code>filter3</code> doesn't
+    <em>want</em> to provide a value for every iteration. So on the iterations where no value is provided, we get those
+    <code>undefined</code>s contaminating our output.
+  </p>
+  <p>
+    This is a sticky problem to solve, and it'll take some work, but we'll deal with it on the next page.
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/theory/generalizing" title="Generalizing iteration and reduction"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/theory/conclusion" title="Putting it all together"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>

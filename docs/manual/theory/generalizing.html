@@ -1,0 +1,380 @@
+<nav>
+  <ul>
+    <li><a href="#manual/about/features" title="Xduce features"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/theory/experiments" title="Experiments in composition"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>Transducer theory: Generalizing iteration and reduction</h1>
+  <p><em>
+    This page could easily be regarded as optional. There isn't anything in here that will tell you how
+    to use xduce. But if you're interested in why you're using xduce, or what's going on under the
+    covers, then you might find this page satisfying. I found it satisfying to write it.
+  </em></p>
+  <p><em>
+    Also, it's pretty long. There's a lot to explain, and since I'm assuming no prior knowledge of any of this
+    transducer business, I want to explain it thoroughly. I even cover something that don't work to make it clear why
+    we do the things that do work. Because it's so long, it's broken into three sections.
+  </em></p>
+  <ol>
+    <li><strong>Generalizing iteration and reduction</strong></li>
+    <li><a href="#manual/theory/experiments">Experiments in composition</a></li>
+    <li><a href="#manual/theory/conclusion">Putting it all together</a></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Transducer? What's that?</h2>
+  <p>
+    That's a great question. But it's a difficult one to answer without some background. Suffice it for the
+    moment to say that transducers provide a different way to transform collections. In order to figure out
+    what's so different and why that difference is good, we're going to start with a traditional list function.
+    We'll learn a bit about it, and then we'll see what we need to do to morph it into a transducer and duscuss
+    why those changes are good.
+  </p>
+  <aside>
+    <p>
+      I'm not sure that there's a well-established word for "those composable functions that exist in functional
+      programming languages that let you manipulate the elements of a collection to produce a new collection".
+      For the purpose of this page I'm going to just call them <strong>list functions</strong>, which isn't
+      exactly right but also isn't exactly wrong.
+    </p>
+    <p>
+      These functions came to prominence in list-based functional programming languages, but they've  long since
+      been taken into many languages &mdash; like JavaScript &mdash; that are <em>not</em> list based.
+      Nevertheless, there are problems with just about every other name I could give them, so we'll just agree
+      that "list functions" can operate on collections that aren't lists and go with it.
+    </p>
+    <p>
+      I'm not satisfied with "list function" but until someone comes up with something better, that's what
+      I'll call them.
+    </p>
+  </aside>
+  <p>
+    Maybe the quintessential list function is <code>map</code>, so let's start our look there. In JavaScript,
+    there is a function property named <code>map</code> on the <code>Array</code> object, and it's normally
+    invoked like this:
+  </p>
+  <pre><code class="javascript">
+    [1, 2, 3, 4, 5].map(x => x + 1);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    So what <code>map</code> is doing here is 1) breaking apart a collection (in this case,
+    <code>[1, 2, 3, 4, 5]</code>), 2) feeding the values from the collection to a function
+    (<code>x => x + 1</code>) to get new values, and 3) putting those values together into a new collection
+    (which turns out to be <code>[2, 3, 4, 5, 6]</code>). This is great. It's very useful, and <code>map</code>
+    gets used all the time, whether overtly or behind the scenes in a library somewhere.
+  </p>
+  <p>
+    But is it really so great? We have a couple of ideas in programming called the <strong>single responsibility
+    principle</strong> and <strong>loose coupling</strong>. The former suggests that any software unit (like a
+    module, class, or function) should be responsible for exactly one concern. The latter suggests that it's best
+    if any particular unit knows as little as possible about other units. These are good principles because they
+    make it much more likely that software produced with them in mind is modular and maintainable.
+  </p>
+  <p>
+    <code>map</code>, as well as just about every other list function, violates both of these principles. It
+    <em>should</em> have a single concern: mapping. Yet it also concerns itself with breaking a list apart and
+    putting it back together, things that have nothing to do with mapping. And because it implements that
+    breaking apart and putting back together without allowing for any customization, it's inextricably linked to
+    arrays, which breaks loose coupling.
+  </p>
+  <aside>
+    <p>
+      In fairness, languages with typeclasses or generics (JavaScript is not one of these) do better with loose
+      coupling on list functions, though they still violate single responsibility.
+    </p>
+  </aside>
+  <p>
+    As if that wasn't enough, it's very important that list functions be <strong>composable</strong>, meaning
+    that they should be able to be chained together to accomplish more complex manipulations. And while list
+    functions do in fact tend to be composable, they do it in a highly inefficient way.
+  </p>
+  <p>
+    Let's take a moment to summarize the issues with <code>map</code> and, by extension, all of its list function
+    brethren.
+  </p>
+  <ol>
+    <li>
+      It violates the single-responsibility principle by deconstructing the input array and constructing a new
+      output array, when it really should only be doing mapping.
+    </li>
+    <li>
+      It violates loose coupling by tying itself directly to the array, disallowing working with any other data
+      structure.
+    </li>
+    <li>
+      It composes, but in an inefficient way (I'll describe what's inefficient about <code>map</code>'s
+      composition a little later).
+    </li>
+  </ol>
+  <p>
+    Having described all that baggage, let's see now what we can do to <code>map</code> to make these problems
+    go away. We will do that by slowly morphing the <code>map</code> list function into a <code>map</code>
+    <strong>transducer</strong>, which doesn't suffer from tight coupling, multiple responsibilities, or
+    inefficient composition. Along the way, we'll learn exactly what a transducer is and how it's different from
+    a list function.
+  </p>
+  <aside>
+    <p>
+      You're welcome to trust that the code in the examples throughout this page is correct and that you
+      understand it perfectly just by reading it. If you don't feel so confident in either of those premises,
+      then feel free to type it directly into a browser console (hit F12 in Chrome, for instance, which is what I
+      did when I was writing this). If you have Node.js installed, you can also run all of this code in the REPL.
+    </p>
+    <p>
+      The code is written to be usable by typing it all in from beginning to end, all three parts included, which is
+      why you're bound to see a lot of <code>let</code>s where there might normally be <code>const</code>s.
+    </p>
+    <p>
+      Which reminds me, it's all ES2015. If you're typing this into Internet Explorer's console, do not expect
+      good results.
+    </p>
+  </aside>
+</section>
+
+<section>
+  <h2>Iteration, transformation, reduction</h2>
+  <p>
+    We've observed that <code>map</code> is doing three things. In fact, we have names for these three things.
+    The part where the input collection is broken into pieces is called <strong>iteration</strong>. The part
+    where the pieces are changed is called <strong>transformation</strong>. And the part where the transformed
+    pieces are put back together again is called <strong>reduction</strong>.
+  </p>
+  <p>
+    With <code>map</code> &mdash; a function that <em>should</em> just be doing transformation but is also doing
+    iteration and reduction &mdash; the programmer only has control over the transformation step. Any function
+    at all can be passed to <code>map</code>, and <code>map</code> will duly pass all elements into this mapping
+    function and collect its return values for the output collection. The iteration and reduction are hard-coded.
+    We would definitely like to get rid of this restriction, not only because the hard-coding is the worst kind
+    of tight coupling, but also because if we can loosely couple these two steps then it's easy to move
+    responsibility for them somewhere else.
+  </p>
+  <p>
+    But enough talk. We want to generalize the iteration and reduction that <code>map</code> is doing. Let's see
+    how we can go about that, starting with iteration.
+  </p>
+</section>
+
+<section>
+  <h2>Generalized iteration</h2>
+  <p>
+    In fact, this is really the easy part. JavaScript already does it for us, at least as of ES2015. That's when
+    <strong>protocols</strong> entered the language, and it so happens that two of the first batch of protocols
+    to be added were the <em>iteration</em> protocols. Sounds promising.
+  </p>
+  <p>
+    If you're interested in the gory details,
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols">read about
+    them on the Mozilla Developer Network</a>. The gist is that if a collection can conform to these protocols,
+    it gains the ability to be used in one of the new ES2015 constructs, the <code>for...of</code> loop.
+  </p>
+  <p>
+    The <code>for...of</code> loop breaks apart a collection into its components and runs through the loop one
+    time for each component. Sound familiar? It's iteration. And the iteration protocols are built-in for
+    JavaScript arrays, strings, and generators. They can also be defined by programmers, and several third-party
+    collection libraries implement them. Let's take a look at some examples.
+  </p>
+  <aside>
+    <p>
+      In all of the examples on this page, I will be using the variable name <code>xs</code> to refer to a
+      collection. This is pronounced "exes" and is literally meant to be the plural of <code>x</code>, which is
+      a single element in the collection. This is a common convention in functional programming.
+    </p>
+  </aside>
+  <pre><code class="javascript">
+    let xs = [1, 2, 3, 4, 5];
+    let result = [];
+    for (const x of xs) {
+      result.push(x + 1);
+    }
+    result;
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    That's mapping an array using <code>for...of</code>. What about other input collections, like strings?
+  </p>
+  <pre><code class="javascript">
+    xs = 'hello';
+    result = [];
+    for (const x of xs) {
+      result.push(x.toUpperCase());
+    }
+    result;
+    // -> ["H", "E", "L", "L", "O"]
+  </code></pre>
+  <p>
+    This will work for any collection with the iterator protocols implemented, and a good example of a collection
+    like that is the <code>List</code> from <a href="https://facebook.github.io/immutable-js/">Immutable</a>, a
+    third-party library of immutable data structures. If you want to be certain, you can type the following code
+    into the console after making sure that Immutable is loaded into the page you're viewing in the browser. This
+    will not work if you haven't loaded a page with Immutable in it, but if you don't have one, you can just skip
+    it and trust that this works.
+  </p>
+  <pre><code class="javascript">
+    xs = Immutable.List.of(1, 2, 3, 4, 5);
+    result = [];
+    for (const x of xs) {
+      result.push(x + 1);
+    }
+    result;
+    // -> [2, 3, 4, 5, 6];
+  </code></pre>
+  <p>
+    So the same construct is used to break down any collection (at least, any collection that implements the
+    iteration protocols, which we'll assume from now on even without saying it) into its pieces. In fact, it's so
+    regular that we can abstract that away and make it a function that works with any kind of input collection.
+  </p>
+  <pre><code class="javascript">
+    function map1(xs, fn) {
+      const result = [];
+      for (const x of xs) {
+        result.push(fn(x));
+      }
+      return result;
+    }
+
+    map1([1, 2, 3, 4, 5], x => x + 1);
+    // -> [2, 3, 4, 5, 6]
+    map1('hello', x => x.toUpperCase());
+    // -> ['H', 'E', 'L', 'L', 'O']
+  </code></pre>
+  <p>
+    So we've already written a function that can map <em>any</em> kind of input collection, but it always returns
+    an array. This is because the reduction step in our new function amounts to pushing the transformed result
+    into an array, a process that remains hard-coded. We could change this reduction step to anything we want to
+    &mdash; string concatentation, creating a new immutable list, yielding out of a generator &mdash; but
+    whatever we change it to, it'll still be hard-coded. We haven't yet made our reduction generalized. Let's
+    look at that next.
+  </p>
+</section>
+
+<section>
+  <h2>Generalized Reduction</h2>
+  <p>
+    Reduction is a pretty familiar concept to a lot of programmers; in fact, the same <code>Array</code> object
+    where <code>map</code> is defined also defines a <code>reduce</code> function. Let's take a look at it in
+    action.
+  </p>
+  <pre><code class="javascript">
+    [1, 2, 3, 4, 5].reduce((acc, x) => {
+      acc.push(x + 1);
+      return acc;
+    }, []);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    What this code is doing is...well, it's exactly the same as the first example on this page. It's
+    <code>map</code>, defined in terms of <code>reduce</code>. (Interestingly, you can define pretty much any
+    list function in terms of <code>reduce</code>, but that's a subject for another time.)
+  </p>
+  <p>
+    The <code>reduce</code> function itself works with three pieces of information: the input collection, a
+    <strong>reducer function</strong>, and an <strong>initial value</strong>. The reducer function is what
+    actually builds the output collection. It takes two arguments: the current, unfinished output (often called
+    the <strong>accumulator</strong>, which is why I name it <code>acc</code>) and the next element of the input
+    collection. Its job is to process that element however it needs to and join it with the accumulator to create
+    an updated accumulator. Once all of the elements have been processed, that final accumulator is what's
+    returned from the <code>reduce</code> function.
+  </p>
+  <aside>
+    <p>
+      A <em>reducer function</em> is actually a thing with a specific definition. It is a function that takes an
+      accumulator and a new value, and it returns a new accumulator with the new value incorporated. In other
+      words, it's a function that's suitable for passing to the <code>reduce</code> list function. We will use
+      them quite a bit before the end.
+    </p>
+  </aside>
+  <p>
+    The initial value is there because, on the very first invocation of the reducer function, there <em>is no</em>
+    accumulator. After all, the function hasn't been run yet to produce one. So on that first go, the initial
+    value is sent to the reducer function as the accumulator.
+  </p>
+  <p>
+    Thing is, if you squint just right, you can see both of these new ideas &mdash; a reducer function and an
+    initial value &mdash; in our <code>map1</code> function from the last section. Let's look at the function
+    again.
+  </p>
+  <pre><code class="javascript">
+    function map1(xs, fn) {
+      const result = [];
+      for (const x of xs) {
+        result.push(fn(x));
+      }
+      return result;
+    }
+  </code></pre>
+  <p>
+    That value that's assigned to <code>result</code> sure does look like an initial value, and the body of the
+    <code>for...of</code> loop looks an awful lot like the reduction function. Now that we've identified these
+    aspects that are playing a part in reduction, let's see if we can abstract them out.
+  </p>
+  <pre><code class="javascript">
+    function map2(xs, fn, reducer, init) {
+      let acc = init;
+      for (const x of xs) {
+        acc = reducer(acc, fn(x));
+      }
+      return acc;
+    }
+  </code></pre>
+  <p>
+    That looks pretty good. There is nothing hard-coded at all; the reducer function, the initial value, the
+    transformer function, and the collection are all passed in as arguments. The <code>for...of</code> loop handles the
+    iteration. Inside of it, the <code>reducer</code> function is passed the current accumulator (which is set as the
+    initial value the first time through) and the transformed next value in the collection, and it returns a new
+    accumulator. When the iteration is complete, the last value of the accumulator is returned as the result. This
+    sounds <em>exactly</em> like our <code>reduce</code>-driven mapping above.
+  </p>
+  <p>
+    Let's try it out. Note <code>arrayReducer</code> and <code>stringReducer</code> &mdash; these are perfectly
+    normal reducer functions and are not specific to this code. We will use them later, exactly as they're
+    presented here.
+  </p>
+  <pre><code class="javascript">
+    function arrayReducer(acc, x) {
+      acc.push(x);
+      return acc;
+    }
+    function stringReducer(acc, x) {
+      return acc + x;
+    }
+
+    map2([1, 2, 3, 4, 5], x => x + 1, arrayReducer, []);
+    // -> [2, 3, 4, 5, 6]
+    map2('hello', x => x + x, stringReducer, '');
+    // -> "hheelllloo"
+
+    // Interesting side effect of separating iteration and
+    // reduction: we can iterate differently than we reduce,
+    // meaning different input and output collection types
+    map2([1, 2, 3, 4, 5], x => x + 1, stringReducer, '');
+    // -> "23456"
+  </code></pre>
+  <p>
+    Great! <code>map2</code> looks really nice so far. It <em>only</em> deals with transformation; the
+    iteration (via the iteration protocols on the input collection) and the reduction (via the reducer function
+    and initial value that we pass to it) are handled by other code that's meant to handle them. What's more, as
+    the last example shows, this same function will accept any kind of input collection and produce any kind of
+    output collection, <em>even if they're different.</em>. Let's see your list function do that.
+  </p>
+  <p>
+    We're getting a little better idea of transducers now. They have to do with separating a regular list
+    function into its single-concern parts so that we have more flexibility in how to call them in order to get
+    the transformation we want. But that stuff is all adjectives, describing some characteristics of transducers,
+    not telling us what a transducer really <em>is</em>. To get there, we're going to have to look at our third
+    problem with list functions &mdash; inefficient composition &mdash; and solve it. We'll look at that on the next
+    page.
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/about/features" title="Xduce features"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/theory/experiments" title="Experiments in composition"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
