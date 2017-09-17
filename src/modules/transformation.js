@@ -26,8 +26,8 @@
 
 const { protocols, isImplemented } = require('./protocol');
 const { isKvFormObject, iterator } = require('./iteration');
-const { isCompleted, reduce, arrayReducer, objectReducer, stringReducer } = require('./reduction');
-const { isArray, isObject, isString } = require('./util');
+const { isCompleted, reduce, arrayReducer, objectReducer, stringReducer, toReducer } = require('./reduction');
+const { isArray, isObject, isString, isFunction } = require('./util');
 const p = protocols;
 
 // An iterator that also acts as a transformer, transforming its collection one element at a time. This is the actual
@@ -178,6 +178,9 @@ function transducingIterator(collection, xform) {
  * it can produce any kind of output collection. The same `transduce` function and the same map transformer is used in
  * all four examples, despite the input/output combination being different in all four.
  *
+ * The `reducer` parameter *can* be a reducer function instead of a reducer object. If this is the case, the `init`
+ * parameter is required because a function cannot define an initial value itself.
+ *
  * The `init` collection doesn't have to be empty. If it isn't, the elements that are already in it are retained and the
  * transformed input elements are reduced into the collection normally.
  *
@@ -193,18 +196,28 @@ function transducingIterator(collection, xform) {
  * @param {module:xduce~transducerFunction} [xform] A function that creates a transducer object that defines the
  *     transformation being done to the input collection's elements. Any of the
  *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function.
+<<<<<<< HEAD
  * @param {object} reducer An object that implements the transducer protocols (`init` is only required if the `init`
  *     parameter is not present). This object must know how to produce an output collection through its `step` and
  *     `result` protocol functions.
  * @param {*} [init] A collection of the same type as the output collection. If this is not present, then the reducer's
+=======
+ * @param {object|function} reducer Either a function or a reducer object that implements the transducer protocols
+ *     (`init` is  only required if the `init` parameter is not present). This object must know how to produce an output
+ *     collection through its `step` and `result` protocol functions. If this parameter is a function, then it is turned
+ *     into a valid reducer object.
+ * @param {*} [init] aAcollection of the same type as the output collection. If this is not present, then the reducer's
+>>>>>>> develop
  *     `init` protocol function is called instead to get the initial collection. If it is present and not empty, then
  *     the existing elements remain and the transformed input collection elements are added to it.
  * @return {*} A collection of a type determined by the passed reducer. The elements of this collection are the results
  *     from the transformer function being applied to each element of the input collection.
  */
-function transduce(collection, xform, reducer, init = reducer[p.init]()) {
-  const xf = xform ? xform(reducer) : reducer;
-  return reduce(collection, xf, init);
+function transduce(collection, xform, reducer, init) {
+  const r = isFunction(reducer) ? toReducer(reducer) : reducer;
+  const i = init === undefined ? r[p.init]() : init;
+  const xf = xform ? xform(r) : r;
+  return reduce(collection, xf, i);
 }
 
 /**
