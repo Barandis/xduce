@@ -1,0 +1,176 @@
+<nav>
+  <ul>
+    <li><a href="#manual/basic/transducers" title="A brief tour of the transducers"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/objects-iterators" title="Objects and iterators"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>Composing transducers</h1>
+  <p>
+    Composition is putting together small, modular functions to produce more complex functions, and it's particularly
+    important in collection manipulation. With composition, any combination and number of small functions can be joined
+    together to accomplish virtually any transformation task without having to write a new function to do it. This is
+    something that is not typically accentuated in regular JavaScript.
+  </p>
+  <p>
+    One of the design goals of xduce is to make every transducer completely composable. In fact the way transducers do
+    composition is much more efficient than the way it's accomplished in their normal list manipulation function
+    counterparts.
+  </p>
+  <aside>
+    <p>
+      You might not realize it, but JavaScript's array functions are composable. It's just kinda hard to tell, because
+      the term <em>compose</em> doesn't occur much in JavaScript documentation. Composition of array functions happens
+      by chaining methods together, like this.
+    </p>
+    <pre><code class="javascript">
+      [1, 2, 3, 4, 5].map(x => x + 1).filter(x => x > 3);
+      // -> [4, 5, 6]
+    </code></pre>
+    <p>
+      This is a perfectly reasonable way to do composition in an object-oriented style. Xduce's style is different,
+      more akin of purely functional programming languages.
+    </p>
+  </aside>
+</section>
+
+<section>
+  <h2>The <code>compose</code> function</h2>
+  <p>
+    Xduce accomplishes composition through its <code>compose</code> function. It accepts any number of transducers and
+    returns a single transducer that will accomplish everything that the individual ones would have done, in the same
+    order. This transducer is exactly what's needed in a call to <code>transduce</code>, <code>into</code>, or
+    <code>sequence</code>.
+  </p>
+  <p>
+    This example shows the way that you would accomplish the above JavaScript array transformation with xduce.
+  </p>
+  <pre><code class="javascript">
+    const xform = compose(map(x => x + 1), filter(x => x > 3));
+    sequence([1, 2, 3, 4, 5], xform);
+    // -> [4, 5, 6]
+  </code></pre>
+  <p>
+    The result of the <code>compose</code> function is fed to <code>sequence</code> in exactly the same way that a
+    single transducer would be. As far as <code>sequence</code> is concerned, there is no difference between a single
+    transducer and a composed transducer, so you can make any kind of composition you want and have it work as you
+    would expect.
+  </p>
+  <aside>
+    <h3>A note on composition order</h3>
+    <p>
+      In most functional programming languages, data moves through a chain of composed functions from
+      <em>right-to-left</em>. This is a fine way to do it, as it makes sense both from a mathematical standpoint
+      (composition in math is also done right-to-left) and because the functions appear in the same order as they would
+      if you chained their results together instead of composing them.
+    </p>
+    <pre><code class="javascript">
+      // Assume `comp` to be a compose function in normal right-to-left order
+      f(g(x));        // applied inside-out, g and then f
+      comp(f, g)(x);  // applied right-to-left, also g and then f
+    </code></pre>
+    <p>
+      But it's more natural to do transducers in a left-to-right order, more akin to reading English. This is in part
+      because of the step-wise nature of transduction, lending itself to work with data sources where the data is not
+      all available at the beginning of the transformation (like streams or channels). Because of that, the xduce
+      <code>compose</code> function sends data through the functions left-to-right.
+    </p>
+  </aside>
+  <p>
+    Note that <code>compose</code> produces a <em>proper transducer</em>, a function that takes a reducer and returns
+    another reducer, which is exactly the same thing that any of xduce's transducers (<code>map</code>,
+    <code>filter</code>, etc.) produce. But it does not have the ability to shortcut the way single transducers do. To
+    use a composed transducer, you must send it to a transduction function like <code>sequence</code>; you cannot
+    provide it a collection as the first argument and have it do everything itself.
+  </p>
+</section>
+
+<section>
+  <h2>Composition mechanics</h2>
+  <p><em>
+    This section doesn't tell you anything about how to use transducers, but it's important to know that composition,
+    and particularly the way composition is done, is one of the key reasons to choose transducers over regular
+    functions.
+  </em></p>
+  <p>
+    Composition of regular list functions is an exercise in inefficiency. To see why, let's look at the same composition
+    of JavaScript array functions as above, reprinted here for convenience.
+  </p>
+  <pre><code class="javascript">
+    [1, 2, 3, 4, 5].map(x => x + 1).filter(x => x > 3);
+  </code></pre>
+  <p>
+    The process of executing this line of code goes something like this.
+  </p>
+  <ol>
+    <li><code>map</code> breaks the input array into pieces</li>
+    <li><code>map</code> adds 1 to each of those pieces</li>
+    <li><code>map</code> puts the transformed pieces back together into a new array</li>
+    <li><code>filter</code> breaks the new array into pieces</li>
+    <li><code>filter</code> decides whether to send each piece to the output</li>
+    <li><code>filter</code> puts the selected pieces back together into a new array</li>
+  </ol>
+  <p>
+    The third and fourth steps create an array from pieces, and then break the array into pieces. In other words,
+    they're completely unnecessary. And for every function added to the composition chain, another unnecessary new
+    array is constructed, and then another unnecessary iteration step is used to break it apart again.
+  </p>
+  <p>
+    This is necessary with normal array functions because they're completely self-contained. You cannot tell
+    <code>map</code> not to create a new array, and you cannot tell <code>filter</code> that it will be recieving
+    separate pieces as input rather than an entire array. Since the breakdown and buildup of arrays are an integral
+    part of these functions, they always have to happen, even when they're not needed.
+  </p>
+  <aside>
+    <p>
+      Note that even in list-based languages, where these kinds of manipulations are commonplace and are therefore
+      made quite efficient, this problem still exists. Even the same operation in Haskell
+    </p>
+    <pre><code class="haskell">
+      filter (>3) . map (+1) $ [1..5]
+    </code></pre>
+    <p>
+      will produce an intermediate list that is then discarded.
+    </p>
+  </aside>
+  <p>
+    Transducers move the breakdown and buildup out of the transducer and into other functions (specifically, functions
+    like <code>transduce</code>, <code>into</code>, and <code>sequence</code> handle those aspects). The transducer
+    itself handles only transformation, and it does that transformation one piece at a time. Let's again see the xduce
+    equivalent of the above JavaScript array manipulation.
+  </p>
+  <pre><code class="javascript">
+    const xform = compose(map(x => x + 1), filter(x => x > 3));
+    sequence([1, 2, 3, 4, 5], xform);
+  </code></pre>
+  <p>
+    This process looks more like this.
+  </p>
+  <ol>
+    <li><code>sequence</code> breaks the input array into pieces</li>
+    <li><code>map</code> receives one piece at a time, transforming it and sending it to <code>filter</code></li>
+    <li>
+      <code>filter</code> receives one piece at a time from <code>map</code>, deciding whether to send the piece
+      back to <code>sequence</code>
+    </li>
+    <li><code>sequence</code> puts the pieces passed from <code>filter</code> together into a new array</li>
+  </ol>
+  <p>
+    The intermediate array, both its construction and its breaking up, is gone. No matter how many transducers are
+    chained together into a single composition, there will be exactly one new collection created, and that's the output
+    collection.
+  </p>
+  <p>
+
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/basic/transducers" title="A brief tour of the transducers"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/objects-iterators" title="Objects and iterators"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>
