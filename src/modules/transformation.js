@@ -196,18 +196,11 @@ function transducingIterator(collection, xform) {
  * @param {module:xduce~transducerFunction} [xform] A function that creates a transducer object that defines the
  *     transformation being done to the input collection's elements. Any of the
  *     {@link module:xduce.transducers|transducers} in this library can produce a suitable transducer function.
-<<<<<<< HEAD
- * @param {object} reducer An object that implements the transducer protocols (`init` is only required if the `init`
- *     parameter is not present). This object must know how to produce an output collection through its `step` and
- *     `result` protocol functions.
- * @param {*} [init] A collection of the same type as the output collection. If this is not present, then the reducer's
-=======
  * @param {object|function} reducer Either a function or a reducer object that implements the transducer protocols
  *     (`init` is  only required if the `init` parameter is not present). This object must know how to produce an output
  *     collection through its `step` and `result` protocol functions. If this parameter is a function, then it is turned
  *     into a valid reducer object.
  * @param {*} [init] aAcollection of the same type as the output collection. If this is not present, then the reducer's
->>>>>>> develop
  *     `init` protocol function is called instead to get the initial collection. If it is present and not empty, then
  *     the existing elements remain and the transformed input collection elements are added to it.
  * @return {*} A collection of a type determined by the passed reducer. The elements of this collection are the results
