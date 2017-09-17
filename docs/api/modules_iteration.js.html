@@ -212,6 +212,8 @@ function arrayIterator(array) {
  * And that's about as concise as it gets. Note that some languages that compile into JavaScript, like CoffeeScript and
  * LiveScript, also support these features.
  *
+ * @private
+ *
  * TL;DR:
  * 1. Iteration order of objects is alphabetical by key, though that can be changed by passing a sort function to
  *    `{@link module:xduce.iterator|iterator}`.
@@ -254,6 +256,40 @@ function objectIterator(obj, sort, kv = false) {
 }
 
 /**
+ * Creates an iterator that runs a function for each `next` value.
+ *
+ * The function in question is provided two arguments: the current 0-based index (which starts at `0` and increases by
+ * one for each run) and the return value for the prior calling of the function (which is `undefined` if the function
+ * has not yet been run). The return value of the function is used as the value that comes from `next` the next time
+ * it's called.
+ *
+ * If the function returns `undefined` at any point, the iteration terminates there and the `done` property of the
+ * object returned with the next call to `next` becomes `true`.
+ *
+ * @private
+ *
+ * @param {function} fn A function that is run once for each step of the iteration. It is provided two arguments: the
+ *     `0`-based index of that run (starts at `0` and increments each run) and the return value of the last call to the
+ *     function (`undefined` if it hasn't been called yet). If the function returns `undefined` at any point, the
+ *     iteration terminates.
+ * @return {function} A generator wrapping `fn`, which is suitable for use as an iterator.
+ */
+function functionIterator(fn) {
+  return function* () {
+    let current;
+    let index = 0;
+
+    for (;;) {
+      current = fn(index++, current);
+      if (current === undefined) {
+        break;
+      }
+      yield current;
+    }
+  }();
+}
+
+/**
  * Determines whether an object is in kv-form. This used by the reducers that must recognize this form and reduce those
  * elements back into key-value form.
  *
@@ -279,19 +315,78 @@ function isKvFormObject(obj) {
  * For collections that are not objects, it's as simple as that. Pass in the collection, get an iterator over that
  * collection.
  *
+ * ```
+ * const iter = iterator([1, 2, 3]);
+ * iter.next().value === 1;     // true
+ * iter.next().value === 2;     // true
+ * iter.next().value === 3;     // true
+ * iter.next().done === true;   // true
+ * ```
+ *
  * Objects get special support though, as noted in the section above on iterating over objects. Objects are iterated in
  * alphabetical order by key, unless a second parameter is passed to `iterator`. This must be a function that takes two
  * parameters (which will be object keys) and returns `-1` if the first is less than the second, `1` if the second is
  * less than the first, and `0` if they're equal.
  *
- * Also, `iterator` by default iterates objects into kv-form. This is the form used internally by the xduce library. If
- * this is not appropriate for a particular use case, then a third parameter of `false` can be passed, which will result
- * in the iteration being into single-property form instead.
+ * Also, `iterator` by default iterates objects into key/value form. However, if a third parameter of `true` is passed,
+ * it will instead render the object in kv-form. This is the form used internally when a transducer is invoked.
  *
  * The second and third parameters are ignored if the input collection is not an object.
  *
+ * ```
+ * const iter = iterator({ b: 2, a: 4 });
+ * iter.next().value.a === 4;     // true
+ * iter.next().value.b === 2;     // true
+ * iter.next().done === true;     // true
+ *
+ * const kvIter = iterator({ b: 2, a: 4 }, null, true);
+ * const { k: k1, v: v1 } = kvIter.next().value;
+ * k1 === 'a' &amp;&amp; v1 === 4;        // true
+ * const { k: k2, v: v2 } = kvIter.next().value;
+ * k2 === 'b' &amp;&amp; v2 === 2;        // true
+ * iter.next().done === true;     // true
+ * ```
+ *
  * Note that if this function is passed an object that looks like an iterator (an object that has a `next` function),
  * the object itself is returned. It is assumed that a function called `next` conforms to the iteration protocol.
+ *
+ * If this function is provided a *function* as its first argument, an iterator is returned which runs that function
+ * one time for each call to `next`. That function is provided two arguments: the index of the call (starting at `0`
+ * for the first time it's called and increasing by 1 per invocation after that) and the return value of the previous
+ * call to the function (starting at `undefined` for the first run before the function is ever called). If the function
+ * ever returns `undefined`, the iterator will terminate and set the `done` property of its return value to `true` at
+ * that point.
+ *
+ * Note that since the initial value of the second argument is `undefined`, using default arguments is an excellent way
+ * of providing the function an initial value.
+ *
+ * ```
+ * const constIter = iterator(() => 6);  // Bert's favorite number
+ * constIter.next().value === 6;   // true
+ * constIter.next().value === 6;   // true;
+ * // This will go on forever, as long as `next` keeps getting called
+ *
+ * const indexIter = iterator(x => x * x);
+ * indexIter.next().value === 0;   // true
+ * indexIter.next().value === 1;   // true
+ * indexIter.next().value === 4;   // true
+ * indexIter.next().value === 9;   // true
+ * // Again, this will go on forever, or until the numbers get to big JS to handle
+ *
+ * // Using default value on `last` parameter for initial value
+ * const lastIter = iterator((index, last = 1) => last * (index + 1));  // Factorial
+ * lastIter.next().value === 1;    // true
+ * lastIter.next().value === 2;    // true
+ * lastIter.next().value === 6;    // true
+ * lastIter.next().value === 24;   // true
+ * // Again, forever, though factorials get big quickly
+ *
+ * // This iterator will terminate when the function returns `undefined`
+ * const stopIter = iterator(x => x &lt; 2 ? x : undefined);
+ * stopIter.next().value === 0;    // true
+ * stopIter.next().value === 1;    // true
+ * stopIter.next().done === true;  // true
+ * ```
  *
  * @memberof module:xduce
  *
@@ -309,6 +404,8 @@ function iterator(obj, sort, kv) {
       return obj[p.iterator]();
     case isFunction(obj.next):
       return obj;
+    case isFunction(obj):
+      return functionIterator(obj);
     case isString(obj):
       return stringIterator(obj);
     case isArray(obj):
