@@ -2,7 +2,7 @@
 
 All notable changes to the library will be documented in this file.
 
-## [1.0.0] 2018-11-06
+## [2.0.0] 2018-11-06
 ### Added
 - Documentation. Lots of documentation.
 
