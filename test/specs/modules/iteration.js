@@ -38,34 +38,38 @@ describe('Iterator', () => {
     });
 
     context('without built-in iterator protocols', () => {
-      let oldString, oldArray;
-
-      /* eslint-disable no-extend-native */
-      before(() => {
-        oldString = String.prototype[p.iterator];
-        oldArray = Array.prototype[p.iterator];
-        String.prototype[p.iterator] = null;
-        Array.prototype[p.iterator] = null;
-      });
-
-      after(() => {
-        String.prototype[p.iterator] = oldString;
-        Array.prototype[p.iterator] = oldArray;
-      });
-      /* eslint-enable no-extend-native */
+      // Recently Mocha started exiting (not failing the test, just exiting prematurely)
+      // when deleting the iterator property from Array. There's probably good reason for this,
+      // but I haven't taken the time to look into it. Using a proxy to pretend the iterator
+      // property isn't there is probably best anyway.
+      function proxy(target) {
+        // Have to treat strings specially because you can't take a proxy of a literal string
+        if (typeof target === 'string') {
+          delete target[p.iterator];
+          return target;
+        }
+        return new Proxy(target, {
+          get(obj, prop) {
+            if (prop === p.iterator) {
+              return;
+            }
+            return obj[prop];
+          }
+        });
+      }
 
       it('iterates over strings', () => {
-        const array = toArray(iterator('hello'));
+        const array = toArray(iterator(proxy('hello')));
         expect(array).to.deep.equal(['h', 'e', 'l', 'l', 'o']);
       });
 
       it('iterates over BMP strings', () => {
-        const array = toArray(iterator(BMP));
+        const array = toArray(iterator(proxy(BMP)));
         expect(array).to.deep.equal(['A', ' ', '\uD87E\uDC04', ' ', 'Z', ' ', '\uD87E\uDC04', ' ', 'A']);
       });
 
       it('iterates over arrays', () => {
-        const array = toArray(iterator([3, 1, 4, 1, 5]));
+        const array = toArray(iterator(proxy([3, 1, 4, 1, 5])));
         expect(array).to.deep.equal([3, 1, 4, 1, 5]);
       });
     });
