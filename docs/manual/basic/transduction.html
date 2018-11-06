@@ -9,26 +9,17 @@
 <section>
   <h1>Basic transduction</h1>
   <p>
-    Even from the simple examples in the setup pages, it should be pretty clear that it's easy to get up and running
-    with transduction, no harder than it is to use regular collection manipulation functions. Even so there are a lot
-    of possibilities, so let's dig a little deeper.
+    Even from the simple examples in the setup pages, it should be pretty clear that it's easy to get up and running with transduction, no harder than it is to use regular collection manipulation functions. Even so there are a lot of possibilities, so let's dig a little deeper.
   </p>
   <p>
     We'll start at the beginning, with all of the different contexts in which you can run transducers.
   </p>
   <aside>
     <p>
-      All of the examples in the rest of the manual will assume a CommonJS environment, like you'd get using Node.js,
-      Browserify, or Webpack. The only part of the code that this actually impacts is in getting access to
-      <code>xduce</code> in the first place, which is the <code>require</code> statements in the example code. If you're
-      using AMD (RequireJS), you will have to translate these into <code>define</code> statements, and for use directly
-      in the browser, you won't need these statements at all (<code>xduce</code> is automatically available in the
-      browser).
+      All of the examples in the rest of the manual will assume a CommonJS environment, like you'd get using Node.js, Browserify, or Webpack. The only part of the code that this actually impacts is in getting access to <code>xduce</code> in the first place, which is the <code>require</code> statements in the example code. If you're using AMD (RequireJS), you will have to translate these into <code>define</code> statements, and for use directly in the browser, you won't need these statements at all (<code>xduce</code> is automatically available in the  browser).
     </p>
     <p>
-      The examples all also use ES2015 code. If you are using RequireJS or the browser, you may want to instead use
-      ES5 because Internet Explorer does not understand ES2015. (Edge is only available for Windows 10, so we will have
-      to worry about IE until everyone stops using Windows 7 and 8.)
+      The examples all also use ES2015 code. If you are using RequireJS or the browser, you may want to instead use ES5 because Internet Explorer does not understand ES2015. (Edge is only available for Windows 10, so we will have to worry about IE until everyone stops using Windows 7 and 8.)
     </p>
   </aside>
 </section>
@@ -52,23 +43,17 @@
     // -> [2, 3, 4, 5, 6]
   </code></pre>
   <p>
-    Aside from the collection and the transducer, <code>transduce</code> requires a reducer function and an initial
-    value. The initial value is the starting value of the new collection, while the reducer function takes a collection
-    and a value and returns the collection with the value incorporated. These two parameters instruct
-    <code>transduce</code> on how to create a new collection out of the values that the transducer feeds it.
+    Aside from the collection and the transducer, <code>transduce</code> requires a reducer function and an initial value. The initial value is the starting value of the new collection, while the reducer function takes a collection and a value and returns the collection with the value incorporated. These two parameters instruct <code>transduce</code> on how to create a new collection out of the values that the transducer feeds it.
   </p>
 </section>
 
 <section>
   <h2>Mid level: <code>into</code></h2>
   <p>
-    <code>transduce</code> requires the reducer function to be provided explicitly. This gives great flexibility,
-    including being able to reduce into collections that xduce wouldn't otherwise know how to reduce into.
+    <code>transduce</code> requires the reducer function to be provided explicitly. This gives great flexibility, including being able to reduce into collections that xduce wouldn't otherwise know how to reduce into.
   </p>
   <p>
-    But it's not that common to need that flexibility. Xduce knows how to reduce into arrays, objects, strings, and
-    iterators already, and any other collection can provide its own instructions on how to reduce into it. If you don't
-    require that explicit reducer, you can use <code>into</code>.
+    But it's not that common to need that flexibility. Xduce knows how to reduce into arrays, objects, strings, and iterators already, and any other collection can provide its own instructions on how to reduce into it. If you don't require that explicit reducer, you can use <code>into</code>.
   </p>
   <pre><code class="javascript">
     const into = xduce.into;
@@ -79,10 +64,7 @@
     // -> [2, 3, 4, 5, 6]
   </code></pre>
   <p>
-    These are basically the parameters to <code>transduce</code> &mdash; barring the reducer function &mdash; in a
-    slightly different order to make it read nicer. It's most common to provide an empty collection as the target, but
-    that isn't a requirement; if there are already elements in the target, they will be retained and all of the
-    transduced values will be added to it.
+    These are basically the parameters to <code>transduce</code> &mdash; barring the reducer function &mdash; in a slightly different order to make it read nicer. It's most common to provide an empty collection as the target, but that isn't a requirement; if there are already elements in the target, they will be retained and all of the transduced values will be added to it.
   </p>
   <pre><code class="javascript">
     into([23, 17], [1, 2, 3, 4, 5], map(x => x + 1));
@@ -96,10 +78,7 @@
 <section>
   <h2>High level: <code>sequence</code></h2>
   <p>
-    Because the target collection is supplied to both <code>transduce</code> and <code>into</code>, they're capable
-    of taking any kind of collection for an input and producing any kind of collection for output. Most of the time
-    though, we will want to make the same sort of output collection as we're getting as an input collection. If that
-    is the case, then we can use <code>sequence</code> instead.
+    Because the target collection is supplied to both <code>transduce</code> and <code>into</code>, they're capable of taking any kind of collection for an input and producing any kind of collection for output. Most of the time though, we will want to make the same sort of output collection as we're getting as an input collection. If that is the case, then we can use <code>sequence</code> instead.
   </p>
   <pre><code class="javascript">
     const sequence = xduce.sequence;
@@ -110,19 +89,14 @@
     // -> [2, 3, 4, 5, 6]
   </code></pre>
   <p>
-    <code>sequence</code> figures out what initial value and reducer to use directly from the input collection. Again,
-    xduce builds in support for arrays, objects, strings, and iterators, so <code>sequence</code> can always use those.
-    It can also use any sort of collection that has instructions on how to iterate over it and reduce it. How to make
-    that happen will be discussed later.
+    <code>sequence</code> figures out what initial value and reducer to use directly from the input collection. Again, xduce builds in support for arrays, objects, strings, and iterators, so <code>sequence</code> can always use those. It can also use any sort of collection that has instructions on how to iterate over it and reduce it. How to make that happen will be discussed later.
   </p>
 </section>
 
 <section>
   <h2>Highest level: transducer shortcuts</h2>
   <p>
-    Each of the transducers supplied by xduce can perform the entire transduction themselves. In each of the examples
-    above, <code>map</code> is given a function and passed into the transducing function. But <code>map</code> (and
-    every other transducer) can also take a collection as a first argument, and if it does, do the transduction itself.
+    Each of the transducers supplied by xduce can perform the entire transduction themselves. In each of the examples above, <code>map</code> is given a function and passed into the transducing function. But <code>map</code> (and every other transducer) can also take a collection as a first argument, and if it does, do the transduction itself.
   </p>
   <pre><code class="javascript">
     const map = xduce.transducers.map;
@@ -132,9 +106,7 @@
     // -> [2, 3, 4, 5, 6]
   </code></pre>
   <p>
-    This is the easiest way to do transduction, but it's also the most limited. It cannot produce an output collection
-    of a different type than the input (just like <code>sequence</code>), and it cannot be used with a composed
-    transducer (which we have not talked about yet, but which <code>sequence</code> <em>can</em> do).
+    This is the easiest way to do transduction, but it's also the most limited. It cannot produce an output collection of a different type than the input (just like <code>sequence</code>), and it cannot be used with a composed transducer (which we have not talked about yet, but which <code>sequence</code> <em>can</em> do).
   </p>
 </section>
 

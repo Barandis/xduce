@@ -9,36 +9,27 @@
 <section id="intro">
   <h1>Global object setup</h1>
   <p>
-    If xduce is not in a CommonJS or AMD environment, then it exposes an object called <code>xduce</code> on the
-    global object. In a browser, this is the <code>window</code> object. If you want to use xduce in a browser directly,
-    this is the setup to follow.
+    If xduce is not in a CommonJS or AMD environment, then it exposes an object called <code>xduce</code> on the global object. In a browser, this is the <code>window</code> object. If you want to use xduce in a browser directly, this is the setup to follow.
   </p>
 </section>
 
 <section id="installation">
   <h2>Installation</h2>
   <p>
-    Download the latest package from the <a href="https://github.com/Barandis/xduce/releases">GitHub releases</a> page.
-    The file you want is in the <code>dist</code> directory; you can use either <code>xduce.js</code> (unminified) or
-    <code>xduce.min.js</code> (minified). The other files in that directory are ES2015 and should only be used if
-    you're abandoning Internet Explorer users.
+    Download the latest package from the <a href="https://github.com/Barandis/xduce/releases">GitHub releases</a> page. The file you want is in the <code>dist</code> directory; you can use either <code>xduce.js</code> (unminified) or <code>xduce.min.js</code> (minified).
   </p>
   <p>
-    It is suggested that you use the unminified version of the library in development environments (for easier
-    debugging) and the minified version in production environments (for smaller size and faster loading).
+    It is suggested that you use the unminified version of the library in development environments (for easier debugging) and the minified version in production environments (for smaller size and faster loading).
   </p>
   <p>
-    Just put the file of your choice in a location that matches the location indicated by the <code>src</code>
-    attibute in your <code>&lt;script&gt;</code> tag.
+    Just put the file of your choice in a location that matches the location indicated by the <code>src</code> attibute in your <code>&lt;script&gt;</code> tag.
   </p>
 </section>
 
 <section id="usage">
   <h2>Usage</h2>
   <p>
-    All of xduce's functionality is available on an object named <code>xduce</code> that is attached directly to
-    <code>window</code> and can therefore be called without qualification (just as <code>xduce</code> rather than
-    <code>window.xduce</code>). You have access to it directly after loading the xduce file.
+    All of xduce's functionality is available on an object named <code>xduce</code> that is attached directly to <code>window</code> and can therefore be called without qualification (just as <code>xduce</code> rather than <code>window.xduce</code>). You have access to it directly after loading the xduce file.
   </p>
   <pre><code class="html">
     &lt;!-- use the path to your xduce.js file here --&gt;

@@ -2,7 +2,7 @@
   <ul>
     <li><a href="#manual/basic/more-transduction" title="More transduction"><span class="fa fa-caret-left"></span></a></li>
     <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
-    <li><a href="#manual/advanced/protocols" title="Protocols and support for other collections"><span class="fa fa-caret-right"></span></a></li>
+    <li><a href="#manual/advanced/interaction" title="Interaction with other libraries"><span class="fa fa-caret-right"></span></a></li>
   </ul>
 </nav>
 
@@ -12,150 +12,107 @@
     The iteration protocols have been mentioned a few times, but we haven't spent much time on just what a protocol is.
   </p>
   <p>
-    A protocol, something which was first brought up in JavaScript for ES2015, isn't too dissimilar from an interface
-    in a class-based language. It's a set of properties that an object agrees to implement in order to statisfy the
-    protocol; the iterable property, for example, says that an object has to have a function property with a particular
-    name that returns an iterator, and if it does that, it gets to play with <code>for...of</code>.
+    A protocol, something which was first brought up in JavaScript for ES2015, isn't too dissimilar from an interface in a class-based language. It's a set of properties that an object agrees to implement in order to statisfy the protocol; the iterable property, for example, says that an object has to have a function property with a particular name that returns an iterator, and if it does that, it gets to play with <code>for...of</code>.
   </p>
   <p>
-    Xduce implements its support for iterating over any collection through the use of these iterator protocols. Any
-    collection that conforms can be broken down by <code>transduce</code> and friends, and any collection that doesn't
-    conform can be made to conform (more on that in a little bit).
+    Xduce implements its support for iterating over any collection through the use of these iterator protocols. Any collection that conforms can be broken down by <code>transduce</code> and friends, and any collection that doesn't conform can be made to conform (more on that in a little bit).
   </p>
   <p>
-    But there are no built-in reduction protocols, no universal way to reduce to a collection in the same way that there
-    is a universal way to iterate over a collection. Fortunately, we have the ability to define our own protocols, and
-    that's exactly what xduce does to let it both iterate over and reduce into any collection type.
+    But there are no built-in reduction protocols, no universal way to reduce to a collection in the same way that there is a universal way to iterate over a collection. Fortunately, we have the ability to define our own protocols, and that's exactly what xduce does to let it both iterate over and reduce into any collection type.
   </p>
 </section>
 
 <section>
   <h2>Making your collection iterate</h2>
   <p>
-    This is really not too hard at all. JavaScript already tells us how to make a collection iterable by implementing
-    the iteration protocols. In fact, it's difficult to find a collection these days that doesn't implement the
-    iterator protocols, so we're going to have to pretend that we need to give a collection iterator support.
-  </p>
-  <p>
-    We're just going to pretend that arrays are not iterable, and we'll show how to make them that way. While that's
-    pretty non-sensical, it does show exactly what you would have to do to make your own collection iterable.
+    This is really not too hard at all. JavaScript already tells us how to make a collection iterable by implementing the iteration protocols. In fact, it's difficult to find a collection these days that doesn't implement the iterator protocols, so we're going to have to pretend that we need to give a collection iterator support.
   </p>
   <aside>
     <p>
-      It might be reasonable to guess that xduce already supports pre-ES2015 arrays, which were not iterable because no
-      iterable protocol existed yet, and that would be a correct guess. You will not have to actually implement this
-      protocol on an array even if you're in a pre-ES2015 environment.
+      It might be reasonable to use arrays since they didn't have iterator support in ES5, which were not iterable because no iterable protocol existed yet. Xduce does add support for ES5 arrays though (and strings and objects too). You will not have to actually implement this protocol on an array even if you're in a pre-ES2015 environment.
     </p>
   </aside>
   <p>
-    The <em>iterable</em> protocol (one of the two iteration protocols) says that to be iterable, an object needs to
-    have a property with a certain name that is a function that returns an iterator. That name is
-    <code>Symbol.iterator</code>. This is a symbol, not a string, and symbols are very often used for protocol property
-    names (they have no literal form, so you actually have to reference the property as <code>Symbol.iterator</code>).
+    The <em>iterable</em> protocol (one of the two iteration protocols) says that to be iterable, an object needs to have a property with a certain name that is a function that returns an iterator. That name is <code>Symbol.iterator</code>. This is a symbol, not a string, and symbols are very often used for protocol property names (they have no literal form, so you actually have to reference the property as <code>Symbol.iterator</code>).
   </p>
   <aside>
     <p>
-      In a pre-ES2015 environment, where symbols don't exist, xduce will instead look for a property called
-      <code>'@@iterator'</code>. It's expected to return an object with a <code>next</code> function just like one that
-      actually conforms to the iterable protocol.
+      In a pre-ES2015 environment, where symbols don't exist, xduce will instead look for a property called <code>'@@iterator'</code>. It's expected to return an object with a <code>next</code> function just like one that actually conforms to the iterable protocol.
+    </p>
+    <p>
+      In fact, you can relieve yourself of the responsibility for figuring which of <code>Symbol.iterator</code> and <code>'@@iterator'</code> is correct by just referring to <code>xduce.protocols.iterator</code>. Xduce automatically assigns the correct name (depending on environment) to that variable.
     </p>
   </aside>
   <p>
-    We need our function to return an object with a <code>next</code> function on it, and that <code>next</code>
-    function needs to return the contents of the array, one element at a time, as the <code>value</code> property of
-    an object. This is the <em>iterator</em> protocol, the other iteration protocol. It's pretty easy to implement by
-    keeping track of the index of the last value to have been returned.
+    We need our function to return an object with a <code>next</code> function on it, and that <code>next</code> function needs to return the contents of the array, one element at a time, as the <code>value</code> property of an object. This is the <em>iterator</em> protocol, the other iteration protocol. It's pretty easy to implement by keeping track of the index of the last value to have been returned.
+  </p>
+  <p>
+    Let's see this in action. The actual hardest part about this example is finding something that needs to be made iterable. With the standardization brought by the iteration protocols and the reward for implementing it (being able to use <code>for...of</code>), nearly everything that makes sense to be iterable already is. So let's use something that doesn't have <em>full</em> support yet &mdash; iterable <code>NodeList</code>s.
   </p>
   <aside>
     <p>
-      We're going to be adding properties to a built-in object here, <code>Array</code>. This is generally considered
-      bad practice. However, it's a much less bad practice when doing it with properties named with symbols, as the
-      chance of there being a name collision &mdash; the biggest reason why we don't normally want to add properties
-      to built-in objects &mdash; is negligible.
-    </p>
-    <p>
-      That being said, even with symbols, you don't actually want to write this code. It turns out that
-      <code>Array</code> <em>does</em> have a symbol named <code>Symbol.iterator</code>, and here we are overwriting
-      it.
+      At the time of this writing, every major browser already supports iteration over <code>NodeList</code>. Edge finally added it in version 16. Of course, Internet Explorer, which is no longer in active development, will never have it, which is relevant because it's still on every Windows computer using something older than Windows 10.
     </p>
   </aside>
   <pre><code class="javascript">
-    Array.prototype[Symbol.iterator] = () => {
-      let index = 0;
-      const array = this;
+    const iterator = xduce.protocols.iterator;
 
-      return {
-        next() {
-          return index &lt; array.length
-            ? {
-                value: array[index++],
+    // Only add the property if it isn't already there
+    if (!NodeList.prototype.hasOwnProperty(iterator)) {
+      NodeList.prototype[iterator] = () => {
+        let index = 0;
+        const list = this;
+
+        return {
+          next() {
+            if (index &lt; list.length) {
+              return {
+                value: list[index++],
                 done: false
-              }
-            : {
-                done: true
               };
-        }
+            }
+            return { done: true };
+          }
+        };
       };
     }
   </code></pre>
   <p>
-    And that's all there is to it. We track the current index and keep a reference to the array (because
-    <code>this</code> inside our returned function will <em>not</em> be the array), and each time <code>next</code> is
-    called, we return the value at the index and increment that index. The value is wrapped up in an object that
-    satisfies the iterator protocol. When there are no more elements left, <code>next</code> returns
-    <code>{ done: true }</code>, just as the protocol requires.
+    This is an idiomatic way of adding the iterable protocol function: write a function that returns an object that acts as a closure, keeping its tracking of the current index completely private. That object has one property, a function named <code>next</code>, thereby satisfying the protocol.
+  </p>
+  <p>
+    Notice also that we wrap this all in an <code>if</code> statement, since we don't want to overwrite <code>NodeList</code>'s implementation of the iteration protocols if it already has them.
   </p>
   <aside>
     <p>
-      Note that the function was added to <code>Array</code>'s prototype. This is a common way to do things because it
-      means that any new array created after this function was added will have that function as a part of it, and will
-      therefore be iterable. But there's nothing preventing you from instead adding the function to a particular
-      instance of an array instead of to the prototype; it'll just mean that only that instance of the array will be
-      iterable.
+      It's pretty universally agreed that adding properties to a built-in object is poor form, because it's too easy to overwrite properties that are already there or that might be added in some future specification. The <code>if</code> statement improves upon this by making sure that we're adding the property only if we're not overwriting.
+    </p>
+    <p>
+      Also, with the advent of symbols this will be a much smaller concern in the future.
     </p>
   </aside>
-  <p>
-    In reality, these days, even most third-party collections implement the iteration protocols. But if you create your
-    own, or if you come across one that doesn't, you can add the ability in exactly the same way. Not only will your
-    collection then be iterable by xduce, it will also be able to be used in <code>for...of</code>.
-  </p>
 </section>
 
 <section>
   <h2>Making your collection reduce</h2>
   <p>
-    This part is trickier, because we don't have any built-in support from JavaScript. For this section we're going to
-    use a real-life collection that you might want to actually make work with xduce, the <code>List</code> from
-    <a href="https://facebook.github.io/immutable-js/">Immutable</a>.
+    This part is trickier, because we don't have any built-in support from JavaScript. For this section we're going to use a real-life collection that you might want to actually make work with xduce, the <code>List</code> from <a href="https://facebook.github.io/immutable-js/">Immutable</a>.
   </p>
   <p>
-    To make a collection reducible by xduce, it needs to provide instructions on how to reduce it. This has two parts:
-    the initial value, and a function that's run once for each element to add it to the collection that's being built.
-    This probably doesn't sound too odd; it's pretty much the definition of reduction itself.
+    To make a collection reducible by xduce, it needs to provide instructions on how to reduce it. This has two parts: an initial value and a function that's run once for each element to add it to the collection that's being built. This probably doesn't sound too odd; it's pretty much the definition of reduction itself.
   </p>
   <p>
-    There are no protocols in JavaScript for reduction, so xduce has created its own. These are available on the
-    <code>xduce.protocols</code> object. To provide a new initial collection, the collection should implement
-    <code>xduce.protocols.init</code>, and reduction should be done via a reduction function called
-    <code>xduce.protocols.step</code>. Let's show how to do that with Immutable lists.
+    There are no protocols in JavaScript for reduction, so xduce has created its own. These are available on the <code>xduce.protocols</code> object. To provide a new initial collection, the collection should implement <code>xduce.protocols.init</code>, and reduction should be done via a reduction function called <code>xduce.protocols.step</code>. Let's show how to do that with Immutable lists.
   </p>
   <aside>
     <p>
-      The actual names in <code>xduce.protocols</code> are symbols, as long as you're in an environment where symbols
-      are available. The cool thing about symbols is that they're absolutely unique, so no one could possibly ever
-      create another symbol with the same name as, for instance, <code>xduce.protocols.init</code>. This completely
-      eliminates accidental name clashes.
+      The actual names in <code>xduce.protocols</code> are symbols, as long as you're in an environment where symbols are available. The cool thing about symbols is that they're absolutely unique, so no one could possibly ever create another symbol with the same name as, for instance, <code>xduce.protocols.init</code>. This completely eliminates accidental name clashes.
     </p>
     <p>
-      If you're working in an ES5 environment without symbols, string names will have to be used, and xduce adjusts
-      accordingly to provide some names that start with <code>'@@transducer/'</code>. Hopefully that will make it
-      unlikely to have a name clash, but unfortunately without symbols it's always possible.
+      If you're working in an ES5 environment without symbols, string names will have to be used, and xduce adjusts accordingly to provide some names that start with <code>'@@transducer/'</code>. Hopefully that will make it unlikely to have a name clash, but unfortunately without symbols it's always possible.
     </p>
     <p>
-      Also, remember us using <code>Symbol.iterator</code> and the comment that xduce will look for
-      <code>'@@iterator</code> instead if symbols don't exist? Well, you don't have to remember those names. You can
-      use <code>xduce.protocols.iterator</code>, which will return the right name &mdash; symbol or string &mdash;
-      depending on your environment.
+      Also, remember us using <code>Symbol.iterator</code> and the comment that xduce will look for <code>'@@iterator</code> instead if symbols don't exist? Well, you don't have to remember those names. You can use <code>xduce.protocols.iterator</code>, which will return the right name &mdash; symbol or string &mdash; depending on your environment.
     </p>
   </aside>
   <pre><code class="javascript">
@@ -170,36 +127,24 @@
   </p>
   <aside>
     <p>
-      Do note however that the <code>init</code> property is a <em>function that returns a new <code>List</code></em>,
-      not a <code>List</code> itself. This is because the property will likely be called several times, and we want it
-      to provide a new empty <code>List</code> each time.
+      Do note however that the <code>init</code> property is a <em>function that returns a new <code>List</code></em>, not a <code>List</code> itself. This is because the property will likely be called several times, and we want it to provide a new empty <code>List</code> each time.
     </p>
   </aside>
   <p>
-    The <code>step</code> function is where the magic happens. In this case, it turns the accumulator (the current
-    <code>List</code> as it's being build) into an array, concatenates the new value to the end of it, and calls
-    <code>List.fromJS</code> to create a new list from that array.
+    The <code>step</code> function is where the magic happens. In this case, it turns the accumulator (the current <code>List</code> as it's being built) into an array, concatenates the new value to the end of it, and calls <code>List.fromJS</code> to create a new list from that array.
   </p>
   <p>
-    And...there's a problem. Because Immutable lists are, well, immutable, the only way to reduce to them is to create
-    a new list for every step (since we can't modify the old list). This really isn't very efficient. But Immutable
-    does provide a different way, by making their immutable lists mutable.
+    And...there's a problem. Because Immutable lists are, well, immutable, the only way to reduce to them is to create a new list for every step (since we can't modify the old list). This really isn't very efficient. But Immutable does provide a different way, by making their immutable lists mutable.
   </p>
   <pre><code class="javascript">
     List.prototype[init] = () => List().asMutable();
     List.prototype[step] = (acc, x) => acc.push(x);
   </code></pre>
   <p>
-    Well, that's certainly going to be more efficient, and it's easier to read to boot (thanks to the fact that
-    <code>List</code>'s <code>push</code> function returns the new <code>List</code>, unlike JavaScript's
-    <code>Array</code>'s <code>push</code>). But the problem here is that we're not making an immutable list at all.
-    The list that gets returned is mutable.
+    Well, that's certainly going to be more efficient, and it's easier to read to boot (thanks to the fact that <code>List</code>'s <code>push</code> function returns the new <code>List</code>, unlike JavaScript's <code>Array</code>'s <code>push</code>). But the problem here is that we're not making an immutable list at all. The list that gets returned is mutable.
   </p>
   <p>
-    The solution is a <em>third</em> protocol function, this one called <code>xduce.protocols.result</code>. When the
-    reduction is complete and the finsihed collection is ready to be returned, <code>result</code> gives us one last
-    chance to modify the collection as a whole before it's sent back. Let's see how we can use that to get the best of
-    both worlds.
+    The solution is a <em>third</em> protocol function, this one called <code>xduce.protocols.result</code>. When the reduction is complete and the finsihed collection is ready to be returned, <code>result</code> gives us one last chance to modify the collection as a whole before it's sent back. Let's see how we can use that to get the best of both worlds.
   </p>
   <pre><code class="javascript">
     const List = Immutable.List;
@@ -210,59 +155,64 @@
     List.prototype[result] = acc => acc.asImmutable();
   </code></pre>
   <p>
-    There! The <code>result</code> function has given us that last chance to take the mutable list that we've been
-    building up so efficiently and turn it into an immutable list for return. Realized that this is not actually just a
-    demonstration &mdash; if you want to use Immutable lists with xduce, those three lines of code above are exactly
-    how to make that happen.
+    There! The <code>result</code> function has given us that last chance to take the mutable list that we've been building up so efficiently and turn it into an immutable list for return. Realized that this is not actually just a demonstration &mdash; if you want to use Immutable lists with xduce, those three lines of code above are exactly how to make that happen.
   </p>
   <aside>
     <p>
-      In case you wondered, this is perfectly okay even from a functional purity standpoint (where <em>everything</em>
-      is supposed to be immutable). Mutability only matters if something can take advantage of it, and that's not the
-      case here. The list is only mutable when we're working on it; by the time any outside code gets a glimpse of it,
-      it's already immutable.
+      In case you wondered, this is perfectly okay even from a functional purity standpoint (where <em>everything</em> is supposed to be immutable). Mutability only matters if something can take advantage of it, and that's not the case here. The list is only mutable when we're working on it; by the time any outside code gets a glimpse of it, it's already immutable.
+    </p>
+    <p>
+      In Rust, this is called <em>interior mutability</em>, which has come to be my favorite term for the concept. In a language like JavaScript, with no performance optimizations based around list creation the way that a list-based language would have, it's an important tool for performance.
     </p>
   </aside>
   <p>
-    Most of the time, the <code>result</code> function is just going to return the accumulator as-is, because there's
-    no need to modify it before return. You will still need to provide a <code>result</code> function though, even if
-    the code for it is just <code>x => x</code>. For a collection like this though, where we want to build in an
-    efficient way that precludes the type that we're outputting, it's invaluable.
+    Most of the time, the <code>result</code> function is just going to return the accumulator as-is, because there's no need to modify it before return. You will still need to provide a <code>result</code> function though, even if the code for it is just <code>x => x</code>. For a collection like this though, where we want to build in an efficient way that precludes the type that we're outputting, it's invaluable.
   </p>
 </section>
 
 <section>
   <h2>Making your own collections work with xduce</h2>
   <p>
-    We've covered all you need to do to make xduce able to work with a third-party collection, but let's consolidate
-    that into an easy-to-use list.
+    We've covered all you need to do to make xduce able to work with a third-party collection, but let's consolidate that into an easy-to-use list.
   </p>
   <ol>
     <li>
-      Give your collection (either directly, or on a prototype object if you're using them and want <em>all</em>
-      instances of your collection to be iterable) a function property called <code>xduce.protocols.iterator</code>
-      that returns an object that conforms to the iterator protocol. You will probably find that most collections
-      already implement this. (Remember that in an environment with symbols, this is the same as
-      <code>Symbol.iterator</code>, so any collection that implements that will conform to what xduce needs.)
+      Give your collection (either directly, or on a prototype object if you're using them and want <em>all</em> instances of your collection to be iterable) a function property called <code>xduce.protocols.iterator</code> that returns an object that conforms to the iterator protocol. You will probably find that most collections already implement this. (Remember that in an environment with symbols, this is the same as <code>Symbol.iterator</code>, so any collection that implements that will conform to what xduce needs.)
     </li>
     <li>
-      Give your collection a function property named <code>xduce.protocols.init</code>. When called, it should provide
-      a new instance of an empty collection.
+      Give your collection a function property named <code>xduce.protocols.init</code>. When called, it should provide a new instance of an empty collection.
     </li>
     <li>
-      Give your collection a function property named <code>xduce.protocols.step</code>. It should be a reducer function,
-      appending a new value onto the collection when called.
+      Give your collection a function property named <code>xduce.protocols.step</code>. It should be a reducer function, appending a new value onto the collection when called.
     </li>
     <li>
-      Give your collection a function property named <code>xduce.protocols.result</code>. It should take a collection
-      and return the collection that you would want returned from that input collection. Note that in the vast
-      majority of cases, this function should just return its input argument unchanged.
+      Give your collection a function property named <code>xduce.protocols.result</code>. It should take a collection and return the collection that you would want returned from that input collection. Note that in the vast majority of cases, this function should just return its input argument unchanged.
     </li>
   </ol>
   <p>
-    Any collection that you can do this with &mdash; and it's not really a very hard task &mdash; can then be used with
-    xduce. And as long as you add it to the prototype so that the functions appear on every new object created from
-    that prototype, it's a one time deal. Do it once, and every transducer will work with your collection.
+    Any collection that you can do this with &mdash; and it's not really a very hard task &mdash; can then be used with xduce. And as long as you add it to the prototype so that the functions appear on every new object created from that prototype, it's a one time deal. Do it once, and every transducer will work with your collection.
+  </p>
+</section>
+
+<section>
+  <h2>Important note: There are no reducer functions</h2>
+  <p>
+    Now that the mechanism behind supporting third-party collections has been described, we can come out and talk about the role of reducer functions in xduce.
+  </p>
+  <p>
+    This was revealed in the final section of the <a href="#manual/basic/more-transduction">More transducution</a> page but, in case you missed it, <strong>xduce does not directly use reducer functions in any of its transductions</strong>. This is a big deal because in <a href="#manual/theory/generalizing">all three</a> <a href="#manual/theory/experiments">of the</a> <a href="#manual/theory/conclusion">Theory pages</a>, we talked a lot about reducer functions. They've been mentioned here and there since then, including on the page about <a href="#manual/basic/transduction">the most basic transduction function</a> in the library, <code>transduce</code>, which was said to take a reducer function as an argument. So what gives?
+  </p>
+  <p>
+    The fact is that a reducer function isn't enough, and you saw that in the last section. To support transduction in a collection, we set <em>three</em> functions: the protocols <code>init</code>, <code>step</code>, and <code>result</code>. <em>Only</em> <code>step</code> is a reducer function, and we need more than that reducer function to be able to define generalized reduction. We also need an initial collection value and, in some cases, a function to pass the result through at the end.
+  </p>
+  <p>
+    We can't get that by passing a reducer function into anything. So instead, xduce uses <em>reducer objects</em>. These are objects that satisfiy all three of the transducer protocols described above. In other words, they're reducer functions, but they're more.
+  </p>
+  <p>
+    We'll talk more about writing reducer objects in the later section on <a href="#manual/advanced/authoring">writing your own transducers</a>, but I'll mention right here that if you have a reduction function and need a reducer object instead, you can pass your function to <code>toReducer</code>. That little utility will take a function and return an object with all three of the protocol function properties on it.
+  </p>
+  <p>
+    In fact, that's how we made <code>transduce</code> work just fine with passing a reducer function to it.
   </p>
 </section>
 
@@ -270,6 +220,6 @@
   <ul>
     <li><a href="#manual/basic/more-transduction" title="More transduction"><span class="fa fa-caret-left"></span></a></li>
     <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
-    <li><a href="#manual/advanced/protocols" title="Protocols and support for other collections"><span class="fa fa-caret-right"></span></a></li>
+    <li><a href="#manual/advanced/interaction" title="Interaction with other libraries"><span class="fa fa-caret-right"></span></a></li>
   </ul>
 </nav>

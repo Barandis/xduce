@@ -2,14 +2,106 @@
   <ul>
     <li><a href="#manual/advanced/protocols" title="Protocols and support for other collections"><span class="fa fa-caret-left"></span></a></li>
     <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
-    <li><a href="#manual/advanced/interaction" title="Interaction with other libraries"><span class="fa fa-caret-right"></span></a></li>
+    <li><a href="#manual/advanced/authoring" title="Writing your own transducers"><span class="fa fa-caret-right"></span></a></li>
   </ul>
 </nav>
 
 <section>
   <h1>Interaction with other libraries</h1>
   <p>
+    Transduction doesn't happen in a vacuum. It isn't only proper collections that can benefit from the idea of flexible, efficient transformations &mdash; streams, channels, pipes, and any number of other constructs where data moves from one place to another. Aside from that, transduction is a specialized form of reduction, and reduction happens everywhere (whether you realize it or not).
+  </p>
+  <p>
+    So it would be useful if our little transducer library could work in other contexts easily. Fortunately, this turns out to be the case, sometimes with facilities provided by xduce, sometimes with facilities provided by other libraries.
+  </p>
+</section>
 
+<section>
+  <h2>Working with other reductions</h2>
+  <p>
+    Transducers, as we've seen, are chains of reducers, many of which might be making some transformations of the data running through them. It would make sense that we could provide these reducers as reducer functions for <em>other</em> <code>reduce</code> functions.
+  </p>
+  <p>
+    Fortunately we can, with the <code>toFunction</code> function. This takes a transducer (which can be a composed transducer) and a reducer the same way that <code>transduce</code> does, and it returns a stock-normal reducer function. That function can be used with anything that requires a reducer function, including pretty much every <code>reduce</code> function, including the built-in JavaScript one.
+  </p>
+  <pre><code class="javascript">
+    const xform = compose(map(x => x * x), filter(x => x > 10), take(3));
+    const reducer = toReducer([]);   // provides a reducer for arrays
+
+    [1, 2, 3, 4, 5, 6, 7, 8].reduce(toFunction(xform, reducer), []);
+    // -> [16, 25, 36]
+  </code></pre>
+  <p>
+    Since <code>toFunction</code> does in fact produce a regular, universally recognized reducer function, it can also be used with third-party libraries that use reducer functions. Here's the same example with Lodash.
+  </p>
+  <pre><code class="javascript">
+    const xform = compose(map(x => x * x), filter(x => x > 10), take(3));
+    const reducer = toReducer([]);   // provides a reducer for arrays
+
+    _.reduce([1, 2, 3, 4, 5, 6, 7, 8], toFunction(xform, reducer), []);
+    // -> [16, 25, 36]
+  </code></pre>
+  <p>
+    In the examples above, a reducible object (in this case, an empty array) is passed to <code>toFunction</code>, and it figured out how to create a reducer function from that. This will work on any kind of collection that has xduce support, including both built-in support and addition through protocols. However, <code>toFunction</code> can also take a regular reducer function, which it will similarly splice to the transformer and return a reducer function suitable for use with other libraries.
+  </p>
+  <pre><code class="javascript">
+    const xform = compose(map(x => x * x), filter(x => x > 10), take(3));
+    const reducer = (acc, value) => {
+      acc.push(value);
+      return acc;
+    };
+
+    [1, 2, 3, 4, 5, 6, 7, 8].reduce(toFunction(xform, reducer), []);
+    // -> [16, 25, 36]
+  </code></pre>
+  <p>
+    There are obviously plusses and minuses to doing things this way. The major minus is that we can't do anything about regular list functions' (like <code>Array.prototype.reduce</code>) reliance on collection types. There's nothing that this reducer function can do to make <code>Array.prototype.reduce</code> return anything but another array. On the plus side, the reducer function that <code>toFunction</code> creates does work the same as any composed transducer in xduce in that it does not create the intermediate collections between each function in the composition. Even if you have to use another library's <code>reduce</code> function, using transducers and <code>toFunction</code> in place of a regular reducer function does have benefits.
+  </p>
+</section>
+
+<section>
+  <h2>Working with channels</h2>
+  <p>
+    Xduce started as a library to provide transducers specifically for a CSP library that I was working on, <a href="https://barandis.github.io/cispy" target="_blank">Cispy</a>. It would make sense then that xduce transducers work well with cispy channels.
+  </p>
+  <p>
+    Channels are communication pipelines where one process (represented typically by an async function) can put a value on the channel and another can take it off. There are compelling reasons for wanting to manipulate this data that's on the channel. For instance, one process might drop every UI event into a channel while a different process is only interested in the click events. Having a way to filter out the uninteresting events simplifies coding. (This is in large part the basis of functional reactive programming.)
+  </p>
+  <p>
+    Channels are not like collections though. They don't have a fixed length and their values are not necessarily available on demand. For a channel loaded with UI events, for instance, the code has no way of telling when that next value is going to be available. It depends on when the user performs an action.
+  </p>
+  <p>
+    Because of this, we can't just put our four protocol functions on a channel object and have it be ready for transducers. How would you write a step function if you didn't even know whether the data would be available when the step function was called? Instead, there is specific support in cispy channels for transducers. Case in point:
+  </p>
+  <pre><code class="javascript">
+    const { chan, go, put, take } = cispy;
+    const { map } = xduce.transducers;
+
+    const ch = chan(1, map(x => x + 1));
+
+    go(async () => {
+      await put(ch, 1);
+      await put(ch, 5);
+    });
+
+    go(async () => {
+      const first  = await take(ch);   // first = 2
+      const second = await take(ch);   // second = 6
+    });
+  </code></pre>
+  <p>
+    The <code>map</code> transducer that is given to the <code>chan</code> function ensures that every value put onto the channel has one added to it when it's taken off the channel. Each of the transducers provided by xduce is usable in cispy in this manner.
+  </p>
+  <p>
+    The particular protocol names in xduce were chosen because of a discussion between some other CSP library writers from some years ago. This choice was made to hopefully make xduce transducers usable with those libraries as well. However, many of them have stopped being maintained and, for example, don't use symbols, so I regard this as a best-effort scenario on my part. If these transducers work with those libraries then great, but if they don't support should not be expected.
+  </p>
+  <aside>
+    <p>
+      That being said, it would not be hard to overcome this symbol/string hurdle if you're so inclined. The xduce source code contains a file called <code>protocol.js</code>, and near the top of that file there is a definition for a constant called <code>USE_SYMBOLS</code>. If someone were to clone xduce from Github, change the value of this variable to <code>false</code>, and rebuild it, the resulting code would use strings for protocol names, even if symbols were available in the environment.
+    </p>
+  </aside>
+  <p>
+    That's pretty much all there is to know about transducers and how to use them. There is but one topic that we have not covered yet: how to write your own transducers.
   </p>
 </section>
 
@@ -17,6 +109,6 @@
   <ul>
     <li><a href="#manual/advanced/protocols" title="Protocols and support for other collections"><span class="fa fa-caret-left"></span></a></li>
     <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
-    <li><a href="#manual/advanced/interaction" title="Interaction with other libraries"><span class="fa fa-caret-right"></span></a></li>
+    <li><a href="#manual/advanced/authoring" title="Writing your own transducers"><span class="fa fa-caret-right"></span></a></li>
   </ul>
 </nav>

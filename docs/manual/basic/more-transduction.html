@@ -9,19 +9,14 @@
 <section>
   <h1>More transduction</h1>
   <p>
-    Back on <a href="#manual/basic/transduction">the first page of this section</a>, we saw how to use
-    <code>transduce</code>, <code>into</code>, <code>sequence</code>, and transducer shortcuts to perform transduction.
-    Now that we've seen all of the transducers <em>and</em> all of the built-in support for collections, we can look
-    at a few other transduction functions that haven't been mentioned yet.
+    Back on <a href="#manual/basic/transduction">the first page of this section</a>, we saw how to use <code>transduce</code>, <code>into</code>, <code>sequence</code>, and transducer shortcuts to perform transduction. Now that we've seen all of the transducers <em>and</em> all of the built-in support for collections, we can look at a few other transduction functions that haven't been mentioned yet.
   </p>
 </section>
 
 <section>
   <h2>High level</h2>
   <p>
-    There is one function for each kind of output supported natively by xduce. These are all like <code>sequence</code>
-    except that the output is a specific collection type, rather than being whatever the input collection type is. Let's
-    look at them.
+    There is one function for each kind of output supported natively by xduce. These are all like <code>sequence</code> except that the output is a specific collection type, rather than being whatever the input collection type is. Let's look at them.
   </p>
 
   <section>
@@ -39,9 +34,7 @@
   <section>
     <h3><code>asObject</code></h3>
     <p>
-      This function always produces an object, whatever the input. If the input wasn't an object &mdash; meaning there
-      are no keys in the input collection &mdash; then keys will be created which are string representations of the
-      index of that element.
+      This function always produces an object, whatever the input. If the input wasn't an object &mdash; meaning there are no keys in the input collection &mdash; then keys will be created which are string representations of the index of that element.
     </p>
     <pre><code class="javascript">
       const vowel = x => 'aeiou'.includes(x);
@@ -53,9 +46,7 @@
   <section>
     <h3><code>asString</code></h3>
     <p>
-      This function always produces a string. This is relatively straightforward, but it should be noted that it
-      doesn't work well with object inputs. Objects have two pieces of information to encode &mdash; the key and the
-      value &mdash; and it's difficult to come up with a general and useful way to encode them into a string.
+      This function always produces a string. This is relatively straightforward, but it should be noted that it doesn't work well with object inputs. Objects have two pieces of information to encode &mdash; the key and the value &mdash; and it's difficult to come up with a general and useful way to encode them into a string.
     </p>
     <pre><code class="javascript">
       asString([1, 2, 3, 4, 5], map(x => x + 1));
@@ -66,10 +57,7 @@
   <section>
     <h3><code>asIterator</code></h3>
     <p>
-      Produces an iterator for output, whatever the kind of input. This function is arguably the most important of the
-      four, because it's the only one that can't be replicated by <code>into</code>. It's also the only way of
-      producing an iterator out of another type of input short of using <code>iterator</code> to turn the input into
-      an iterator directly.
+      Produces an iterator for output, whatever the kind of input. This function is arguably the most important of the four, because it's the only one that can't be replicated by <code>into</code>. It's also the only way of producing an iterator out of another type of input short of using <code>iterator</code> to turn the input into an iterator directly.
     </p>
     <pre><code class="javascript">
       const result = asIterator([1, 2, 3, 4, 5], map(x => x + 1));
@@ -86,34 +74,22 @@
 <section>
   <h2>The lowest level: <code>reduce</code> and <code>toReducer</code></h2>
   <p><em>
-    (This section deals with a low-level function that seldom sees actual use outside of the library itself. You can
-    feel free to skip this section, or to not feel bad if you read it and don't quite understand why it might be
-    useful. Anything that's important in this section will be covered later, so you won't miss anything.)
+    (This section deals with a low-level function that seldom sees actual use outside of the library itself. You can feel free to skip this section, or to not feel bad if you read it and don't quite understand why it might be useful. Anything that's important in this section will be covered later, so you won't miss anything.)
   </em></p>
   <p>
-    Ultimately, all transduction boils down to reduction, and xduce does provide a <code>reduce</code> function. As you
-    might expect by now, it takes a collection, a reducer, and an initial value. But here's a little secret, something
-    worth revealing now that we're at the lowest level of transduction: xduce doesn't really deal with reducer
-    <em>functions</em>. Instead, it works with reducer <em>objects</em>. The reason for this will be made clear later
-    when we talk about protocols and supporting arbitrary collection types, but for the moment, let it suffice that
-    we need a way to make a reducer object that <code>reduce</code> will understand.
+    Ultimately, all transduction boils down to reduction, and xduce does provide a <code>reduce</code> function. As you might expect by now, it takes a collection, a reducer, and an initial value. But here's a little secret, something worth revealing now that we're at the lowest level of transduction: xduce doesn't really deal with reducer <em>functions</em>. Instead, it works with reducer <em>objects</em>. The reason for this will be made clear later when we talk about protocols and supporting arbitrary collection types, but for the moment, let it suffice that we need a way to make a reducer object that <code>reduce</code> will understand.
   </p>
   <aside>
     <p>
-      Why is this just coming up now? Mostly because the only other function that we've seen that uses a reducer,
-      <code>transduce</code>, will automatically create a reducer object out of a reducer function if that's what you
-      provide it. <code>reduce</code> remains low-level though and does no such thing.
+      Why is this just coming up now? Mostly because the only other function that we've seen that uses a reducer, <code>transduce</code>, will automatically create a reducer object out of a reducer function if that's what you provide it. <code>reduce</code> remains low-level though and does no such thing.
     </p>
   </aside>
   <p>
-    It so happens that there is a function, <code>toReducer</code>, that can turn a reducer function into a reducer
-    object. Not only that, it can create a reducer object for arrays, objects, or strings if you provide one of those
-    instead of a function.
+    It so happens that there is a function, <code>toReducer</code>, that can turn a reducer function into a reducer object. Not only that, it can create a reducer object for arrays, objects, or strings if you provide one of those instead of a function.
   </p>
   <aside>
     <p>
-      It can also create a reducer object for an arbitrary collection that has been made to support transduction, but
-      again, we'll talk about that when we talk about supporting other collection types.
+      It can also create a reducer object for an arbitrary collection that has been made to support transduction, but again, we'll talk about that when we talk about supporting other collection types.
     </p>
   </aside>
   <p>
@@ -124,20 +100,13 @@
     // -> 15
   </code></pre>
   <p>
-    So why, on a page about transduction, are we spending so much time on a function that does simple
-    <em>re</em>duction? Because transduction is really nothing more than reduction, except with the ability to transform
-    the reducer in a way to get the results you want.
+    So why, on a page about transduction, are we spending so much time on a function that does simple <em>re</em>duction? Because transduction is really nothing more than reduction, except with the ability to transform the reducer in a way to get the results you want.
   </p>
   <p>
-    In fact, the transducers that xduce provides, when called without the shortcutting input collection, produce
-    functions that take reducer objects and return reducer objects. Since they return reducer objects, those return
-    values can be sent directly to <code>reduce</code>.
+    In fact, the transducers that xduce provides, when called without the shortcutting input collection, produce functions that take reducer objects and return reducer objects. Since they return reducer objects, those return values can be sent directly to <code>reduce</code>.
   </p>
   <p>
-    Of course, this isn't useful in most situations. After all, whether it returns a reducer or not, <code>map</code>
-    only knows how to map values, not how to produce an output collection. But since each of the transducers produce
-    functions that <em>take</em> reducers as well as return them, we can pass a reducer object to this function to
-    produce a composed reducer that knows both how to map values and how to produce a collection from them.
+    Of course, this isn't useful in most situations. After all, whether it returns a reducer or not, <code>map</code> only knows how to map values, not how to produce an output collection. But since each of the transducers produce functions that <em>take</em> reducers as well as return them, we can pass a reducer object to this function to produce a composed reducer that knows both how to map values and how to produce a collection from them.
   </p>
   <pre><code class="javascript">
     const reducer = toReducer([]);  // this is a reducer that knows how to make an array
@@ -146,16 +115,10 @@
     // -> [2, 3, 4, 5, 6]
   </code></pre>
   <p>
-    Here, we've gotten the functon that <code>map</code> produces (called <code>xform</code>) and passed to it an
-    array reduction function (called <code>reducer</code>). The result is another reducer, one that both does the
-    mapping and creates the output array, that we duly pass into <code>reduce</code>. This is exactly how
-    <code>transduce</code> operates, in fact &mdash; it takes the transducer and reducer that it is sent, combines
-    them, and sends them to <code>reduce</code>.
+    Here, we've gotten the functon that <code>map</code> produces (called <code>xform</code>) and passed to it an array reduction function (called <code>reducer</code>). The result is another reducer, one that both does the mapping and creates the output array, that we duly pass into <code>reduce</code>. This is exactly how <code>transduce</code> operates, in fact &mdash; it takes the transducer and reducer that it is sent, combines them, and sends them to <code>reduce</code>.
   </p>
   <p>
-    This is pretty low-level stuff, and seldom should there be a time when it would actually be needed. If you don't
-    quite understand what's going on with this reduction business, you're probably not missing much. But the facility
-    is there if it's needed.
+    This is pretty low-level stuff, and seldom should there be a time when it would actually be needed. If you don't quite understand what's going on with this reduction business, you're probably not missing much. But the facility is there if it's needed.
   </p>
 </section>
 
