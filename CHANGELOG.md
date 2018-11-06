@@ -2,7 +2,7 @@
 
 All notable changes to the library will be documented in this file.
 
-## [unreleased]
+## [1.0.0] 2018-11-06
 ### Added
 - Documentation. Lots of documentation.
 
@@ -12,7 +12,6 @@ All notable changes to the library will be documented in this file.
 - Changed the names of transduction protocol properties to use symbols insteaed of strings, as long as symbols are available in the environment where the library is being used. This has no effect on the operation of the library, but it could affect the way it interfaces with other libraries (older CSP libraries, for instance, expect string property names).
 - Changed some internal naming conventions. The terminology around tranducers is a bit subtle, but I have an idea about how I want to go about that now. This does not affect any part of the public API.
 - Changed the way distribution is done. The files in `dist` are transpiled ES5. The default import will just go into the source code, using the Node-friendly ES2015 of the source.
-- Letting semantic-release handle the version numbers. That's gonna push this one to 1.0 because of some breaking changes with the distribution. It makes this changelog less necessary too, since it should create release notes.
 
 ## [0.8.2] 2017-03-16
 ### Added
