@@ -1,0 +1,291 @@
+<nav>
+  <ul>
+    <li><a href="#manual/basic/composition" title="Composing transducers"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/more-transduction" title="More transduction"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>Objects and iterators</h1>
+  <p>
+    We've seen a lot of examples of transducing arrays so far, and quite a few of strings. Xduce handles both of these kinds natively. What we have <em>not</em> seen are the other two types that it handles natively: objects and iterators.
+  </p>
+  <p>
+    The reason we haven't seen them yet is because they're not quite as straightforward; objects are not generally considered iterable, which would make them unusuable with transducers, and iterators have their own special considerations such as infinite series and lack of a literal form. Xduce has some special facilities to deal with both of these types and make them nearly as natural to work with as arrays and strings.
+  </p>
+</section>
+
+<section>
+  <h2>Objects</h2>
+  <p>
+    Even in ES2015, objects are not generally iterable. They do not implement the iterator protocols, and therefore they cannot be used in <code>for...of</code> statements (they can use <code>for...in</code>, which was created specifically for objects). However, it's frequently useful to be able to process objects in the same way that we can with arrays.
+  </p>
+  <p>
+    There are two questions that need to be answered to implement iteration over objects. What form do the iterated units take (the "pieces" of the object)? And what order do they come in?
+  </p>
+
+  <section>
+    <h3>Iterated form</h3>
+    <p>
+      There are a couple of obvious answers to the question of the form of the pieces of an object. One is a two-element array, with the first element being the key and the second element being the value. The second is as single-property objects, one for each key-value pair.
+    </p>
+    <p>
+      As it turns out, there are problems with both of these approaches. Arrays are fine for iterating, but they suffer during the reduction process. Since transducers are capable of creating an output collection that is different from the input collection, how does xduce know whether to turn a two-element array into an object property, or to keep it as a two-element array? There's really not a way to tell without including some sort of protocol property to differentiate them, but then it would be on the transducer user to add that prototype property to the transformation functions, and that's not really feasible.
+    </p>
+    <p>
+      The problem with single-property objects is a syntactic problem. It's too difficult to gain access to a key and value when you don't already know the name of the key. To write a transformation function that works with these single-property objects, you have to resort to things like this:
+    </p>
+    <pre><code class="javascript">
+      function add1ToValue(obj) {
+        const k = Object.keys(obj)[0];
+        const v = obj[k];
+        return { [k]: v + 1 };
+      }
+
+      sequence({ a: 1, b: 2 }, map(add1ToValue));
+      // -> { a: 2, b: 3 }
+    </code></pre>
+    <p>
+      Two thirds of the function is dedicated to just getting the key and value, and it's not particularly elegant.
+    </p>
+    <p>
+      Xduce uses a third way. The object is broken into <em>two</em>-property objects where the two properties always have the same names: <code>k</code> and <code>v</code>, for the key and the value, respectively. This is especially suitable for ES2015 parameter destructuring, which gets rid of two of the three lines of code in the above function body.
+    </p>
+    <pre><code class="javascript">
+      function add1ToValue({k, v}) {
+        return { k, v: v + 1 };
+      }
+
+      sequence({ a: 1, b: 2 }, map(add1ToValue));
+      // -> { a: 2, b: 3 }
+    </code></pre>
+    <p>
+      While the iteration happens in this <em>kv-form</em>, the output of the transformer function doesn't <em>have</em> to be in kv-form. It can be in regular key-value form as well, so the following function does the same thing.
+    </p>
+    <pre><code class="javascript">
+      function add1ToValue({k, v}) {
+        return { [k]: v + 1 };
+      }
+
+      sequence({ a: 1, b: 2 }, map(add1ToValue));
+      // -> { a: 2, b: 3 }
+    </code></pre>
+    <p>
+      The rules are simple about what one of these transformer functions must return when working with objects. It must return either
+    </p>
+    <ul>
+      <li>An object with one property, representing one of the properties of the output object</li>
+      <li>An object with exactly two properties, which must be named exactly <code>k</code> and <code>v</code></li>
+    </ul>
+    <p>
+      Xduce recognizes either of these and does the right thing with them. The choice is yours.
+    </p>
+  </section>
+
+  <section>
+    <h3>Iteration order</h3>
+    <p>
+      By default, objects are iterated in the same order as a <code>for...in</code> loop would iterate over them. This happens to be in the order that the <em>property was added to the object</em>. Yes, it's time-based. Most of the time this will do just fine; there are lots of applications where the actual order of iteration over object properties doesn't matter.
+    </p>
+    <p>
+      If the order <em>does</em> matter, it can be specified. But doing that requires the use of the <code>iterator</code> function, which will be discussed after we discuss iterators themselves.
+    </p>
+  </section>
+</section>
+
+<section>
+  <h2>Iterators</h2>
+  <p>
+    Iterators in JavaScript are objects that satisfy the
+    <a
+    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#The_iterator_protocol" target="_blank">iterator protocol</a>. Basically, they must implement a <code>next</code> function, and that <code>next</code> function must produce an object on each call with a <code>done</code> property and a <code>value</code> property.
+  </p>
+  <p>
+    Xduce recognizes objects with <code>next</code> functions, so that's one way to create an iterator. In ES2015 there is a better way though: the <em>generator</em>. A generator is produced by calling a <em>generator function</em>, which uses the <code>function*</code> (with the star) keyword. Each time the function is called, it produces a new generator, and each generator <em>is</em> an iterator.
+  </p>
+  <p>
+    Iterators are recognized fully by xduce, and if you feed an iterator to <code>sequence</code>, you will get a new iterator in return. However, much like with objects, there are a couple of unique characteristics that mean that xduce has to handle them in special ways: they cannot have an initial value, and they can be infinite.
+  </p>
+
+  <section>
+    <h3>No initial value</h3>
+    <p>
+      It's plenty easy to use iterators in transduction, in particular circumstances. Here's an iterator produced by a generator function that iterates over the numbers from 1 to 5, transduced into another iterator.
+    </p>
+    <pre><code class="javascript">
+      function* five() {
+        for (let i = 1; i &lt;= 5; ++i) {
+          yield i;
+        }
+      }
+
+      const result = sequence(five(), map(x => x + 1));
+      result.next();   // -> { value: 2, done: false }
+      result.next();   // -> { value: 3, done: false }
+      result.next();   // -> { value: 4, done: false }
+      result.next();   // -> { value: 5, done: false }
+      result.next();   // -> { value: 6, done: false }
+      result.next();   // -> { done: true }
+    </code></pre>
+    <p>
+      Iterator in, iterator out. The problem is that out of the functions that we've learned about so far, <code>sequence</code> is the only one that can handle an iterator as output. The reason? Iterators do not have an initial value, so you cannot use <code>into</code> and <code>transduce</code>, both of which require an initial value. In fact, <code>sequence</code> even uses an initial value &mdash; it just gets it from the input collection &mdash; but it has been coded specially to recognize iterator input and provide iterator output.
+    </p>
+    <aside>
+      <p>
+        Iterators do not have an initial value because they are not built by reduction, the way other collections are. Each time you transduce into an array, a string, or an object, <em>every</em> element, character, or property will be completely calculated and added to the output collection before that collection is returned. That's what reduction does.
+      </p>
+      <p>
+        Iterators are different. When an iterator is returned, <em>none</em> of its values have been calculated. The first value isn't calculated until <code>next</code> is called, and then the second value is not calculated until <code>next</code> is called again, and so on. This is akin to <em>lazy evaluation</em>, where calculation of a value is deferred until it's actually necessary to know what that value is. And since it isn't calculated when the iterator is constructed, the idea of an "initial collection" to add all of the elements to is non-sensical.
+      </p>
+    </aside>
+  </section>
+
+  <section>
+    <h3>Infinite iterators</h3>
+    <p>
+      Because iterators are lazy &mdash; their values are not calculated until <code>next</code> is called enough times &mdash; they can have a special property that other JavaScript collections cannot: they can be infinite.
+    </p>
+    <pre><code class="javascript">
+      function* naturals() {
+        let i = 1;
+        while (true) {
+          yield i++;
+        }
+      }
+    </code></pre>
+    <p>
+      The iterators that this function produces will loop forever, returning a new number each time that <code>next</code> is called on them. Fortunately, xduce can produce iterators as well, which means that we can still work with these infinite iterators.
+    </p>
+    <pre><code class="javascript">
+      const result = sequence(naturals(), map(x => x + 1));
+      result.next();   // -> { value: 2, done: false }
+      result.next();   // -> { value: 3, done: false }
+      result.next();   // -> { value: 4, done: false }
+      result.next();   // -> { value: 5, done: false }
+      result.next();   // -> { value: 6, done: false }
+      result.next();   // -> { value: 7, done: false }
+      result.next();   // -> { value: 8, done: false }
+      // and so on, as long as we want
+    </code></pre>
+    <p>
+      But trouble will arise if you use an inifinte iterator for an input but have some other sort of collection for an output.
+    </p>
+    <pre><code class="javascript">
+      into([], naturals(), map(x => x + 1));
+      // This will not return a value, instead it will
+      // overflow the stack and throw an error
+    </code></pre>
+    <p>
+      <code>map</code> will happily continue transforming the values that the infinite iterator provides, over and over, until the memory runs out. It isn't well-suited to working with infinite series. But there are two transducers that work fine with infinities: <code>take</code> and <code>takeWhile</code>.
+    </p>
+    <pre><code class="javascript">
+      into([], naturals(), take(3));
+      // -> [1, 2, 3]
+    </code></pre>
+    <p>
+      <code>take</code> stops the reduction operation entirely once it has collected the number of elements specified (in this case, three). And it does it in such a way that even if it's composed after another transducer that doesn't deal so well with infinite iterators.
+    </p>
+    <pre><code class="javascript">
+      const xform = compose(map(x => x + 1), take(3));
+      into([], naturals(), xform);
+      // -> [2, 3, 4]
+    </code></pre>
+    <p>
+      Even though the first transducer that this infinite series is fed to is <code>map</code>, which we have already seen blows up when presented with infinities, the <code>take</code> transducer still manages to cut off the operation once it's had its fill.
+    </p>
+  </section>
+</section>
+
+<section>
+  <h2>Creating iterators</h2>
+  <p>
+    Internally, iteration is done by transforming the input collection into an iterator (if it isn't one already). This is a good way to be able to process every collection in the same way, no matter what type it is.
+  </p>
+  <p>
+    There are situations where you may want to provide your own iterator to the transducer functions. This is easily done with the <code>iterator</code> function, which simply takes an iterable collection as an input and returns an iterator as an output.
+  </p>
+  <pre><code class="javascript">
+    const iter = iterator([1, 2, 3, 4, 5]);
+    iter.next();   // -> { value: 1, done: false }
+    iter.next();   // -> { value: 2, done: false }
+    iter.next();   // -> { value: 3, done: false }
+    iter.next();   // -> { value: 4, done: false }
+    iter.next();   // -> { value: 5, done: false }
+    iter.next();   // -> { done: true }
+  </code></pre>
+  <p>
+    If xduce already transforms input collections into iterators, why would we want to do it ourselves? There are several reasons, but three reasons stand out as the most common.
+  </p>
+  <p>
+    One is that you simply want an iterator. The iterator that is returned from <code>iterator</code> isn't particular to xduce in any way; it's just an iterator. It can be used anywhere an iterator would normally be used.
+  </p>
+  <p>
+    The second is that you don't actually have an iterator, but you have a function that can be run multiple times to produce a series of values. <code>iterator</code> is capable of turning a function into an iterator by running the function once each time <code>next</code> is called. On each invocation, the function is sent the index (the number of times the function has been run) and the return value of the <em>last</em> time the function was run. The function is free to use or ignore these values as it sees fit.
+  </p>
+  <pre><code class="javascript">
+    const constIter = iterator(() => 6); // Bert's favorite number
+    constIter.next();   // { value: 6, done: false }
+    constIter.next();   // { value: 6, done: false }
+    // This will go on forever, as long as `next` keeps getting called
+
+    const indexIter = iterator(x => x * x);
+    indexIter.next();   // { value: 0, done: false }
+    indexIter.next();   // { value: 1, done: false }
+    indexIter.next();   // { value: 4, done: false }
+    indexIter.next();   // { value: 9, done: false }
+    // Again, this will go on forever, or until the numbers get to big JS to handle
+
+    // Using default value on `last` parameter for initial value
+    const lastIter = iterator((index, last = 1) => last * (index + 1));  // Factorial
+    lastIter.next();    // { value: 1, done: false }
+    lastIter.next();    // { value: 2, done: false }
+    lastIter.next();    // { value: 6, done: false }
+    lastIter.next();    // { value: 24, done: false }
+    // Again, forever, though factorials get big quickly
+
+    // This iterator will terminate when the function returns `undefined`
+    const stopIter = iterator(x => x &lt; 2 ? x : undefined);
+    stopIter.next();    // { value: 0, done: false }
+    stopIter.next();    // { value: 1, done: false }
+    stopIter.next();    // { done: true }
+  </code></pre>
+  <p>
+    Finally, <code>iterator</code> can be given a sort function. This applies only to the keys in an object being iterated over, letting the keys be sorted in any possible way. The sort function is the same kind that's expected by <code>Array.prototype.sort</code> &mdash; it takes two arguments and returns a negative number if the first is less than the second, a positive number if the first is greater than the second, or <code>0</code> if the two are equal.
+  </p>
+  <pre><code class="javascript">
+    // alphabetical sort function
+    const sortFn = (a, b) => a &lt; b ? -1 : a > b ? 1 : 0;
+    const result = iterator({ b: 1, a: 2, c: 3 }, sortFn);
+    result.next();   // -> { value: { a: 2 }, done: false }
+    result.next();   // -> { value: { b: 1 }, done: false }
+    result.next();   // -> { value: { c: 3 }, done: false }
+    result.next();   // -> { done: true }
+  </code></pre>
+  <p>
+    Alternately, a boolean third argument can be passed to tell <code>iterator</code> whether to return the individual properties in kv-form (see above). The default is <code>false</code>.
+  </p>
+  <pre><code class="javascript">
+    // alphabetical sort function
+    const sortFn = (a, b) => a &lt; b ? -1 : a > b ? 1 : 0;
+    const result = iterator({ b: 1, a: 2, c: 3 }, sortFn, true);
+    result.next();   // -> { value: { k: 'a', v: 2 }, done: false }
+    result.next();   // -> { value: { k: 'b', v: 1 }, done: false }
+    result.next();   // -> { value: { k: 'c', v: 3 }, done: false }
+    result.next();   // -> { done: true }
+  </code></pre>
+  <p>
+    These final two arguments are ignored if the input is not a plain object.
+  </p>
+  <p>
+    Since transducers are able to produce any sort of output regardless of the type of input, any of these iterators can be used in any transduction function to create any sort of output. So using <code>iterator</code> will let you create an array out of a function, or a sorted iterator out of an object, or any other combination of input and output collection types.
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/basic/composition" title="Composing transducers"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/more-transduction" title="More transduction"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>

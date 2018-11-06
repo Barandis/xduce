@@ -1,0 +1,433 @@
+<nav>
+  <ul>
+    <li><a href="#manual/basic/transduction" title="Basic transduction"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/composition" title="Composing transducers"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>A brief tour of the transducers</h1>
+  <p>
+    Xduce currently offers 21 different transducers. The examples in this manual largely revolve around the two most commonly used ones, <code>map</code> and <code>filter</code>, but they will all be touched upon here.
+  </p>
+  <p>
+    Each of these transducers is available on the main xduce object's <code>transducers</code> property. Assuming that the main object is called <code>xduce</code>, this would mean that <code>map</code> is available as <code>xduce.transducers.map</code>, for instance. Most of the transducer examples below assume you've already taken care of importing the transducer in question, so that code isn't repeated over and over.
+  </p>
+  <p>
+    For more information on any of these, see the <a href="api/index.html">API documentation</a>.
+  </p>
+  <aside>
+    <h2>Nomenclature</h2>
+    <p>
+      If we're being completely accurate, none of these functions are transducers. Actual transducers are functions that take reducers as arguments and return reducers as return values. What all of these functions do is <em>produce</em> proper transducers, which are then typically provided to <code>transduce</code>, et al.
+    </p>
+    <p>
+      Since these produced transducers are seldom used directly, there isn't a lot of chance of ambiguity, so I just use the term "transducer" to refer to these 21 transducer-producing functions. I'll probably hate myself for doing it this way later though.
+    </p>
+  </aside>
+</section>
+
+<section>
+  <h2>Transducer shortcuts</h2>
+  <p>
+    Each of these 21 transducers can be used to provide the transducer argument to the basic transduction functions. This is the normal use of these functions.
+  </p>
+  <pre><code class="javascript">
+    const sequence = xduce.sequence;
+    const map = xduce.transducers.map;
+
+    sequence([1, 2, 3, 4, 5], map(x => x + 1));
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    However, if provided a collection as the first argument, the transducer will perform the entire operation itself. This is termed a <em>transducer shortcut</em>. Behind the scenes, the transducer will call <code>sequence</code> to put together an output collection without you having to call it explicitly. Therefore, this code is for all intents and purposes exactly the same as the above example.
+  </p>
+  <pre><code class="javascript">
+    const map = xduce.transducers.map;
+
+    map([1, 2, 3, 4, 5], x => x + 1);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    The examples all use this shortcut method out of a desire for succinctness, but it's no more or less correct than using <code>sequence</code>.
+  </p>
+</section>
+
+<section>
+  <h2>Functions and contexts</h2>
+  <p>
+    Any transducer that takes a function for a parameter also takes an optional context object. If this object is provided, it will become <code>this</code> inside the function. This context object is never used in the descriptions on this page, though it does appear in the <a href="api/index.html">API documentation</a>.
+  </p>
+  <p>
+    This is not available with ES2015 arrow functions, as there is no way to bind <code>this</code> in one of these functions (<code>this</code> is bound lexically, meaning that it will be whatever <code>this</code> was at the time of the arrow function's definition).
+  </p>
+  <p>
+    This is meant as a convenience. There's no reason you can't bind your own function and pass the bound function directly to the transducer.
+  </p>
+</section>
+
+<section>
+  <h2>Mapping transducers</h2>
+  <p>
+    Mapping transducers pass collection values through a function, filling an output collection with the results. There are two mapping transducers, differing only in how they handle elements that are collections themselves.
+  </p>
+
+  <section>
+    <h3><code>map</code></h3>
+    <p>
+      Your basic mapping transducer, <code>map</code> accepts a function which is applied to each element of the input collection. The return values then become the values in the output collection.
+    </p>
+    <pre><code class="javascript">
+      map([1, 2, 3, 4, 5], x => x + 1);  // -> [2, 3, 4, 5, 6]
+      map('hello', x => x + x + x);      // -> "hhheeellllllooo"
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>flatMap</code></h3>
+    <p>
+      <code>flatMap</code> works almost the same as <code>map</code>, except that the output elements are flattened. In other words, if an output element is a collection, its elements are removed from that collection and made top-level members of the output collection instead.
+    </p>
+    <pre><code class="javascript">
+      flatMap([1, 2, 3, 4, 5], x => [x, x * x]);  // -> [1, 1, 2, 4, 3, 9, 4, 16, 5, 25]
+    </code></pre>
+    <p>
+      If we use <code>map</code> with the same arguments, it's easy to see the difference.
+    </p>
+    <pre><code class="javascript">
+      map([1, 2, 3, 4, 5], x => [x, x * x]);  // -> [[1, 1], [2, 4], [3, 9], [4, 16], [5, 25]]
+    </code></pre>
+    <p>
+      Only the top-level collections are flattened. If a top-level collection contains collections for elements, those collections will <em>not</em> be flattened.
+    </p>
+    <p>
+      <code>flatMap</code> is easy to define as a composition of <code>map</code> and <code>flatten</code>. However, it's useful in enough different scenarios that it justifies being a part of the base library.
+    </p>
+  </section>
+</section>
+
+<section>
+  <h2>Filtering transducers</h2>
+  <p>
+    Filtering transducers take a collection and decide whether to keep or reject each element. Those that are kept appear in the output collection; those that are rejected do not.
+  </p>
+
+  <section>
+    <h3><code>filter</code></h3>
+    <p>
+      The most basic of filtering transducers, <code>filter</code> takes a function and applies it to each element of the input collection. Those that return <code>true</code> are kept, while those that return <code>false</code> will not appear in the output collection.
+    </p>
+    <pre><code class="javascript">
+      const even = x => x % 2 === 0;
+      const vowel = x => 'aeiou'.includes(x);
+
+      filter([1, 2, 3, 4, 5], even);   // -> [2, 4]
+      filter('hello world', vowel);    // -> "eoo"
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>reject</code></h3>
+    <p>
+      <code>reject</code> is exactly like <code>filter</code>, except opposite. Again, the function is applied to each element of the input collection, but this time the only ones that appear in the output collection are those for which the function returns <code>false</code>.
+    </p>
+    <pre><code class="javascript">
+      const even = x => x % 2 === 0;
+      const vowel = x => 'aeiou'.includes(x);
+
+      reject([1, 2, 3, 4, 5], even);   // -> [1, 3, 5]
+      reject('hello world', vowel);    // -> "hll wrld"
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>compact</code></h3>
+    <p>
+      This transducer removes any "falsey" values from the input collection. There are five of these "falsey" values in JavaScript: <code>false</code>, <code>null</code>, <code>undefined</code>, <code>0</code>, and <code>""</code>.
+    </p>
+    <p>
+      Unlike the other filtering transducers, this one doesn't take a function. The function is already built in.
+    </p>
+    <pre><code class="javascript">
+      compact([0, 1, 2, false, 3, null, 4, undefined, '', 5]);  // -> [1, 2, 3, 4, 5]
+    </code></pre>
+  </section>
+</section>
+
+<section>
+  <h2>Taking transducers</h2>
+  <p>
+    Taking transducers return a certain set of elements from the input collection, and no more.
+  </p>
+
+  <section>
+    <h3><code>take</code></h3>
+    <p>
+      This is a simple transducer: it takes a number <em>n</em>, and it returns a collection with the first <em>n</em> elements from the input collection in it.
+    </p>
+    <pre><code class="javascript">
+      take([1, 2, 3, 4, 5], 3);  // -> [1, 2, 3]
+      take('hello world', 7);    // -> "hello w"
+    </code></pre>
+    <p>
+      <code>take</code> is a very useful transducer when working with infinite iterators; they can take one as an input and provide a finite iterator as output. That will be discussed later when we talk about iterators.
+    </p>
+  </section>
+
+  <section>
+    <h3><code>takeWhile</code></h3>
+    <p>
+      <code>takeWhile</code> works like <code>take</code> in that it returns the first elements of the input collection. But instead of returning a set number, it takes a function and returns input elements <em>until</em> the first element that returns <code>false</code> when the function is invoked with it.
+    </p>
+    <pre><code class="javascript">
+      const even = x => x % 2 === 0;
+
+      takeWhile([2, 4, 6, 1, 2, 3, 4, 5], even);  // -> [2, 4, 6]
+    </code></pre>
+    <p>
+      This transducer is very similar to <code>filter</code>, except that once an element returns <code>false</code> from its function, it will return no more elements, even ones that would return <code>true</code> from that function. Compare a call to <code>filter</code> with the same arguments.
+    </p>
+    <pre><code class="javascript">
+      filter([2, 4, 6, 1, 2, 3, 4, 5], even);     // -> [2, 4, 6, 2, 4]
+    </code></pre>
+    <p>
+      Like <code>take</code>, since there comes a point where the transducer returns no more elements, <code>takeWhile</code> can take an infinite iterator and return a finite one.
+    </p>
+  </section>
+
+  <section>
+    <h3><code>takeNth</code></h3>
+    <p>
+      This one's a little different &mdash; it takes a number <em>n</em> and then returns the first element of the input collection and every <em>n</em>th one after that.
+    </p>
+    <pre><code class="javascript">
+      takeNth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3);  // -> [1, 4, 7, 10]
+      takeNth('hello world', 2);                    // -> "hlowrd"
+    </code></pre>
+    <p>
+      Unlike the other taking transducers, this one will continue to return elements as long as the input collection continues, so it will <em>not</em> return a finite iterator if presented with an infinite one.
+    </p>
+  </section>
+</section>
+
+<section>
+  <h2>Dropping transducers</h2>
+  <p>
+    Dropping transducers are the inverse of taking transducers: they initially reject elements from the input collection until a condition is met, and then all of the rest are returned.
+  </p>
+
+  <section>
+    <h3><code>drop</code></h3>
+    <p>
+      The inverse of <code>take</code>, this transducer removes the first <em>n</em> elements from the input collection and return the rest.
+    </p>
+    <pre><code class="javascript">
+      drop([1, 2, 3, 4, 5], 3);  // -> [4, 5]
+      drop('hello world', 7);    // -> "orld"
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>dropWhile</code></h3>
+    <p>
+      The dropping analogue of <code>takeWhile</code>, this transducer takes a function and rejects all of the input elements until the first one that makes the function return <code>false</code> when invoked with it.
+    </p>
+    <pre><code class="javascript">
+      const even = x => x % 2 === 0;
+
+      dropWhile([2, 4, 6, 1, 2, 3, 4, 5], even);  // -> [1, 2, 3, 4, 5]
+    </code></pre>
+    <p>
+      This isn't too different from <code>reject</code>, except that once a value returns <code>false</code> from the function, <em>no more</em> elements will be removed even if they would also make the function return <code>false</code>. Compare a call to <code>reject</code> with the same arguments.
+    </p>
+    <pre><code class="javascript">
+      reject([2, 4, 6, 1, 2, 3, 4, 5], even);  // -> [1, 3, 5]
+    </code></pre>
+  </section>
+</section>
+
+<section>
+  <h2>Dinstinctness transducers</h2>
+  <p>
+    Distinctness transducers remove repeating elements of an input collection.
+  </p>
+
+  <section>
+    <h3><code>distinct</code></h3>
+    <p>
+      This simple transducer doesn't take any arguments. It merely removes consecutive elements of the same value. Equality is determined using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness" target="_blank">SameValueZero</a>, which is the same as <code>===</code> except that <code>NaN</code> is equal to itself.
+    </p>
+    <pre><code class="javascript">
+      distinct([1, 5, 2, 2, 4, 5, 3, 3, 2]);  // -> [1, 5, 2, 4, 5, 3, 2]
+      distinct('hello world');                // -> "helo world"
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>distinctBy</code></h3>
+    <p>
+      Like <code>distinct</code>, except that it takes a function of one argument that is passed each element in turn. The return values of this function, rather than the elements themselves, are compared for equality, and consecutive equal elements are removed. Again, equality is determined by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness" target="_blank">SameValueZero</a>.
+    </p>
+    <p>
+      The example here removes consecutive even elements and consecutive odd elements.
+    </p>
+    <pre><code class="javascript">
+      const even = x => x % 2 === 0;
+
+      distinctBy([1, 5, 2, 2, 4, 5, 3, 3, 2], even);  // -> [1, 2, 5, 2]
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>distinctWith</code></h3>
+    <p>
+      <code>distinctWith</code> takes configurability one step further, accepting a <em>two</em>-argument function. This function directly determines equality by passing consecutive elements to it. If it returns <code>true</code> then the elements are considered equal and the second one is rejected.
+    </p>
+    <p>
+      The example code here rejects consecutive elements with the same number of digits (called <em>magnitude</em>).
+    </p>
+    <pre><code class="javascript">
+      const magnitude = x => Math.floor(Math.log(x) / Math.LN10 + 0.000000001);
+      const compare = (a, b) => magnitude(a) === magnitude(b);
+
+      distinctWith([17504, 2, 274, 105, 15, 21012, 770, 79239, 2058, 4462], compare);
+      // -> [17504, 2, 274, 15, 21012, 770, 79239, 2058]
+    </code></pre>
+  </section>
+</section>
+
+<section>
+  <h2>Uniqueness transducers</h2>
+  <p>
+    Uniqueness transducers are like distinctness transducers, except that they don't limit themselves to checking consecutive values. A uniqueness transducer will remove duplicate elements even if they are not next to each other.
+  </p>
+  <p>
+    The examples for these transducers use the same arguments as the distinctness transducers above so you can see the difference.
+  </p>
+
+  <section>
+    <h3><code>unique</code></h3>
+    <p>
+      A simple transducer that takes no elements, this removes any equal elements aside from the very first one. Equality is determined by using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness" target="_blank">SameValueZero</a>.
+    </p>
+    <pre><code class="javascript">
+      unique([1, 5, 2, 2, 4, 5, 3, 3, 2]);  // -> [1, 5, 2, 4, 3]
+      unique('hello world');                // -> "helo wrd"
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>uniqueBy</code></h3>
+    <p>
+      Like <code>unique</code>, except that it takes a function of one argument that is passed each element in turn. The return values of this function, rather than the elements themselves, are compared for equality, and duplicate elements are removed. Again, equality is determined by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness" target="_blank">SameValueZero</a>.
+    </p>
+    <pre><code class="javascript">
+      const even = x => x % 2 === 0;
+
+      uniqueBy([1, 5, 2, 2, 4, 5, 3, 3, 2], even);  // -> [1, 2]
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>uniqueWith</code></h3>
+    <p>
+      <code>uniqueWith</code> takes configurability one step further, accepting a <em>two</em>-argument function. This function directly determines equality by passing each pair of elements to it. If it returns <code>true</code> then the elements are considered equal and the second one is rejected.
+    </p>
+    <p>
+      The example code here rejects elements with the same number of digits (called <em>magnitude</em>).
+    </p>
+    <pre><code class="javascript">
+      const magnitude = x => Math.floor(Math.log(x) / Math.LN10 + 0.000000001);
+      const compare = (a, b) => magnitude(a) === magnitude(b);
+
+      uniqueWith([17504, 2, 274, 105, 15, 21012, 770, 79239, 2058, 4462], compare);
+      // -> [17504, 2, 274, 15, 2058]
+    </code></pre>
+  </section>
+</section>
+
+<section>
+  <h2>Chunking transducers</h2>
+  <p>
+    Chunking transducers split their input elements into groups and return those groups. The groups themselves are always arrays, no matter what the type of the output collection around it. This does mean that some output collection types (like strings) don't make a lot of sense to use with these transducers.
+  </p>
+
+  <section>
+    <h3><code>chunk</code></h3>
+    <p>
+      Takes a number <em>n</em> and returns the input collection grouped into arrays of <em>n</em> elements. If there are not enough elements to fill the final grouping, then that array will be shorter than the others.
+    </p>
+    <pre><code class="javascript">
+      chunk([1, 2, 3, 4, 5, 6], 3);  // -> [[1, 2, 3], [4, 5, 6]]
+      chunk([1, 2, 3, 4, 5], 2);     // -> [[1, 2], [3, 4], [5]]
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>chunkBy</code></h3>
+    <p>
+      This transducer takes a function, to which it passes each element of the input collection in turn. If the return value is the same as for the prior element, then that element is put into the same chunk. When the return value changes, a new chunk is started.
+    </p>
+    <p>
+      This example uses <code>chunkBy</code> on an array of the first few fibonacci numbers based on whether they're odd or even.
+    </p>
+    <pre><code class="javascript">
+      const fib = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34];
+      const even = x => x % 2 === 0;
+
+      chunkBy(fib, even);   // -> [[0], [1, 1], [2], [3, 5], [8], [13, 21], [34]]
+    </code></pre>
+  </section>
+</section>
+
+<section>
+  <h2>Miscellaneous transducers</h2>
+  <p>
+    These are the few transducers that really don't fit into any other category.
+  </p>
+
+  <section>
+    <h3><code>identity</code></h3>
+    <p>
+      The <code>identity</code> transducer is the simplest of them all: it simply returns all of the elements from the input collection, unchanged. It is typically used in situations where a transducer needs to be specified but you don't actually want to change anything.
+    </p>
+    <pre><code class="javascript">
+      identity([1, 2, 3, 4, 5]); // -> [1, 2, 3, 4, 5]
+      identity('hello world');   // -> "hello world"
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>flatten</code></h3>
+    <p>
+      This transducer takes any input elements that are collections themselves and flattens them, making their elements into top-level elements. It's like <code>flatMap</code> except without the mapping part.
+    </p>
+    <p>
+      Remember that strings are collections; this explains the flattening behavior of the second example.
+    </p>
+    <pre><code class="javascript">
+      flatten([[1, 2], 3, 4, [5]]);  // -> [1, 2, 3, 4, 5]
+      flatten('hello', 'world');     // -> ["h", "e", "l", "l", "o", "w", "o", "r", "l", "d"]
+    </code></pre>
+  </section>
+
+  <section>
+    <h3><code>repeat</code></h3>
+    <p>
+      Does exactly what it says it does: it repeats each element of the collection <em>n</em> times in the output.
+    </p>
+    <pre><code class="javascript">
+      repeat([1, 2, 3, 4, 5], 2);   // -> [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+      repeat('hello', 3);           // -> "hhheeellllllooo"
+    </code></pre>
+  </section>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/basic/transduction" title="Basic transduction"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/basic/composition" title="Composing transducers"><span class="fa fa-caret-right"></span></a></li>
+  </ul>
+</nav>

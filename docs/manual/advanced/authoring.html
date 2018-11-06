@@ -1,0 +1,178 @@
+<nav>
+  <ul>
+    <li><a href="#manual/advanced/interaction" title="Interaction with other libraries"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>Writing your own transducers</h1>
+  <p>
+    So now you know all there is to know about transducers: what they are, why they're good, how to use them. But what if the transducers supplied by xduce aren't enough? What if there's something special that you want to do that can't be covered by composing a bunch of them together? The answer is to write your own.
+  </p>
+</section>
+
+<section>
+  <h2>What you can (and cannot) create</h2>
+  <p>
+    The first important thing to understand is what is possible with transducers, at least in this library. There are some operations that you might take for granted that it turns out aren't possible to render as a transducer, precisely because transducers are so generalized. Let's look at some of them.
+  </p>
+
+  <section>
+    <h3>Transducers that take or render more than one collection</h3>
+    <p>
+      Transducers are one-to-one. They take one collection and go through it one step at a time, returning one collection. Therefore, operations like <code>zip</code> (which takes multiple collections and turns them into one) and <code>partition</code> (which takes one collection and turns it into several) are not possible.
+    </p>
+    <p>
+      I am not convinced that it <em>has</em> to be this way. My future plans include investigating this to see if there's a way around this restriction, particularly for multiple inputs (multiple outputs may well just be infeasible with this mechanism). For the moment though, it's one collection in, one collection out.
+    </p>
+  </section>
+
+  <section>
+    <h3>Transducers that work from the end</h3>
+    <p>
+      Transducers need to cover every type of collection that could be used with them, and that's where there gets to be a problem with operations that need to know where the end of the collection is. How can you take the last three elements from an infinite iterator? What is the first element in a stream if it's reversed? While these operations make sense for things like arrays and strings, they can't be written to work with other kinds of collections.
+    </p>
+  </section>
+
+  <section>
+    <h3>Transducers that create arbitrary types of collections inside other collections</h3>
+    <p>
+      I spent a lot of time working with this while writing <code>chunk</code>. I was looking for a way to, for instance, create an iterator whose elements were other iterators. There was one technical hurdle after another though, and I eventually settled on declaring that the chunks themselves were going to be arrays, even if those arrays were elements of an iterator.
+    </p>
+    <p>
+      I'm also not convinced that this can't be overcome. I didn't run into anything that made me believe that it would be impossible to have chunks that were arbitrary collections. It's another thing that will be revisited, but for now, your chunks are arrays.
+    </p>
+  </section>
+</section>
+
+<section>
+  <h2>How to write <code>map</code></h2>
+  <p>
+    Now that we have the bad news out of the way, let's look at how a few of the existing transducers are written. We'll start with the most basic of them all, <code>map</code>.
+  </p>
+  <p>
+    It's been mentioned before that a transducer in xduce is a function that returns a reducer <em>object</em>, so to write our own, we will have to start with writing that reducer object. The object has to have three function properties, all named with the reduction protocol names. These functions chain to the functions on the reducer object of the <em>next</em> transducer, all the way to the last object which is the actual reducer that creates the final output.
+  </p>
+  <p>
+    For most transducers, the <code>xduce.protocols.init</code> and <code>xduce.protocols.result</code> functions just chain to the next one. This is because in most cases, the reducer is responsible for both of these operations. The transducer has nothing to do with them, so it just calls the same function in the next transducer.
+  </p>
+  <p>
+    It's the <code>xduce.protocols.step</code> function that's the important one. This is the actual reducer <em>function</em> where each transducer does its work. With that in mind, let's look at the code for the <code>map</code> transducer.
+  </p>
+  <aside>
+    <p>
+      This code is a bit simplified; in the source code this is actually two functions, with one handling the inputs to allow shortcutting and then calling the second one as needed. This rendition skips those details. See the source code if you're interested.
+    </p>
+  </aside>
+  <pre><code class="javascript">
+    // In this code, `p` is an alias for `xduce.protocols`
+    function map(fn) {
+      return xform => {
+        return {
+          [p.init]() {
+            return xform[p.init]();
+          },
+
+          [p.step](acc, input) {
+            return xform[p.step](acc, fn(input));
+          },
+
+          [p.result](value) {
+            return xform[p.result](value);
+          }
+        };
+      }
+    }
+  </code></pre>
+  <p>
+    It's plain to see that the <code>p.init</code> and <code>p.result</code> functions are simply calling the corresponding functions on the next transducer in the chain (named <code>xform</code>). The <code>p.step</code> function is doing something slightly different though: it's calling the corresponding function on the next transducer, but it's changing the input by running it through its mapping function first. This step function is run one time for each input from the prior transducer, meaning that each value is passed through the mapping function one at a time and sent on to the next transducer.
+  </p>
+  <p>
+    You may recall from the theory section though that in xduce, a transducer is a function that produces a function that takes the next transducer in the chain and returns a reducer object. That's what the outer <code>map</code> function does &mdash; it returns exactly such a function. Library functions like <code>sequence</code> expect to receive exactly what this <code>map</code> function is returning, and the right thing will happen.
+  </p>
+</section>
+
+<section>
+  <h2>Failing to pass along a value</h2>
+  <p>
+    There are reasons why a transducer may want to fail to pass a value. A <code>filter</code> transducer will drop elements that don't pass its predicate function, a <code>take</code> transducer wants to skip all of the element after a certain index, and so on. This is accomplished easily enough by just not delegating to the next <code>step</code> function and returning the unmodified accumulator instead.
+  </p>
+  <p>
+    Here's the <code>step</code> function for the <code>filter</code> transducer, for illustration.
+  </p>
+  <pre><code class="javascript">
+    [p.step](acc, input) {
+      return fn(input) ? xform[p.step](acc, input) : acc;
+    }
+  </code></pre>
+  <p>
+    Again this is simple in operation, though in a different way. The input value is not modified in this transducer. Instead, it's passed into the predicate <code>fn</code>, and if that returns <code>true</code>, it's just passed along to the next transducer's <code>step</code> function. If it returns <code>false</code> though, the input it simply ignored. The acculmator itself is returned without passing it to the next transducer. This is because since there's not anything being added to the accumulator &mdash; the input value is being ignored &mdash; there's no need to run any of the other <code>step</code> functions. This accumulator will simply make it to the end of the chain, where it'll be used as the accumulator for the next input element.
+  </p>
+</section>
+<section>
+  <h2>Early completion</h2>
+  <p>
+    <code>take</code> is a little trickier, at least to make work properly. In theory, a <code>take</code> transducer can just keep track of how many elements it's processed, and when it reaches a certain number, do exactly the same thing that this <code>filter</code> transducer does (pass along the accumulator without doing anything). This is not a good way to do it though, for two reasons.
+  </p>
+  <p>
+    First of all, it's inefficient. While this transducer stops processing on an element, any transducers that came <em>before</em> it have already done their processing. This is reasonable in <code>filter</code>, where it's presumed that a lot of the elements will get passed into the final collection. But for <code>take</code>, this may not be true. Running <code>take(3)</code> on a million-item collection would mean that 999,997 items are being processed unnecessarily since they're going to be dropped anyway.
+  </p>
+  <p>
+    Secondly, one of the nice things about the real <code>take</code> transducer is that it can turn infinite collections into finite ones. It could not do this if it continued to process every element, even if that processing was simply to drop the element. There has to be a way to stop the reduction, not simply drop elements one at a time.
+  </p>
+  <p>
+    How does <code>take</code> do this? Let's have a look at its code.
+  </p>
+  <pre><code class="javascript">
+    function take(n) {
+      return xform => {
+        let i = 0;
+
+        return {
+          [p.init]() {
+            return xform[p.init]();
+          },
+
+          [p.step](acc, input) {
+            let result = acc;
+
+            if (i < n) {
+              result = xform[p.step](acc, input);
+              if (i === n - 1) {
+                result = ensureCompleted(result);
+              }
+            }
+            i++;
+            return result;
+          },
+
+          [p.result](value) {
+            return xform[p.result](value);
+          }
+        };
+      }
+    }
+  </code></pre>
+  <p>
+    Again, <code>p.init</code> and <code>p.result</code> just chain to the next transducer, as we've seen before. <code>p.step</code>, however, does something very different. If the limit has not yet been reached, it just chains to the next transducer. But if the limit <em>has</em> been reached, it passes that chained result to the <code>ensureCompleted</code> function.
+  </p>
+  <p>
+    <code>ensureCompleted</code> marks the result in a way that the engine will know that the transduction process is finished at that point. It will take the result as the final result, pass it through <code>p.result</code>, and return it. Even if there are an infinite number of items remaining in the collection, its job is done and it returns. There is nothing further for the transducer writer to do &mdash; once a result is returned from <code>p.step</code> that has been returned from <code>ensureCompleted</code>, processing will cease automatically.
+  </p>
+  <p>
+    There are a number of these status-related functions: <code>complete</code>, <code>uncomplete</code>, <code>isCompleted</code>, <code>ensureCompleted</code>, and <code>ensureUncompleted</code>. Information about them is available in the <a href="api/index.html">API documentation</a>.
+  </p>
+  <p>
+    These are three of the most basic transducers. You may want to have a look at the code for transducers like <code>repeat</code> and <code>chunk</code> to see some of the other things that can be done. As long as you work within the constraints mentioned earlier on this page, there's very little limit to what a transducer can do.
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/advanced/interaction" title="Interaction with other libraries"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li></li>
+  </ul>
+</nav>

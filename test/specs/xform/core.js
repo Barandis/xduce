@@ -50,6 +50,10 @@ describe('Core transducers', () => {
       expect(flatten([[1, 2], [3, 4]])).to.deep.equal([1, 2, 3, 4]);
     });
 
+    it('works with strings inside of arrays', () => {
+      expect(flatten(['hello', 'world'])).to.deep.equal(['h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd']);
+    });
+
     it('works with reducibles', () => {
       const input = List.of(List.of(1, 2), List.of(3, 4));
       expect(flatten(input).toArray()).to.deep.equal([1, 2, 3, 4]);

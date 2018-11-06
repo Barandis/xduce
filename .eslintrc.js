@@ -3,21 +3,18 @@ const WARN = 1;
 const ERROR = 2;
 
 module.exports = {
-  'env': {
-    'es6': true,
-    'node': true,
-    'mocha': true,
-    'browser': true
+  env: {
+    es6: true,
+    node: true,
+    mocha: true,
+    browser: true,
   },
-  'extends': 'eslint:recommended',
-  'parser': 'babel-eslint',
-  'parserOptions': {
-    'sourceType': 'module'
+  extends: 'eslint:recommended',
+  parser: 'babel-eslint',
+  parserOptions: {
+    sourceType: 'module',
   },
-  'plugins': [
-    'no-class'
-  ],
-  'rules': {
+  rules: {
     // All rules set to OFF are handled by prettier
 
     // Possible Errors
@@ -27,11 +24,11 @@ module.exports = {
 
     // Best Practices
     'accessor-pairs': [ERROR],
-    'complexity': [ERROR, 20],
-    'curly': [ERROR],
+    complexity: [ERROR, 20],
+    curly: [ERROR],
     'dot-location': [OFF],
     'dot-notation': [ERROR],
-    'eqeqeq': [ERROR, 'smart'],
+    eqeqeq: [ERROR, 'smart'],
     'no-caller': [ERROR],
     'no-else-return': [ERROR],
     'no-extend-native': [ERROR],
@@ -59,10 +56,10 @@ module.exports = {
     'no-void': [ERROR],
     'no-with': [ERROR],
     'wrap-iife': [OFF],
-    'yoda': [ERROR],
+    yoda: [ERROR],
 
     // Strict Mode
-    'strict': [ERROR],
+    strict: [ERROR],
 
     // Variables
     'no-label-var': [ERROR],
@@ -75,9 +72,12 @@ module.exports = {
     'array-element-newline': [OFF],
     'block-spacing': [OFF],
     'brace-style': [OFF],
-    'camelcase': [ERROR, {
-      'properties': 'never'
-    }],
+    camelcase: [
+      ERROR,
+      {
+        properties: 'never',
+      },
+    ],
     'comma-dangle': [OFF],
     'comma-spacing': [OFF],
     'comma-style': [OFF],
@@ -86,24 +86,30 @@ module.exports = {
     'eol-last': [OFF],
     'func-call-spacing': [OFF],
     'func-name-matching': [ERROR],
-    'indent': [OFF],
+    indent: [OFF],
     'jsx-quotes': [OFF],
     'key-spacing': [OFF],
     'keyword-spacing': [OFF],
     'max-len': [ERROR, 120],
-    'max-lines': [ERROR, {
-      'max': 300,
-      'skipBlankLines': true,
-      'skipComments': true
-    }],
+    'max-lines': [
+      ERROR,
+      {
+        max: 300,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
     'multiline-ternary': [OFF],
     'newline-per-chained-call': [OFF],
     'new-parens': [OFF],
     'no-lonely-if': [ERROR],
     'no-mixed-spaces-and-tabs': [OFF],
-    'no-multiple-empty-lines': [ERROR, {
-      max: 1
-    }],
+    'no-multiple-empty-lines': [
+      ERROR,
+      {
+        max: 1,
+      },
+    ],
     'no-new-object': [ERROR],
     'no-tabs': [ERROR],
     'no-trailing-spaces': [OFF],
@@ -113,17 +119,24 @@ module.exports = {
     'object-curly-newline': [OFF],
     'object-curly-spacing': [OFF],
     'object-property-newline': [OFF],
-    'one-var': [ERROR, {
-      'initialized': 'never'
-    }],
+    'one-var': [
+      ERROR,
+      {
+        initialized: 'never',
+      },
+    ],
     'one-var-declaration-per-line': [OFF],
     'operator-linebreak': [OFF],
     'padded-blocks': [OFF],
     'quote-props': [OFF],
-    'quotes': [ERROR, 'single', {
-      'avoidEscape': true
-    }],
-    'semi': [OFF],
+    quotes: [
+      ERROR,
+      'single',
+      {
+        avoidEscape: true,
+      },
+    ],
+    semi: [OFF],
     'semi-spacing': [OFF],
     'semi-style': [OFF],
     'space-before-blocks': [OFF],
@@ -131,17 +144,21 @@ module.exports = {
     'space-in-parens': [OFF],
     'space-infix-ops': [OFF],
     'space-unary-ops': [OFF],
-    'spaced-comment': [ERROR, 'always', {
-      'line': {
-        'markers': ['/'],
-        'exceptions': ['-', '+', '/', '=']
+    'spaced-comment': [
+      ERROR,
+      'always',
+      {
+        line: {
+          markers: ['/'],
+          exceptions: ['-', '+', '/', '='],
+        },
+        block: {
+          markers: ['!'],
+          exceptions: ['*', '='],
+          balanced: true,
+        },
       },
-      'block': {
-        'markers': ['!'],
-        'exceptions': ['*', '='],
-        'balanced': true
-      }
-    }],
+    ],
     'switch-colon-spacing': [OFF],
     'unicode-bom': [OFF],
     'wrap-regex': [OFF],
@@ -164,8 +181,5 @@ module.exports = {
     'template-curly-spacing': [OFF],
     'template-tag-spacing': [OFF],
     'yield-star-spacing': [OFF],
-
-    // Plugin rules
-    'no-class/no-class': [ERROR]
-  }
+  },
 };

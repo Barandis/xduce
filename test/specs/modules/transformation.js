@@ -75,6 +75,11 @@ describe('Transduction functions', () => {
       expect(result.values).to.deep.equal([2, 3, 4, 5, 6]);
     });
 
+    it('will accept a function as a reducer', () => {
+      const result = transduce(ARRAY_5, map(x => x + 1), (acc, x) => acc + x, 0);
+      expect(result).to.equal(20);
+    });
+
     it('returns null if given a null collection', () => {
       expect(transduce(null, map(addOne), arrayReducer)).to.be.null;
     });

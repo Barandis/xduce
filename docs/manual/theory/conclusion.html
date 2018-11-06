@@ -1,0 +1,261 @@
+<nav>
+  <ul>
+    <li><a href="#manual/theory/experiments" title="Experiments in composition"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/setup/commonjs" title="CommonJS setup"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
+
+<section>
+  <h1>Transducer theory: Putting it all together</h1>
+  <p><em>
+    In the <a href="#manual/theory/generalizing">first part of this series</a>, we covered abstracting the iteration and reduction away from transformer functions. In the <a href="#manual/theory/experiments">second part</a>, we looked at some of the challenges that come with working in decent composition.
+  </em></p>
+  <p><em>
+    We didn't come up with any solutions for composition, but we have a good direction to go. Let's pick it up there, and finish by putting all of our solutions into one nice package.
+  </em></p>
+  <ol>
+    <li><a href="#manual/theory/generalizing">Generalizing iteration and reduction</a></li>
+    <li><a href="#manual/theory/experiments">Experiments in composition</a></li>
+    <li><strong>Putting it all together</strong></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Composition, how does it work?</h2>
+  <p>
+    So that didn't work, but it did tell us a couple of things that we have to take into consideration to make a helper function that <em>does</em> work.
+  </p>
+  <ol>
+    <li>A composed set of functions has to look like a single function.</li>
+    <li>If any of the set of composed functions abandons an element, it has to not appear in the output.</li>
+  </ol>
+  <p>
+    We're on the right track with the first requirement. Each transformer does look the same as the next, but now we have to make sure that a composed function also looks the same. We can really only do this if the helper function only needs to pass in the initial value. To accommodate, we can give the helper function its own helper function to make all the rest of the calls.
+  </p>
+  <pre><code class="javascript">
+    function compose4(...xforms) {
+      return x => {
+        let value = x;
+        for (const xform of xforms) {
+          value = xform(value);
+        }
+        return value;
+      };
+    }
+
+    // Change transform3 to take a single function instead of an array of them
+    function transform4(xs, xform, reducer, init) {
+      let acc = init;
+      for (const x of xs) {
+        acc = reducer(acc, xform(x));
+      }
+      return acc;
+    }
+
+    // The other functions stay the same; we'll just rename them so the numbers match
+    const map4 = map3;
+    const filter4 = filter3;
+
+    let xform = compose4(map4(x => x + 1), filter4(x => x > 3));
+    transform4([1, 2, 3, 4, 5], xform, arrayReducer, []);
+    // -> [undefined, undefined, 4, 5, 6]
+  </code></pre>
+  <p>
+    Looking good! It seems like our first problem is solved. The <code>compose4</code> function does the same thing as our regular transformer functions: it returns a function that takes a value and returns another value. In this case, it just calculates the return value by passing it through all of the functions that are composed under it. But in the end, this produced function can be passed into our <code>transform4</code> function just like one of our regular transformers can do.
+  </p>
+  <p>
+    This does require one nice change to <code>transform3</code>: the new <code>transform4</code> now takes a single transformer function, not an array of them. That function can be any function that takes a value and returns another value, including the function returned by any of our transformers <em>or</em> the function returned by <code>compose4</code>. All looks good.
+  </p>
+</section>
+
+<section>
+  <h2>One down, one to go</h2>
+  <p>
+    To solve the other problem, getting rid of those nasty <code>undefined</code>s in the output, let's look at what we can do with what our transformers' output. Clearly, the way we have it now cannot work &mdash; <code>filter</code> would actually have to return <em>nothing at all</em>, not just <code>undefined</code>. There's no way to do that in JavaScript. We have to find another way.
+  </p>
+  <aside>
+    <p>
+      If that's confusing, understand that <em>every</em> JavaScript function returns a value. If you write a function with no <code>return</code> statement, or if you write a bare <code>return;</code> statement that does not specify a value to return, then the function helpfully returns <code>undefined</code> without telling you.
+    </p>
+    <p>
+      That's why we get the <code>undefined</code>s in <code>filter4</code>'s output. If a value is filtered out, there's no <code>return</code> statement at all to cover that possibilty, so <code>undefined</code> is returned instead of returning nothing at all.
+    </p>
+  </aside>
+  <p>
+    What we really need is for the transformer to have some measure of control over the reducer. A <code>filter</code> function could then fail an input value by simply not invoking the reducer, meaning that there would actually be nothing added to the output collection, rather than <code>undefined</code> being added.
+  </p>
+  <p>
+    The problem is that we said we didn't want to do that. We said that we don't want the transformer having to decide whether to call the reducer. We made an entire helper function to make sure that the transformer didn't even need to know about the reducer. To then turn back and make the transformer function reducer-aware would violate the entire point of this exercise.
+  </p>
+  <p>
+    The solution here is a tricky one that requires some thought. You may find yourself having to take some of this on faith, but at the end you'll see why it all works. It is (as you may have come to expect by now) <em>even more generalization</em>.
+  </p>
+  <p>
+    As we saw when writing <code>compose4</code>, to do composition correctly, we have to make sure that each function takes and returns the same number and kind of values, and we have to make sure that the overall composition does the same. A reducer does not take the same number and kind of values as our transformer functions. Our transformers take a value, while our reducers take an accumulator <em>and</em> a value. We can't take any of those arguments away from a reducer function. They're both necessary. But what if we could add an argument to the transformer functions to make them look like reducer functions? Then <code>filter</code> could fail to invoke the next function just like we want, but it won't have to care whether it's a transformer function or a reducer function, because they both look the same anyway.
+  </p>
+  <p>
+    Really, that's an excellent idea. Here's why: <code>compose</code> can be written as a reduction itself. The initial value &mdash; in this case, the value being transformed &mdash; is passed to the first function. The result becomes the new value, which is passed to the second function. The result becomes the new value...and so on and so on, until you run out of functions to pass the ever-changing value to. This is a reduction, plain and simple. Just because it's producing a single value &mdash; the completely transformed value &mdash; and not a collection does not make it any less a reduction.
+  </p>
+  <aside>
+    <p>
+      All of our reductions have been making collections, because making collections is what transducers do. But a reducer does not need to produce a collection. Maybe the best example of a reduction is a summing operation.
+    </p>
+    <pre><code class="java">
+      [1, 2, 3, 4, 5].reduce((acc, x) => acc + x, 0);
+      // -> 15
+    </code></pre>
+    <p>
+      The reducer function here creates its new value by just adding the total-so-far and the next input, rather than appending it to a new collection or something like that. Reduction can be used to make new collections, but that's a specific use for it and doesn't represent everything it can do.
+    </p>
+    <p>
+      This is useful because it lets us know we can reduce a list of functions into a single function.
+    </p>
+  </aside>
+  <p>
+    And here's the last bit of good news: if our <code>filter</code> function becomes a reducer function, it can choose to ignore an input element by <em>just returning the original accumulator</em> rather than having the next function in the chain act on the accumulator and value.
+  </p>
+  <p>
+    So there are our requirements. We have to provide a transformer function that takes the <em>next</em> transformer function as an argument and assumes that it's a reducer function. Which means that our function itself needs to <em>return</em> a reducer function, so any function earlier in the chain that we pass it to can pretend that it is a reducer function itself. Let's try it.
+  </p>
+  <pre><code class="javascript">
+    function map5(fn, next) {
+      return (acc, x) => next(acc, fn(x));
+    }
+  </code></pre>
+  <p>
+    That's really not so different. Instead of taking a single value and returning a single value, the function that this new transformer returns is an actual reducer function. Notice that it's not acting any differently; it's still manipulating the data value, but it simply passes the accumulator along to the next function. The actual reducer function presumably will manipulate this accumulator, but a transformer function just passes it along. It only needs it so that it looks like a reducer function too.
+  </p>
+  <p>
+    To make this happen, <code>map5</code> needs to take one more argument: the next transformer in the chain, which is also assumed to be a reducer function. Suddenly it's really easy to tack the reducer onto the end, because it looks just like a transformer too.
+  </p>
+  <p>
+    Of course, this assumes that we have a new helper function that knows to tack the reducer onto the end and knows how to call the (possibly composed) transformer function. Let's write that now.
+  </p>
+  <pre><code class="javascript">
+    function transform5(xs, fn, reducer, init) {
+      let acc = init;
+      const xform = fn(reducer);
+      for (const x of xs) {
+        acc = xform(acc, x);
+      }
+      return acc;
+    }
+
+    xform = next => map5(x => x + 1, next);
+    transform5([1, 2, 3, 4, 5], xform, arrayReducer, []);
+    // -> [2, 3, 4, 5, 6]
+  </code></pre>
+  <p>
+    Okay, now that's more like it. Our new <code>transform5</code> function starts by chaining the transformation function (<code>fn</code>, which could be a composition of several functions) to the reducer, and then it iterates over the input collection, passing each value one at a time to the chain. The accumulator receives the output of the reducer function, which is the last link of the chain, and when the iteration completes, the accumulator is returned as the output collection.
+  </p>
+  <p>
+    This suggests that a transformer function can be composed with the reducer function, but can multiple transformer functions be composed? Let's write a new analogue to our <code>filter4</code> function and use it to find out.
+  </p>
+  <aside>
+    <p>
+      Just as an aside, even though <code>filter</code> functions don't modify any data they let through, they're still transformer functions. They transform collections by retaining some elements and rejecting others.
+    </p>
+  </aside>
+  <pre><code class="javascript">
+    function filter5(fn, next) {
+      return (acc, x) => fn(x) ? next(acc, x) : acc;
+    }
+
+    xform = next => filter5(x => x > 2, map5(x => x + 1, next));
+    transform([1, 2, 3, 4, 5], xform, arrayReducer, []);
+    // -> [4, 5, 6]
+  </code></pre>
+  <p>
+    It works! Now we have a <code>filter</code> function that simply <em>returns the original accumulator, unmodified</em>, when it doesn't want to pass along a value, rather than adding <code>undefined</code> to the accumulator and returning it. All of the later transformers functions (and the reduction function, which is unnecessary because nothing is being added) are skipped because <code>next</code> is not called. And since each transformer actually takes the <em>next</em> transformer as an argument, we don't even have to use a <code>compose</code> function to make it work. It's almost perfect!
+  </p>
+  <p>
+    What isn't perfect is the syntax. We can see from our <code>transform5</code> function that it wants to chain functions together just by passing one to the next, as it does when it passes the reducer function to the transformer function. But each of our actual transformer functions accepts <em>two</em> parameters when <code>transform5</code> only wants one, meaning that we have to do that ugly thing with the definition of <code>xform</code> to create a function that takes only the next transformer function. But there's no reason in the world that we can't rewrite our <code>map5</code> and <code>filter5</code> functions to do this for us, returning a function that accepts one reducer function and returns another, which is exactly what <code>transform5</code> really wants.
+  </p>
+  <pre><code class="javascript">
+    function map(fn) {
+      return xform => {
+        return (acc, x) => xform(acc, fn(x));
+      };
+    }
+
+    function filter(fn) {
+      return xform => {
+        return (acc, x) => fn(x) ? xform(acc, x) : acc;
+      };
+    }
+
+    function compose(...xforms) {
+      const reversed = xforms.reverse();
+      return value => reversed.reduce((acc, fn) => fn(acc), value);
+    }
+
+    function transduce(xs, xform, reducer, init) {
+      const xf = xform(reducer);
+      let acc = init;
+      for (const x of xs) {
+        acc = xf(acc, x);
+      }
+      return acc;
+    }
+
+    xform = compose(map(x => x + 1), filter(x => x > 3);
+    transduce([1, 2, 3, 4, 5], xform, arrayReducer, []);
+    // -> [4, 5, 6]
+  </code></pre>
+  <p>
+    And there it is. The big change is taking our transformer functions exactly as they are and wrapping them in another function which takes the next transformer in the chain. This is exactly the same code as in the prior example's definition of <code>xform</code>, just with some better names. Oh, we've done a little housekeeping &mdash; we've redefined <code>compose5</code> to create a composition chain by using reduction, because even though we've shown we don't <em>need</em> that, it's still a lot nicer to have it than to have to chain our functions together by hand. We've also changed the name of the <code>transform5</code> function into something that might interest you.
+  </p>
+  <aside>
+    <p>
+      In the world of functional programming, composition happens in right-to-left order. There are good reasons for this. One of them is that it matches the written order of just applying one function after another by hand:
+    </p>
+    <pre><code class="javascript">
+      comp(f, g)(x) === f(g(x)); // `comp` is taken to be a compose function with 'normal' order
+    </code></pre>
+    <p>
+      Another reason is that reverse order is the natural order when doing composition by reduction, as we're doing in our own <code>compose</code> function. However, it's easier to reason about <em>transducer</em> composition if it's going left-to-right, mostly because of the step-wise nature of the reduction (and maybe a healthy does of personal opinion). This is why our <code>compose</code> function reverses the order of the functions before composing them.
+    </p>
+  </aside>
+</section>
+
+<section>
+  <h2>Yes, yes...but what is a transducer?</h2>
+  <p>
+    Time to answer that question once and for all.
+  </p>
+  <p>
+    Take a close look at our final transformer functions, <code>map</code> and <code>filter</code>. They each take a reducer function, modify it a little bit by applying a transformation to the value that's being reduced at that moment, and return the slightly modified reducer function. It's almost as if what these functions are <em>really</em> doing is...<strong>trans</strong>forming re<strong>ducers</strong>. Ooooohhh.
+  </p>
+  <p>
+    So at long last, <strong>transducers are functions that transform reducer functions</strong>, leaving us with one big, composed reducer function that does a bunch of transformations right inside. It doesn't care about the transducer before it or the one after it &mdash; one of them is ultimately going to be the reducer that makes the output collection, but they all look the same to our transducers.
+  </p>
+  <p>
+    Of course, I could have told you in the first paragraph that <em>transducer</em> is a combination of <em>transformer</em> and <em>reducer</em>, but that wouldn't have told you why transforming reducers is important. By making this journey &mdash; which ended up with nothing more than a six-line <code>transduce</code> function that handles a bunch of three-line transducers and a utility <code>compose</code> function that is standard-issue and can be used to compose <em>any</em> single-argument JavaScript functions &mdash; we have learned what transforming reducer functions is good for and, as a side effect, solved all of the major problems of list functions.
+  </p>
+  <ul>
+    <li>
+      Transducers are single responsibility, concerned only with their job of transforming pieces of data.
+    </li>
+    <li>
+      Transducers are loosely coupled, not tied at all to any input or output type, and not even caring what happens to the data within composed transducers or even whether there <em>are</em> composed transducers.
+    </li>
+    <li>
+      Transducers do not create intermediate collections, only iterating over the input once and reducing only to the output once, no matter how many transformations are chained together.
+    </li>
+  </ul>
+  <p>
+    This isn't the whole story, of course. Xduce transducers do all of this but have a lot of bells and whistles too, like infinite iterators as input or output, reducers read from the output collection instead of being passed explicitly to <code>transduce</code>, and explicit iteration (instead of <code>for...of</code> loops) that let you iterate over objects in a reasonable way, turn functions into iterators, and all sorts of cool things.
+  </p>
+  <p>
+    But at least now you know what a transducer is.
+  </p>
+</section>
+
+<nav>
+  <ul>
+    <li><a href="#manual/theory/experiments" title="Experiments in composition"><span class="fa fa-caret-left"></span></a></li>
+    <li><a href="#manual/main" title="Table of contents"><span class="fa fa-caret-up"></span></a></li>
+    <li><a href="#manual/setup/commonjs" title="CommonJS setup"><span class="fa fa-caret-right"></a></li>
+  </ul>
+</nav>
