@@ -35,7 +35,8 @@
   "author": "Thomas Otterson <tjotterson@gmail.com>",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "devDependencies": {
     "@babel/core": "^7.1.2",
