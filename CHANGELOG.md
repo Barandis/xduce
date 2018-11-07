@@ -2,6 +2,11 @@
 
 All notable changes to the library will be documented in this file.
 
+## [2.0.1] 2018-11-07
+### Added
+- All of the files. When I changed the format I failed to tell NPM to put those changed files in the distribution. The net result was that it didn't work.
+- A license (MIT) to the minified dist file.
+
 ## [2.0.0] 2018-11-06
 ### Added
 - Documentation. Lots of documentation.
