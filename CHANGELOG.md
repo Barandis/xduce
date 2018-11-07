@@ -2,6 +2,10 @@
 
 All notable changes to the library will be documented in this file.
 
+## [2.0.2] 2018-11-07
+### Changed
+- Added an option to the build config for the dist files. This is something new in Babel 7 that I just learned about and affects how imports are done. I'm using require instead of import, but Babel assumes import, and I had to tell Babel that. This will eventually be changed to modules (with import), but they're still pretty new in Node and I'm not ready for that yet.
+
 ## [2.0.1] 2018-11-07
 ### Added
 - All of the files. When I changed the format I failed to tell NPM to put those changed files in the distribution. The net result was that it didn't work.
